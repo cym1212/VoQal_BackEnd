@@ -1,5 +1,13 @@
 spring:
-  config:
-    import:
-      - classpath:application-db.yml
+  datasource:
+    url: jdbc:postgresql://localhost:5432/voqal
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    defer-datasource-initialization: false
 
