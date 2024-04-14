@@ -52,7 +52,12 @@ public enum ErrorCode {
     MULTIPART_FILE_EXCEPTION(400, "MP001", "파일을 찾을 수 없습니다"),
     STORAGE_UPLOAD_FAILURE(400, "MP002", "스토리지로 업로드를 실패했습니다"),
     MAX_UPLOAD_SIZE_EXCEEDED(400, "MP003", "파일 최대 크기를 초과했습니다"),
-    NO_SUCH_KEY(400, "MP004", "잘못된 파일 이름으로 스토리지에 업로드를 요청했습니다");
+    NO_SUCH_KEY(400, "MP004", "잘못된 파일 이름으로 스토리지에 업로드를 요청했습니다"),
+
+    //Login
+    INCOMPLETE_SIGNUP_INFO(400,"L001","회원가입 정보 누락! 누락된 정보를 입력해주세요"),
+    INVALID_PASSWORD(400,"L002","비밀번호가 일치하지 않습니다");
+
 
 
     private final String code;

@@ -1,6 +1,6 @@
 package Capstone.VoQal.global.auth.filter;
 
-import Capstone.VoQal.global.auth.domain.SecurityMemberDTO;
+import Capstone.VoQal.global.auth.dto.SecurityMemberDTO;
 import Capstone.VoQal.global.auth.service.JwtProvider;
 import io.jsonwebtoken.Claims;
 

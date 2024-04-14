@@ -1,65 +1,41 @@
 package Capstone.VoQal.global.auth.controller;
 
-import Capstone.VoQal.global.auth.domain.SecurityMemberDTO;
-
-import Capstone.VoQal.global.auth.dto.AppLoginDTO;
 import Capstone.VoQal.global.auth.dto.GeneratedTokenDTO;
-import Capstone.VoQal.global.auth.dto.RegisterDTO;
-import Capstone.VoQal.global.auth.dto.TokenModifyDTO;
+import Capstone.VoQal.global.auth.dto.LoginRequestDTO;
+import Capstone.VoQal.global.auth.dto.SignUpRequestDTO;
+import Capstone.VoQal.global.auth.dto.SignUpResponseDTO;
 import Capstone.VoQal.global.auth.service.AuthService;
-import Capstone.VoQal.global.auth.service.JwtProvider;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Authentication", description = "Auth API")
+@Slf4j
 public class AuthController {
     private final AuthService authService;
-    private final JwtProvider jwtProvider;
 
-    @PostMapping("/register")
-    @Operation(summary = "회원가입", description = "회원가입 형식에 맞게 데이터를 전달해주세요.")
-    public GeneratedTokenDTO register(@Valid @RequestBody RegisterDTO registerDTO) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        SecurityMemberDTO securityMember = (SecurityMemberDTO) authentication.getPrincipal();
-        return authService.register(securityMember, registerDTO);
+    @PostMapping("/signup")
+    public ResponseEntity<SignUpResponseDTO> signUp(@RequestBody @Valid SignUpRequestDTO signUpRequestDTO) {
+
+        SignUpResponseDTO responseDTO = authService.signUp(signUpRequestDTO);
+        return ResponseEntity.ok(responseDTO);
     }
 
-    @PatchMapping("/logout")
-    @Operation(summary = "로그아웃", description = "로그아웃 합니다.")
-    public void logout() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        SecurityMemberDTO securityMember = (SecurityMemberDTO) authentication.getPrincipal();
-        authService.logout(securityMember.getId());
+    @PostMapping("/login")
+    public ResponseEntity<GeneratedTokenDTO> login(@RequestBody @Valid LoginRequestDTO loginRequestDTO) {
+        String email = String.valueOf(loginRequestDTO.getEmail());
+        String password = String.valueOf(loginRequestDTO.getPassword());
+        GeneratedTokenDTO generatedTokenDTO = authService.login(email, password);
+        return ResponseEntity.ok(generatedTokenDTO);
+
     }
 
-    @PostMapping("/app/login/kakao")
-    @Operation(summary = "네이티브에서 카카오 로그인", description = "AccessToken을 넘겨주어 검증 후 회원이 아닐경우 계정을 생성합니다.")
-    public GeneratedTokenDTO appKakaoLogin(@Valid @RequestBody AppLoginDTO appLoginDTO) {
-        return authService.loginKakao(appLoginDTO.getToken());
-    }
-
-    @PostMapping("/app/login/google")
-    @Operation(summary = "네이티브에서 구글 로그인", description = "idToken을 넘겨주어 검증 후 회원이 아닐경우 계정을 생성합니다.")
-    public GeneratedTokenDTO appGoogleLogin(@Valid @RequestBody AppLoginDTO appLoginDTO) {
-        return authService.loginGoogle(appLoginDTO.getToken());
-    }
-
-    @PatchMapping("/tokens")
-    @Operation(summary = "로그아웃", description = "Access Token과 남은 기간에 따라 Refresh Token을 재발급 합니다.")
-    public GeneratedTokenDTO tokenModify(@Valid @RequestBody TokenModifyDTO tokenModifyRequest) {
-        return jwtProvider.reissueToken(tokenModifyRequest.getRefreshToken());
-    }
-
-    @GetMapping("/nickname-duplicate")
-    @Operation(summary = "닉네임 중복 검사", description = "닉네임이 중복인지 확인합니다.")
-    public void nicknameDuplicateCheck(@RequestParam("nickname") String nickname) {
-        authService.checkNicknameDuplicate(nickname);
+    @PostMapping("/test")
+    public String test() {
+        return "sucess";
     }
 }

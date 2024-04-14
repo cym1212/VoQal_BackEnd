@@ -1,4 +1,4 @@
-package Capstone.VoQal.global.auth.domain;
+package Capstone.VoQal.global.auth.dto;
 
 import Capstone.VoQal.global.enums.Provider;
 import Capstone.VoQal.global.enums.Role;
@@ -16,9 +16,11 @@ public class SecurityMemberDTO {
     @Setter
     private Role role;
     private final String email;
-    private final Provider provider;
+    private final String name;
+    private final String nickName;
+    private final String phoneNum;
 
     public static SecurityMemberDTO fromClaims(Claims claims) {
-        return SecurityMemberDTO.builder().id(Long.valueOf(claims.getId())).email(claims.get("email", String.class)).provider(Provider.fromValue(claims.get("provider", String.class))).role(Role.fromValue(claims.get("role", String.class))).build();
+        return SecurityMemberDTO.builder().id(Long.valueOf(claims.getId())).email(claims.get("email", String.class)).name(claims.get("name", String.class)).role(Role.fromValue(claims.get("role", String.class))).build();
     }
 }

@@ -3,163 +3,95 @@ package Capstone.VoQal.global.auth.service;
 
 import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.domain.member.repository.MemberRepository;
-import Capstone.VoQal.global.auth.domain.SecurityMemberDTO;
+import Capstone.VoQal.global.auth.dto.SecurityMemberDTO;
 import Capstone.VoQal.global.auth.dto.GeneratedTokenDTO;
-import Capstone.VoQal.global.auth.dto.OAuth2AttributeDTO;
-import Capstone.VoQal.global.auth.dto.RegisterDTO;
+import Capstone.VoQal.global.auth.dto.SignUpRequestDTO;
+import Capstone.VoQal.global.auth.dto.SignUpResponseDTO;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.enums.Role;
 import Capstone.VoQal.global.error.exception.BusinessException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.*;
 
+import static Capstone.VoQal.global.enums.Role.GUEST;
+
 @Service
+@RequiredArgsConstructor
 @Slf4j
-@AllArgsConstructor
-@Transactional
 public class AuthService {
+
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final ClientRegistrationRepository clientRegistrationRepository;
-    private static final String KAKAO_API_URL = "https://kapi.kakao.com/v2/user/me";
+    private final PasswordEncoder passwordEncoder;
 
-    public GeneratedTokenDTO register(SecurityMemberDTO securityMember, RegisterDTO registerDTO) {
-        Optional<Member> findMember = memberRepository.findById(securityMember.getId());
 
-        if (findMember.isEmpty()) {
-            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
+    @Transactional
+    public SignUpResponseDTO signUp(SignUpRequestDTO signUpRequestDTO) {
+        Optional<Member> findEmail = memberRepository.findByEmail(signUpRequestDTO.getEmail());
+        if (findEmail.isPresent()) {
+            throw new BusinessException(ErrorCode.MEMBER_PROFILE_DUPLICATION);
         }
-
-        Member member = findMember.get();
-
-        memberRepository.updateRole(member.getId(), Role.GUEST);
-
-        securityMember.setRole(Role.GUEST);
-
-        return jwtProvider.generateTokens(securityMember);
-    }
-
-    public GeneratedTokenDTO loginKakao(String kakaoAccessToken) {
-        String registrationId = "kakao";
-
-        try {
-            CloseableHttpClient client = HttpClientBuilder.create().build();
-            HttpGet getRequest = new HttpGet(KAKAO_API_URL);
-            getRequest.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + kakaoAccessToken);
-            CloseableHttpResponse response = client.execute(getRequest);
-            ResponseHandler<String> handler = new BasicResponseHandler();
-            String jsonString = handler.handleResponse(response);
-
-            if (response.getStatusLine().getStatusCode() == HttpStatus.OK.value()) {
-                ObjectMapper objectMapper = new ObjectMapper();
-                TypeReference<Map<String, Object>> typeReference = new TypeReference<>() {
-                };
-
-                Map<String, Object> originAttributes = objectMapper.readValue(jsonString, typeReference);
-                OAuth2AttributeDTO oAuth2Attribute = OAuth2AttributeDTO.of(registrationId, originAttributes);
-
-                OAuth2User oAuth2User = customOAuth2UserService.processOAuth2Login(oAuth2Attribute);
-
-                return onAuthenticationSuccess(oAuth2User);
-            } else {
-                throw new BusinessException(jsonString, ErrorCode.APP_OAUTH2_LOGIN_FAIL);
-            }
-
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new BusinessException(ErrorCode.APP_OAUTH2_LOGIN_FAIL);
+        if (signUpRequestDTO.getEmail().isEmpty() && signUpRequestDTO.getName().isEmpty() && signUpRequestDTO.getPassword().isEmpty() && signUpRequestDTO.getNickName().isEmpty() && signUpRequestDTO.getPhoneNum().isEmpty()) {
+            throw new BusinessException(ErrorCode.INCOMPLETE_SIGNUP_INFO);
         }
-    }
+        Role role = GUEST;
 
-    public GeneratedTokenDTO loginGoogle(String googleIdToken) {
-        String registrationId = "google";
-        HttpTransport transport = new NetHttpTransport();
-
-        ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId(registrationId);
-
-
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, new GsonFactory())
-                .setAudience(Collections.singletonList(clientRegistration.getClientId()))
+        String hashedPassword = passwordEncoder.encode(signUpRequestDTO.getPassword());
+        Member member = Member.builder()
+                .name(signUpRequestDTO.getName())
+                .email(signUpRequestDTO.getEmail())
+                .phoneNumber(signUpRequestDTO.getPhoneNum())
+                .nickName(signUpRequestDTO.getNickName())
+                .password(hashedPassword)
                 .build();
+        member.setRole(role);
 
-        try {
-            GoogleIdToken idToken = verifier.verify(googleIdToken);
-            if (idToken != null) {
-                GoogleIdToken.Payload payload = idToken.getPayload();
-
-                String userId = payload.getSubject();
-                String email = payload.getEmail();
-                Map<String, Object> originAttributes = new HashMap<>();
-                originAttributes.put("email", email);
-                originAttributes.put("id", userId);
+        memberRepository.save(member);
+        return SignUpResponseDTO.builder()
+                .name(member.getName())
+                .email(member.getEmail())
+                .phoneNum(member.getPhoneNumber())
+                .nickName(member.getNickName())
+                .build();
+    }
 
 
-                OAuth2AttributeDTO oAuth2Attribute = OAuth2AttributeDTO.of(registrationId, originAttributes);
 
-                OAuth2User oAuth2User = customOAuth2UserService.processOAuth2Login(oAuth2Attribute);
+    @Transactional
+    public GeneratedTokenDTO login(String email, String password) {
+        Optional<Member> findEmail = memberRepository.findByEmail(email);
 
-                return onAuthenticationSuccess(oAuth2User);
+        if (findEmail.isPresent()) {
+            Member member = findEmail.get();
+            if (passwordEncoder.matches(password, member.getPassword())) {
+                SecurityMemberDTO securityMemberDTO = SecurityMemberDTO.builder()
+                        .id(member.getId())
+                        .email(member.getEmail())
+                        .role(member.getRole())
+                        .name(member.getName())
+                        .phoneNum(member.getPhoneNumber())
+                        .nickName(member.getNickName())
+                        .build();
+
+                GeneratedTokenDTO generatedTokenDTO = jwtProvider.generateTokens(securityMemberDTO);
+
+                return generatedTokenDTO;
             } else {
-                throw new BusinessException("유효하지 않은 IdToken", ErrorCode.APP_OAUTH2_LOGIN_FAIL);
+                throw new BusinessException(ErrorCode.INVALID_PASSWORD);
             }
-        } catch (GeneralSecurityException | IOException e) {
-            throw new BusinessException(e.getMessage(), ErrorCode.APP_OAUTH2_LOGIN_FAIL);
-        }
-    }
 
-    public void logout(Long memberId) {
-        memberRepository.updateRefreshToken(memberId, null);
-    }
-
-    public void checkNicknameDuplicate(String nickname) {
-        Optional<Member> findMember = memberRepository.findByNickName(nickname);
-        if (findMember.isPresent()) {
-            throw new BusinessException(ErrorCode.NICKNAME_DUPLICATE);
-        }
-    }
-
-    public GeneratedTokenDTO onAuthenticationSuccess(OAuth2User oAuth2User) {
-        boolean registered = Boolean.TRUE.equals(oAuth2User.getAttribute("registered"));
-
-        Long id = oAuth2User.getAttribute("id");
-        String email = oAuth2User.getAttribute("email");
-        String provider = oAuth2User.getAttribute("provider");
-        String role = oAuth2User.getAuthorities().stream().findFirst().orElseThrow(IllegalAccessError::new).getAuthority();
-        GeneratedTokenDTO generatedTokenDTO;
-
-        if (!registered) {
-            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
         } else {
-            generatedTokenDTO = jwtProvider.generateTokens(id, email, provider, role);
-            generatedTokenDTO.setIsRegistered(true);
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
         }
-        return generatedTokenDTO;
     }
 }
+
+
+

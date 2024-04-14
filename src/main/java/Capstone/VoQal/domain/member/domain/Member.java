@@ -24,7 +24,7 @@ import java.util.Set;
 public class Member extends BaseEntity {
 
 
-    @Setter
+
     private String refreshToken;
 
     @Column(length = 10, nullable = false)
@@ -41,7 +41,13 @@ public class Member extends BaseEntity {
     @Column(unique = true, nullable = true)
     private String providerId; //erd cloud에 추가 해야함
 
+    private String password; //erd cloud에 추가 해야함
+
     private String email; //erd cloud에 추가 해야함
+
+    private String phoneNumber; //erd cloud에 추가 해야함
+
+    private String name; //erd cloud에 추가 해야함
 
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
     private Student student;
@@ -59,8 +65,12 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private Set<MemberAndChatRoom> memberAndChatRoom;
 
-
-    public static Member createGuest(Provider provider, String providerId, String email) {
-        return Member.builder().provider(provider).role(Role.GUEST).email(email).providerId(providerId).build();
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
 }

@@ -1,9 +1,10 @@
 package Capstone.VoQal.global.auth.service;
 
+
 import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.domain.member.repository.MemberRepository;
-import Capstone.VoQal.global.auth.domain.SecurityMemberDTO;
 import Capstone.VoQal.global.auth.dto.GeneratedTokenDTO;
+import Capstone.VoQal.global.auth.dto.SecurityMemberDTO;
 import Capstone.VoQal.global.config.JwtProperties;
 import Capstone.VoQal.global.error.exception.BusinessException;
 import io.jsonwebtoken.*;
@@ -32,9 +33,7 @@ public class JwtProvider {
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
     private Key signingKey;
     private JwtParser jwtParser;
-    //todo 배포시 변경해야함
-//    private static final Long ACCESS_TOKEN_PERIOD = 1000L * 60L * 60L; // 1시간
-    private static final Long ACCESS_TOKEN_PERIOD = 1000L * 60L * 60L * 24L * 14L; // 2주
+    private static final Long ACCESS_TOKEN_PERIOD = 1000L * 60L * 60L; // 1시간
     private static final Long REFRESH_TOKEN_PERIOD = 1000L * 60L * 60L * 24L * 14L; // 2주
 
     @PostConstruct
@@ -46,40 +45,20 @@ public class JwtProvider {
     }
 
     @Transactional
-    public GeneratedTokenDTO generateTokens(Long id, String email, String provider, String role) {
-        String accessToken = generateToken(id, email, provider, role, ACCESS_TOKEN_PERIOD);
-        String refreshToken = generateToken(id, email, provider, role, REFRESH_TOKEN_PERIOD);
-
-        saveRefreshToken(id, refreshToken);
-
-        return GeneratedTokenDTO.builder().accessToken(accessToken).refreshToken(refreshToken).build();
-    }
-
     public GeneratedTokenDTO generateTokens(SecurityMemberDTO securityMemberDTO) {
         String accessToken = generateToken(securityMemberDTO, ACCESS_TOKEN_PERIOD);
         String refreshToken = generateToken(securityMemberDTO, REFRESH_TOKEN_PERIOD);
 
         saveRefreshToken(securityMemberDTO.getId(), refreshToken);
 
-        return GeneratedTokenDTO.builder().accessToken(accessToken).refreshToken(refreshToken).isRegistered(true).build();
+        return GeneratedTokenDTO.builder().accessToken(accessToken).refreshToken(refreshToken).build();
     }
 
-    private String generateToken(Long id, String email, String provider, String role, Long tokenPeriod) {
-        Claims claims = Jwts.claims().setSubject("id");
-        claims.put("role", role);
-        claims.put("provider", provider);
-        claims.put("email", email);
-        claims.setId(String.valueOf(id));
-        Date now = new Date();
-
-        return Jwts.builder().setClaims(claims).setIssuedAt(now).setExpiration(new Date(now.getTime() + tokenPeriod)).signWith(signingKey, signatureAlgorithm).compact();
-    }
 
     private String generateToken(SecurityMemberDTO securityMemberDTO, Long tokenPeriod) {
         Claims claims = Jwts.claims().setSubject("id");
-        claims.put("role", securityMemberDTO.getRole().name());
-        claims.put("provider", securityMemberDTO.getProvider().name());
         claims.put("email", securityMemberDTO.getEmail());
+        claims.put("role", securityMemberDTO.getRole().name());
         claims.setId(String.valueOf(securityMemberDTO.getId()));
         Date now = new Date();
 
@@ -96,17 +75,17 @@ public class JwtProvider {
 
         Optional<Member> findMember = memberRepository.findById(securityMemberDTO.getId());
 
-        if(findMember.isEmpty()) {
+        if (findMember.isEmpty()) {
             throw new BusinessException(MEMBER_NOT_FOUND);
         }
 
         Member member = findMember.get();
 
-        if(member.getRefreshToken() == null) {
+        if (member.getRefreshToken() == null) {
             throw new BusinessException(MISMATCH_REFRESH_TOKEN);
         }
 
-        if(!member.getRefreshToken().equals(refreshToken)) {
+        if (!member.getRefreshToken().equals(refreshToken)) {
             throw new BusinessException(MISMATCH_REFRESH_TOKEN);
         }
 
@@ -116,7 +95,7 @@ public class JwtProvider {
 
         memberRepository.save(member);
 
-        generatedTokenDTO = GeneratedTokenDTO.builder().accessToken(reissuedAccessToken).refreshToken(reissuedRefreshToken).isRegistered(true).build();
+        generatedTokenDTO = GeneratedTokenDTO.builder().accessToken(reissuedAccessToken).refreshToken(reissuedRefreshToken).build();
 
         return generatedTokenDTO;
     }
