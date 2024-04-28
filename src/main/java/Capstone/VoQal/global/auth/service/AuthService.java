@@ -117,8 +117,8 @@ public class AuthService {
     }
 
     @Transactional
-    public boolean checkMember(String name, String phoneNumber, String email) {
-        Optional<Member> findMember = memberRepository.findByNameAndPhoneNumberAndEmail(name, phoneNumber, email);
+    public boolean checkMember(FindRequestDTO.Password findPasswordRequestDTO) {
+        Optional<Member> findMember = memberRepository.findByNameAndPhoneNumberAndEmail(findPasswordRequestDTO.getName(),findPasswordRequestDTO.getPhoneNumber(),findPasswordRequestDTO.getEmail());
 
         return findMember.isPresent();
     }
@@ -158,6 +158,21 @@ public class AuthService {
             coachListDTO.add(new MemberListDTO(coach.getId(), coach.getName()));
         }
         return coachListDTO;
+    }
+
+    @Transactional
+    public void updateNickname(Long id, ChangeNicknameDTO changeNicknameDTO) {
+        Optional<Member> findMemberId = memberRepository.findByMemberId(id);
+        if (findMemberId.isEmpty()) {
+            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
+        }
+        if (dupliacteNickname(changeNicknameDTO.getNickname())) {
+            throw new BusinessException(ErrorCode.NICKNAME_DUPLICATE);
+        }
+        Member member = findMemberId.get();
+        member.setNickName(changeNicknameDTO.getNickname());
+        memberRepository.save(member);
+
     }
 }
 

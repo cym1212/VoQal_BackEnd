@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
@@ -23,14 +24,16 @@ import java.util.Set;
 public class Member extends BaseEntity {
 
 
-
+    @Setter
     private String refreshToken;
 
     @Column(length = 10, nullable = false)
     @Enumerated(EnumType.STRING)
+    @Setter
     private Role role;
 
     @Column(length = 20, nullable = true)
+    @Setter
     private String nickName;
 
     @Column(length = 10, nullable = true)
@@ -64,13 +67,6 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private Set<MemberAndChatRoom> memberAndChatRoom;
 
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
 
     public void changePassword(String newPassword) {
         this.password = newPassword;

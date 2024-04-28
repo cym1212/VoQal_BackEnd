@@ -70,18 +70,16 @@ public class AuthController {
 
     // todo ( 모하지 발표 후 완료된 것들은 삭제 )
     // 1. 컨트롤러에서 올바르지 않은 경우에 대한 응답값도 설정하기
-    // 2. mapper 로 코드 리펙토링
+    // 2. mapper 로 코드 리펙토링 (고민중)
     // 3. @PathVariabe 에 관한 의문 ( 해결 )
     // 4. 너무 api 요청을 자주 해서 서버에 무리가 가는건 아닌지..
+    // 5. JSON 직렬화, 역직렬화에 대한 개념 정리 (해결)
 
 
     @PostMapping("/find/member")
     @Operation(summary = "회원인지 찾기 ", description = "이름과 전화번호 이메일을 사용해서 가입된 회원인지 확인합니다.")
     public ResponseEntity<String> checkMember(@Valid @RequestBody  FindRequestDTO.Password findPasswordRequestDTO) {
-        String name = findPasswordRequestDTO.getName();
-        String phoneNumber = findPasswordRequestDTO.getPhoneNumber();
-        String email = findPasswordRequestDTO.getEmail();
-        boolean isChecked = authService.checkMember(name, phoneNumber, email);
+        boolean isChecked = authService.checkMember(findPasswordRequestDTO);
         if (isChecked) {
             return ResponseEntity.ok("회원이 맞습니다");
         }
@@ -111,7 +109,13 @@ public class AuthController {
         return coachList;
     }
 
+    @PatchMapping("/{id}/change-nickname")
+    @Operation(summary = " 닉네임 변경 ", description = "닉네임을 변경하는 로직")
+    public ResponseEntity<String> updateNickname(@PathVariable("id") Long id, @RequestBody ChangeNicknameDTO changeNicknameDTO) {
+        authService.updateNickname(id, changeNicknameDTO);
+        return ResponseEntity.ok().body("닉네임 변경에 성공했습니다.");
 
+    }
     @PostMapping("/test")
     public String test() {
         return "sucess";
