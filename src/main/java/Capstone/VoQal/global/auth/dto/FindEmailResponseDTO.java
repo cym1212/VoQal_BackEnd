@@ -3,17 +3,13 @@ package Capstone.VoQal.global.auth.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
-
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class SignUpResponseDTO {
+public class FindEmailResponseDTO {
 
-    private String nickName;
     private String email;
-    private String name;
-    private String  phoneNum;
-
 }

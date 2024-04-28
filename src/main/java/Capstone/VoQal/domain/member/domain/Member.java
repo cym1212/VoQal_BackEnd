@@ -10,7 +10,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
@@ -53,7 +52,7 @@ public class Member extends BaseEntity {
     private Student student;
 
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
-    private Trainer trainer;
+    private Coach coach;
 
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
     private ChallengePost challengePost;
@@ -71,6 +70,10 @@ public class Member extends BaseEntity {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
     }
 
 }

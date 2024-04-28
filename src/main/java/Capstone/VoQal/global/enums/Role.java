@@ -24,7 +24,7 @@ package Capstone.VoQal.global.enums;
 
 public enum Role {
 
-    TRAINER("TRAINER"),
+    COACH("COACH"),
     STUDENT("STUDENT"),
     GUEST("GUEST");
 

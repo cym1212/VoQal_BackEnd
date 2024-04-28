@@ -17,16 +17,16 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "trainer")
-public class Trainer extends BaseEntity {
+@Table(name = "coach")
+public class Coach extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "trainer", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "coach", fetch = FetchType.LAZY)
     private Set<Student> student;
 
-    @OneToOne(mappedBy = "trainer", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "coach", fetch = FetchType.LAZY)
     private LessonNote lessonNote;
 }

@@ -2,7 +2,7 @@ package Capstone.VoQal.domain.lesson.domain;
 
 
 import Capstone.VoQal.domain.member.domain.Student;
-import Capstone.VoQal.domain.member.domain.Trainer;
+import Capstone.VoQal.domain.member.domain.Coach;
 import Capstone.VoQal.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,8 +31,8 @@ public class LessonNote extends BaseEntity {
     private String recordUrl;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "trainer_id")
-    private Trainer trainer;
+    @JoinColumn(name = "coach_id")
+    private Coach coach;
 
     @OneToOne(mappedBy = "lessonNote", fetch = FetchType.LAZY)
     private Student student;

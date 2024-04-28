@@ -29,8 +29,8 @@ public class Student extends BaseEntity {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "trainer_id")
-    private Trainer trainer;
+    @JoinColumn(name = "coach_id")
+    private Coach coach;
 
     @OneToOne( fetch = FetchType.LAZY)
     @JoinColumn(name = "note_id")

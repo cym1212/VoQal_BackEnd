@@ -3,7 +3,9 @@ spring:
     import:
       - classpath:application-secret.yml
       - classpath:application-database.yml
-
+springdoc:
+  swagger-ui:
+    path: /swagger
 
 
 

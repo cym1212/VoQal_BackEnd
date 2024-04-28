@@ -3,10 +3,7 @@ package Capstone.VoQal.global.auth.service;
 
 import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.domain.member.repository.MemberRepository;
-import Capstone.VoQal.global.auth.dto.SecurityMemberDTO;
-import Capstone.VoQal.global.auth.dto.GeneratedTokenDTO;
-import Capstone.VoQal.global.auth.dto.SignUpRequestDTO;
-import Capstone.VoQal.global.auth.dto.SignUpResponseDTO;
+import Capstone.VoQal.global.auth.dto.*;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.enums.Role;
 import Capstone.VoQal.global.error.exception.BusinessException;
@@ -38,9 +35,6 @@ public class AuthService {
         if (findEmail.isPresent()) {
             throw new BusinessException(ErrorCode.MEMBER_PROFILE_DUPLICATION);
         }
-        if (signUpRequestDTO.getEmail().isEmpty() && signUpRequestDTO.getName().isEmpty() && signUpRequestDTO.getPassword().isEmpty() && signUpRequestDTO.getNickName().isEmpty() && signUpRequestDTO.getPhoneNum().isEmpty()) {
-            throw new BusinessException(ErrorCode.INCOMPLETE_SIGNUP_INFO);
-        }
         Role role = GUEST;
 
         String hashedPassword = passwordEncoder.encode(signUpRequestDTO.getPassword());
@@ -65,12 +59,12 @@ public class AuthService {
 
 
     @Transactional
-    public GeneratedTokenDTO login(String email, String password) {
-        Optional<Member> findEmail = memberRepository.findByEmail(email);
+    public GeneratedTokenDTO login(LoginRequestDTO loginRequestDTO) {
+        Optional<Member> findEmail = memberRepository.findByEmail(loginRequestDTO.getEmail());
 
         if (findEmail.isPresent()) {
             Member member = findEmail.get();
-            if (passwordEncoder.matches(password, member.getPassword())) {
+            if (passwordEncoder.matches(loginRequestDTO.getPassword(), member.getPassword())) {
                 SecurityMemberDTO securityMemberDTO = SecurityMemberDTO.builder()
                         .id(member.getId())
                         .email(member.getEmail())
@@ -90,6 +84,80 @@ public class AuthService {
         } else {
             throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
         }
+    }
+
+    @Transactional
+    public boolean dupliacteNickname(String requestNickname) {
+        Optional<Member> findNickname = memberRepository.findByNickName(requestNickname);
+        return findNickname.isPresent();
+
+    }
+    @Transactional
+    public boolean duplicateEmail(String requsetEmail) {
+        Optional<Member> findEmail = memberRepository.findByEmail(requsetEmail);
+
+        return findEmail.isPresent();
+
+    }
+
+    @Transactional
+    public FindEmailResponseDTO findEmail(String name, String phoneNumber) {
+        Optional<Member> findMember = memberRepository.findByNameAndPhoneNumber(name, phoneNumber);
+
+        if (findMember.isPresent()) {
+            Member findEmailMember = findMember.get();
+            return FindEmailResponseDTO.builder()
+                    .email(findEmailMember.getEmail())
+                    .build();
+        }
+        else {
+            throw new BusinessException(ErrorCode.INVALID_MEMBER);
+        }
+
+    }
+
+    @Transactional
+    public boolean checkMember(String name, String phoneNumber, String email) {
+        Optional<Member> findMember = memberRepository.findByNameAndPhoneNumberAndEmail(name, phoneNumber, email);
+
+        return findMember.isPresent();
+    }
+
+    @Transactional
+    public void resetPassword(FindRequestDTO.ResetPassword passwordRequestDTO) {
+        Optional<Member> findEmail = memberRepository.findByEmail(passwordRequestDTO.getEmail());
+
+        findEmail.ifPresent(member -> {
+            String hashedPassword = passwordEncoder.encode(passwordRequestDTO.getPassword());
+            member.changePassword(hashedPassword);
+            memberRepository.save(member);
+        });
+        if (findEmail.isEmpty()) {
+            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
+        }
+    }
+
+    @Transactional
+    public void setRoleToCoach(RoleDTO roleDTO) {
+        Optional<Member> findEmail = memberRepository.findByEmail(roleDTO.getEmail());
+
+        findEmail.ifPresent(member -> {
+            member.setRole(Role.COACH);
+            memberRepository.save(member);
+        });
+        if (findEmail.isEmpty()) {
+            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
+        }
+    }
+
+    @Transactional
+    public List<MemberListDTO> getCoachList() {
+        List<Member> coachList = memberRepository.findByRole(Role.COACH);
+        List<MemberListDTO> coachListDTO = new ArrayList<>();
+        for (Member coach : coachList) {
+            coachListDTO.add(new MemberListDTO(coach.getId(), coach.getName()));
+        }
+        return coachListDTO;
     }
 }
 

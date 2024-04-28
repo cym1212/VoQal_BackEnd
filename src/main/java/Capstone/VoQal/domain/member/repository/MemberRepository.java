@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,6 +17,17 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByNickName(String nickName);
 
     Optional<Member> findByEmail(String email);
+
+    Optional<Member> findByName(String name);
+    Optional<Member> findByPhoneNumber(String phoneNumber);
+
+    List<Member> findByRole(Role role);
+
+    Optional<Member> findByNameAndPhoneNumber(String name, String phoneNumber);
+
+
+    Optional<Member> findByNameAndPhoneNumberAndEmail(String name, String phoneNumber, String email);
+
 
     @Query("SELECT m FROM Member m WHERE m.id = :memberId")
     Optional<Member> findByMemberId(@Param("memberId") Long memberId);

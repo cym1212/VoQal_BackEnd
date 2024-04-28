@@ -18,8 +18,6 @@ public class HomeController {
         return "Hello World";
     }
 
-   
-
     @GetMapping("/secured/home")
     @ResponseBody
     public String getSecuredHome() {

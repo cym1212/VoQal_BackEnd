@@ -1,10 +1,9 @@
 package Capstone.VoQal.global.auth.dto;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-@Data
 @Getter
 @Setter
 @AllArgsConstructor
@@ -12,11 +11,11 @@ import lombok.*;
 @Builder
 public class LoginRequestDTO {
 
-    @NotBlank
+    @NotNull
     @Email(message = "잘못된 이메일 형식입니다")
     private final String email;
 
-    @NotBlank
+    @NotNull
     private final String password;
 
 
