@@ -15,10 +15,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(force = true)
 public class RoleDTO {
 
-    @NotNull
-    @Email
-    @JsonProperty("email")
-    private  String email;
+    @Getter
+    public static class CoachDTO {
+        @NotNull
+        @Email
+        @JsonProperty("email")
+        private  String email;
+    }
+
+    @Getter
+    public static class StudentDTO{
+
+
+        @NotNull
+        private Long studentId;
+    }
+
 
 
 }

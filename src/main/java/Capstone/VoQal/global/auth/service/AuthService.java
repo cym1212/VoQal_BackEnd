@@ -137,43 +137,7 @@ public class AuthService {
         }
     }
 
-    @Transactional
-    public void setRoleToCoach(RoleDTO roleDTO) {
-        Optional<Member> findEmail = memberRepository.findByEmail(roleDTO.getEmail());
 
-        findEmail.ifPresent(member -> {
-            member.setRole(Role.COACH);
-            memberRepository.save(member);
-        });
-        if (findEmail.isEmpty()) {
-            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
-        }
-    }
-
-    @Transactional
-    public List<MemberListDTO> getCoachList() {
-        List<Member> coachList = memberRepository.findByRole(Role.COACH);
-        List<MemberListDTO> coachListDTO = new ArrayList<>();
-        for (Member coach : coachList) {
-            coachListDTO.add(new MemberListDTO(coach.getId(), coach.getName()));
-        }
-        return coachListDTO;
-    }
-
-    @Transactional
-    public void updateNickname(Long id, ChangeNicknameDTO changeNicknameDTO) {
-        Optional<Member> findMemberId = memberRepository.findByMemberId(id);
-        if (findMemberId.isEmpty()) {
-            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
-        }
-        if (dupliacteNickname(changeNicknameDTO.getNickname())) {
-            throw new BusinessException(ErrorCode.NICKNAME_DUPLICATE);
-        }
-        Member member = findMemberId.get();
-        member.setNickName(changeNicknameDTO.getNickname());
-        memberRepository.save(member);
-
-    }
 }
 
 

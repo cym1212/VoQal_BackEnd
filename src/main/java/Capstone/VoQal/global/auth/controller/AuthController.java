@@ -3,6 +3,7 @@ package Capstone.VoQal.global.auth.controller;
 import Capstone.VoQal.global.auth.dto.*;
 import Capstone.VoQal.global.auth.service.AuthService;
 
+import Capstone.VoQal.global.auth.service.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,13 +12,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
     private final AuthService authService;
+    private final JwtProvider jwtProvider;
 
     @PostMapping("/signup")
     @Operation(summary = "회원가입 로직", description = "이메일, 이름, 전화번호, 닉네임, 비밀번호를 입력하면 검증 후 회원가입을 진행합니다.")
@@ -74,6 +74,7 @@ public class AuthController {
     // 3. @PathVariabe 에 관한 의문 ( 해결 )
     // 4. 너무 api 요청을 자주 해서 서버에 무리가 가는건 아닌지..
     // 5. JSON 직렬화, 역직렬화에 대한 개념 정리 (해결)
+    // 6. 역할 정하는 로직을 어떻게 처리할지
 
 
     @PostMapping("/find/member")
@@ -94,28 +95,12 @@ public class AuthController {
 
     }
 
-    @PostMapping("/role/coach")
-    @Operation(summary = " 코치로 역할 설정 로직 ", description = "역할을 코치로 설정할 경우")
-    public ResponseEntity<String> setRoleCoach(@Valid @RequestBody RoleDTO roleDTO) {
-        authService.setRoleToCoach(roleDTO);
-
-        return ResponseEntity.ok("코치로 설정되었습니다");
+    @PatchMapping("/tokens")
+    @Operation(summary = "토큰 재발급", description = "Access Token과 남은 기간에 따라 Refresh Token을 재발급 합니다.")
+    public GeneratedTokenDTO tokenModify(@Valid @RequestBody TokenModifyDTO tokenModifyRequest) {
+        return jwtProvider.reissueToken(tokenModifyRequest.getRefreshToken());
     }
 
-    @GetMapping("/role/coach")
-    @Operation(summary = " 코치 조회 ", description = "학생일 경우를 선택했을 때 코치 리스트 조회")
-    public List<MemberListDTO> getCoachList() {
-        List<MemberListDTO> coachList = authService.getCoachList();
-        return coachList;
-    }
-
-    @PatchMapping("/{id}/change-nickname")
-    @Operation(summary = " 닉네임 변경 ", description = "닉네임을 변경하는 로직")
-    public ResponseEntity<String> updateNickname(@PathVariable("id") Long id, @RequestBody ChangeNicknameDTO changeNicknameDTO) {
-        authService.updateNickname(id, changeNicknameDTO);
-        return ResponseEntity.ok().body("닉네임 변경에 성공했습니다.");
-
-    }
     @PostMapping("/test")
     public String test() {
         return "sucess";

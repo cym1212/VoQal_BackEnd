@@ -13,5 +13,5 @@ import lombok.NoArgsConstructor;
 public class ChangeNicknameDTO {
 
     @NotNull
-    public String nickname;
+    private String nickname;
 }

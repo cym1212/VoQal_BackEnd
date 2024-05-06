@@ -20,6 +20,9 @@ import java.util.Set;
 @Table(name = "coach")
 public class Coach extends BaseEntity {
 
+    @Column(name = "pending_student_id")
+    private Long pendingStudentId;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -29,4 +32,5 @@ public class Coach extends BaseEntity {
 
     @OneToOne(mappedBy = "coach", fetch = FetchType.LAZY)
     private LessonNote lessonNote;
+
 }
