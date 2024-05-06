@@ -63,21 +63,21 @@ public class ProfileService {
 
     }
 
-    @Transactional
-    public void requestCoachAssignment(Long coachId, RoleDTO.StudentDTO studentDTO) {
-        Optional<Member> findStudent = memberRepository.findByMemberId(studentDTO.getStudentId());
-        if (findStudent.isEmpty()) {
-            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
-        }
-        Member student = findStudent.get();
-
-        Optional<Member> findCoach = memberRepository.findByMemberId(coachId);
-        if (findCoach.isEmpty()) {
-            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
-        }
-        Member
-
-    }
+//    @Transactional
+//    public void requestCoachAssignment(Long coachId, RoleDTO.StudentDTO studentDTO) {
+//        Optional<Member> findStudent = memberRepository.findByMemberId(studentDTO.getStudentId());
+//        if (findStudent.isEmpty()) {
+//            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
+//        }
+//        Member student = findStudent.get();
+//
+//        Optional<Member> findCoach = memberRepository.findByMemberId(coachId);
+//        if (findCoach.isEmpty()) {
+//            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
+//        }
+//        Member
+//
+//    }
 
 
 }

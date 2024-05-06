@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor(force = true)
 public class RoleDTO {
 
