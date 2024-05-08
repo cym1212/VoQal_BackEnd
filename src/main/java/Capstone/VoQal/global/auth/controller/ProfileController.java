@@ -22,8 +22,8 @@ public class ProfileController {
     private final ProfileService profileService;
     @PostMapping("/role/coach")
     @Operation(summary = " 코치로 역할 설정 로직 ", description = "역할을 코치로 설정할 경우")
-    public ResponseEntity<String> setRoleCoach(@Valid @RequestBody RoleDTO.CoachDTO roleDTO) {
-        profileService.setRoleToCoach(roleDTO);
+    public ResponseEntity<String> setRoleCoach() {
+        profileService.setRoleToCoach();
 
         return ResponseEntity.ok("코치로 설정되었습니다");
     }

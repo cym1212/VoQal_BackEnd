@@ -10,6 +10,7 @@ import Capstone.VoQal.global.error.exception.BusinessException;
 import io.jsonwebtoken.*;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import jakarta.xml.bind.DatatypeConverter;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +32,10 @@ public class JwtProvider {
     private final JwtProperties jwtConfig;
     private final MemberRepository memberRepository;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+    private final HttpServletRequest request;
     private Key signingKey;
     private JwtParser jwtParser;
+
     private static final Long ACCESS_TOKEN_PERIOD = 1000L * 60L * 60L; // 1시간
     private static final Long REFRESH_TOKEN_PERIOD = 1000L * 60L * 60L * 24L * 14L; // 2주
 
@@ -117,5 +120,26 @@ public class JwtProvider {
     private void saveRefreshToken(Long id, String refreshToken) {
         Optional<Member> findMember = memberRepository.findById(id);
         findMember.ifPresent(member -> memberRepository.updateRefreshToken(member.getId(), refreshToken));
+    }
+
+    public long extractIdFromTokenInHeader() {
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            String token = header.substring(7);
+            return extractIdFromToken(token);
+        } else {
+            throw new IllegalArgumentException("Token not found in header.");
+        }
+    }
+
+    public long extractIdFromToken(String token) {
+
+        try {
+            Jws<Claims> claims = Jwts.parser().setSigningKey(signingKey).parseClaimsJws(token);
+            String idString = claims.getBody().get("jti", String.class);
+            return Long.parseLong(idString);
+        } catch (JwtException | IllegalArgumentException | NullPointerException e) {
+            throw new IllegalArgumentException("Error extracting ID from token.");
+        }
     }
 }

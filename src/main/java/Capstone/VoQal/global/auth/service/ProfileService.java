@@ -24,16 +24,18 @@ import java.util.Optional;
 public class ProfileService {
     private final MemberRepository memberRepository;
     private final AuthService authService;
+    private final JwtProvider jwtProvider;
 
     @Transactional
-    public void setRoleToCoach(RoleDTO.CoachDTO roleDTO) {
-        Optional<Member> findEmail = memberRepository.findByEmail(roleDTO.getEmail());
+    public void setRoleToCoach() {
+        long id = jwtProvider.extractIdFromTokenInHeader();
+        Optional<Member> findId = memberRepository.findById(id);
 
-        findEmail.ifPresent(member -> {
+        findId.ifPresent(member -> {
             member.setRole(Role.COACH);
             memberRepository.save(member);
         });
-        if (findEmail.isEmpty()) {
+        if (findId.isEmpty()) {
             throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
         }
     }
