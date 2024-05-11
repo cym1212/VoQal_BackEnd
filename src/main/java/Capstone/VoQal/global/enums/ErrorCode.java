@@ -26,7 +26,8 @@ public enum ErrorCode {
     // Member
     MEMBER_NOT_FOUND(404, "M001", "존재하지 않는 회원입니다"),
     MEMBER_PROFILE_DUPLICATION(400, "M002", "이미 존재하는 회원입니다"),
-    INVALID_MEMBER(400, "M004", "일치하는 회원이 존재하지 않습니다"),
+    COACH_NOT_FOUND(400, "M004", "코치가 존재하지 않습니다"),
+    INVALID_ROLE(400,"M005", "일치하는 역할이 아닙니다"),
 
     // Token
     MISMATCH_REFRESH_TOKEN(401, "T001", "유효하지 않은 리프레시 토큰입니다"),

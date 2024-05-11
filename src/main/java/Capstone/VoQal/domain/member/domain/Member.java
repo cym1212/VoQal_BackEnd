@@ -36,12 +36,6 @@ public class Member extends BaseEntity {
     @Setter
     private String nickName;
 
-    @Column(length = 10, nullable = true)
-    @Enumerated(EnumType.STRING)
-    private Provider provider; //erd cloud에 추가 해야함
-
-    @Column(unique = true, nullable = true)
-    private String providerId; //erd cloud에 추가 해야함
 
     private String password; //erd cloud에 추가 해야함
 
@@ -55,6 +49,7 @@ public class Member extends BaseEntity {
     private Student student;
 
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
+    @Getter
     private Coach coach;
 
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)

@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.util.*;
 
 
 @Getter
@@ -20,8 +20,10 @@ import java.util.Set;
 @Table(name = "coach")
 public class Coach extends BaseEntity {
 
+    @ElementCollection
+    @CollectionTable(name = "pending_student_list", joinColumns = @JoinColumn(name = "coach_id"))
     @Column(name = "pending_student_id")
-    private Long pendingStudentId;
+    private List<Long> pendingStudentIds = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -33,4 +35,23 @@ public class Coach extends BaseEntity {
     @OneToOne(mappedBy = "coach", fetch = FetchType.LAZY)
     private LessonNote lessonNote;
 
+
+    public void addPendingStudentId(Long studentId) {
+        if (this.pendingStudentIds == null) {
+            this.pendingStudentIds = new ArrayList<>();
+        }
+        this.pendingStudentIds.add(studentId);
+    }
+
+
+    @PostLoad
+    public void initPendingStudentIds() {
+        if (pendingStudentIds == null) {
+            pendingStudentIds = new ArrayList<>();
+        }
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
 }

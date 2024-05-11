@@ -13,6 +13,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import jakarta.xml.bind.DatatypeConverter;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,11 +33,13 @@ public class JwtProvider {
     private final JwtProperties jwtConfig;
     private final MemberRepository memberRepository;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-    private final HttpServletRequest request;
+
+    @Getter
     private Key signingKey;
     private JwtParser jwtParser;
 
-    private static final Long ACCESS_TOKEN_PERIOD = 1000L * 60L * 60L; // 1시간
+//    private static final Long ACCESS_TOKEN_PERIOD = 1000L * 60L * 60L; // 1시간
+    private static final Long ACCESS_TOKEN_PERIOD = 1000L * 60L * 60L * 24L * 31L; // 1시간
     private static final Long REFRESH_TOKEN_PERIOD = 1000L * 60L * 60L * 24L * 14L; // 2주
 
     @PostConstruct
@@ -122,24 +125,5 @@ public class JwtProvider {
         findMember.ifPresent(member -> memberRepository.updateRefreshToken(member.getId(), refreshToken));
     }
 
-    public long extractIdFromTokenInHeader() {
-        String header = request.getHeader("Authorization");
-        if (header != null && header.startsWith("Bearer ")) {
-            String token = header.substring(7);
-            return extractIdFromToken(token);
-        } else {
-            throw new IllegalArgumentException("Token not found in header.");
-        }
-    }
 
-    public long extractIdFromToken(String token) {
-
-        try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(signingKey).parseClaimsJws(token);
-            String idString = claims.getBody().get("jti", String.class);
-            return Long.parseLong(idString);
-        } catch (JwtException | IllegalArgumentException | NullPointerException e) {
-            throw new IllegalArgumentException("Error extracting ID from token.");
-        }
-    }
 }

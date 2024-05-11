@@ -1,10 +1,11 @@
 package Capstone.VoQal.global.auth.service;
 
+import Capstone.VoQal.domain.member.domain.Coach;
 import Capstone.VoQal.domain.member.domain.Member;
+import Capstone.VoQal.domain.member.repository.CoachRepository;
 import Capstone.VoQal.global.auth.dto.ChangeNicknameDTO;
 import Capstone.VoQal.domain.member.repository.MemberRepository;
 import Capstone.VoQal.global.auth.dto.MemberListDTO;
-import Capstone.VoQal.global.auth.dto.RoleDTO;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.enums.Role;
 import Capstone.VoQal.global.error.exception.BusinessException;
@@ -12,23 +13,21 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ProfileService {
     private final MemberRepository memberRepository;
+    private final CoachRepository coachRepository;
     private final AuthService authService;
-    private final JwtProvider jwtProvider;
+    private final JwtTokenIdDecoder jwtTokenIdDecoder;
 
     @Transactional
     public void setRoleToCoach() {
-        long id = jwtProvider.extractIdFromTokenInHeader();
+        long id = jwtTokenIdDecoder.extractIdFromTokenInHeader();
         Optional<Member> findId = memberRepository.findById(id);
 
         findId.ifPresent(member -> {
@@ -65,21 +64,63 @@ public class ProfileService {
 
     }
 
-//    @Transactional
-//    public void requestCoachAssignment(Long coachId, RoleDTO.StudentDTO studentDTO) {
-//        Optional<Member> findStudent = memberRepository.findByMemberId(studentDTO.getStudentId());
-//        if (findStudent.isEmpty()) {
-//            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
-//        }
-//        Member student = findStudent.get();
-//
-//        Optional<Member> findCoach = memberRepository.findByMemberId(coachId);
-//        if (findCoach.isEmpty()) {
-//            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
-//        }
-//        Member
-//
-//    }
+    @Transactional
+    public void requestCoachAssignment(Long coachId) {
+        Long studentId = jwtTokenIdDecoder.extractIdFromTokenInHeader();
+
+        Member studentMember = memberRepository.findById(studentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+        Member coachMember = memberRepository.findById(coachId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+
+        if (coachMember.getRole() != Role.COACH) {
+            throw new BusinessException(ErrorCode.INVALID_ROLE);
+        }
+
+        Coach coach = coachRepository.findByMemberId(coachId);
+        if (coach == null) {
+            coach = new Coach();
+            coach.setMember(coachMember);
+        }
+        coach.addPendingStudentId(studentId);
+        coachRepository.save(coach);
+    }
+
+    @Transactional
+    public List<MemberListDTO> requestedStudentList() {
+        Long coachId = jwtTokenIdDecoder.extractIdFromTokenInHeader();
+        Member coachMember = memberRepository.findById(coachId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+
+        Coach coach = coachMember.getCoach();
+
+        if (coach == null) {
+            throw new BusinessException(ErrorCode.COACH_NOT_FOUND);
+        }
+
+        List<MemberListDTO> studentList = new ArrayList<>();
+
+        coach.initPendingStudentIds();
+
+        List<Long> pendingStudentId = new ArrayList<>(coach.getPendingStudentIds());
+
+        if (!pendingStudentId.isEmpty()) {
+            List<Member> students = memberRepository.findAllByIdIn(pendingStudentId);
+
+            for (Member student : students) {
+                MemberListDTO studentDTO = MemberListDTO.builder()
+                        .id(student.getId())
+                        .name(student.getName())
+                        .build();
+                studentList.add(studentDTO);
+            }
+        }
+
+        return studentList;
+    }
 
 
 }
+
+
+

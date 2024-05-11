@@ -39,4 +39,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Modifying
     @Query("UPDATE Member m SET m.role = :role WHERE m.id = :id")
     void updateRole(@Param("id") Long id, @Param("role") Role role);
+
+    List<Member> findAllByIdIn(List<Long> id);
 }
