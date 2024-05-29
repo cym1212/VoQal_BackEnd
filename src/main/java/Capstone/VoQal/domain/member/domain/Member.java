@@ -37,13 +37,13 @@ public class Member extends BaseEntity {
     private String nickName;
 
 
-    private String password; //erd cloud에 추가 해야함
+    private String password;
 
-    private String email; //erd cloud에 추가 해야함
+    private String email;
 
-    private String phoneNumber; //erd cloud에 추가 해야함
+    private String phoneNumber;
 
-    private String name; //erd cloud에 추가 해야함
+    private String name;
 
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
     private Student student;

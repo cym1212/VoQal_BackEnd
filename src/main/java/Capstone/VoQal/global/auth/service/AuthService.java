@@ -111,7 +111,7 @@ public class AuthService {
                     .build();
         }
         else {
-            throw new BusinessException(ErrorCode.INVALID_MEMBER);
+            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
         }
 
     }

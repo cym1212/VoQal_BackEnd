@@ -43,7 +43,8 @@ public class ProfileController {
     }
 
     //todo
-    //테스트 해보기
+    //테스트 해보기 + 예외처리 해야할것 있으면 추가하기
+    // 로직 분석하기 + 블로그 정리
     @PostMapping("/{coachId}/student")
     @Operation(summary = "학생으로 역할 설정(코치 선택) ", description = "코치를 선택하고 승인을 기다리는 로직")
     public ResponseEntity<String> requestCoachAssignment(@PathVariable("coachId") Long coachId) {

@@ -28,13 +28,13 @@ public class Student extends BaseEntity {
     @JoinColumn(name = "mamebr_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coach_id")
-    private Coach coach;
 
     @OneToOne( fetch = FetchType.LAZY)
     @JoinColumn(name = "note_id")
     private LessonNote lessonNote;
+
+    @OneToMany(mappedBy = "student", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<CoachAndStudent> coachAndStudents;
 
     @OneToMany(mappedBy = "student", fetch = FetchType.LAZY)
     private Set<Reservation> reservation;
