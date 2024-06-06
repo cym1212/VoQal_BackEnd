@@ -1,8 +1,7 @@
 package Capstone.VoQal.global.auth.controller;
 
 
-import Capstone.VoQal.global.auth.dto.ChangeNicknameDTO;
-import Capstone.VoQal.global.auth.dto.MemberListDTO;
+import Capstone.VoQal.global.auth.dto.*;
 import Capstone.VoQal.global.auth.service.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -43,19 +42,38 @@ public class ProfileController {
     }
 
     //todo
-    //테스트 해보기 + 예외처리 해야할것 있으면 추가하기
-    // 로직 분석하기 + 블로그 정리
-    @PostMapping("/{coachId}/student")
-    @Operation(summary = "학생으로 역할 설정(코치 선택) ", description = "코치를 선택하고 승인을 기다리는 로직")
-    public ResponseEntity<String> requestCoachAssignment(@PathVariable("coachId") Long coachId) {
-        profileService.requestCoachAssignment(coachId);
-        return ResponseEntity.ok().body("담당 코치 선택이 신청되었습니다");
+    // Exception 전부 커스텀 exception으로 바꾸기
+
+    @PostMapping("/request")
+    @Operation(summary = " 담당 코치 신청 ", description = "코치에게 담당코치로 신청합니다")
+    public ResponseEntity<String> requestCoach(@RequestBody StudentRequestDTO studentRequestDTO) {
+        Long studentId = studentRequestDTO.getStudentId();
+        Long coachId = studentRequestDTO.getCoachId();
+        profileService.requestCoach(studentId, coachId);
+        return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/role/student")
-    @Operation(summary = "(코치입장에서) 담당학생 요청한 리스트 조회 ", description = "코치 본인에게 담당학생을 요청한 학생들의 리스트를 조회하는 로직")
-    public List<MemberListDTO> getStudentList() {
-        List<MemberListDTO> studentList = profileService.requestedStudentList();
-        return studentList;
+    @GetMapping("/request")
+    @Operation(summary = " 코치에게 신청한 학생 조회 ", description = "코치에게 담당코치로 신청한 학생의 목록을 조회합니다")
+    public List<RequestStudentListDTO> getRequestStudentList() {
+        List<RequestStudentListDTO> requestStudentList = profileService.getRequestStudentList();
+        return requestStudentList;
     }
+
+    @PostMapping("/approve")
+    @Operation(summary = " 코치에게 신청한 학생 승인 ", description = "코치에게 담당코치로 신청한 학생을 승인하여 담당 코치와 학생 관계가 됩니다.")
+    public ResponseEntity<String> approveRequest(@RequestBody ApproveRequestDTO approveRequestDTO) {
+        Long studentId = approveRequestDTO.getStudentId();
+        profileService.approveRequest(studentId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/reject")
+    @Operation(summary = " 코치에게 신청한 학생 거절 ", description = "코치에게 담당코치로 신청한 학생을 거절합니다.")
+    public ResponseEntity<String> rejectRequest(@RequestBody ApproveRequestDTO approveRequestDTO) {
+        Long requestId = approveRequestDTO.getStudentId();
+        profileService.rejectRequest(requestId);
+        return ResponseEntity.ok().build();
+    }
+
 }

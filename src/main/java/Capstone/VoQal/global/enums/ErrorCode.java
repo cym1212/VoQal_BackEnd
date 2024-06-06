@@ -33,6 +33,7 @@ public enum ErrorCode {
     MISMATCH_REFRESH_TOKEN(401, "T001", "유효하지 않은 리프레시 토큰입니다"),
     NO_PERMISSION(401, "T002", "요청에 대한 권한이 없습니다"),
 
+
     // Post
     INVALID_ORDER_NUMBER(400, "P002", "잘못된 순서 번호입니다"),
     MAX_POSTS_PER_DAY(400, "P003", "하루에 작성 가능한 최대 게시글 개수에 도달했습니다"),

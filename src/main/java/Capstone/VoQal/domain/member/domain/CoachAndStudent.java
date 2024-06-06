@@ -25,7 +25,8 @@ public class CoachAndStudent extends BaseEntity  {
 
     @Enumerated(EnumType.STRING)
     private RequestStatus status;
+
+    public void setStatus(RequestStatus requestStatus) {
+        this.status = requestStatus;
+    }
 }
-
-
-

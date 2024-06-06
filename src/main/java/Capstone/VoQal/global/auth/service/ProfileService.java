@@ -1,12 +1,18 @@
 package Capstone.VoQal.global.auth.service;
 
 import Capstone.VoQal.domain.member.domain.Coach;
+import Capstone.VoQal.domain.member.domain.CoachAndStudent;
 import Capstone.VoQal.domain.member.domain.Member;
+import Capstone.VoQal.domain.member.domain.Student;
+import Capstone.VoQal.domain.member.repository.CoachAndStudentRepository;
 import Capstone.VoQal.domain.member.repository.CoachRepository;
+import Capstone.VoQal.domain.member.repository.StudentRepository;
 import Capstone.VoQal.global.auth.dto.ChangeNicknameDTO;
 import Capstone.VoQal.domain.member.repository.MemberRepository;
 import Capstone.VoQal.global.auth.dto.MemberListDTO;
+import Capstone.VoQal.global.auth.dto.RequestStudentListDTO;
 import Capstone.VoQal.global.enums.ErrorCode;
+import Capstone.VoQal.global.enums.RequestStatus;
 import Capstone.VoQal.global.enums.Role;
 import Capstone.VoQal.global.error.exception.BusinessException;
 import jakarta.transaction.Transactional;
@@ -22,21 +28,30 @@ import java.util.*;
 public class ProfileService {
     private final MemberRepository memberRepository;
     private final CoachRepository coachRepository;
+    private final StudentRepository studentRepository;
+    private final CoachAndStudentRepository coachAndStudentRepository;
     private final AuthService authService;
     private final JwtTokenIdDecoder jwtTokenIdDecoder;
 
     @Transactional
     public void setRoleToCoach() {
-        long id = jwtTokenIdDecoder.extractIdFromTokenInHeader();
-        Optional<Member> findId = memberRepository.findById(id);
-
-        findId.ifPresent(member -> {
-            member.setRole(Role.COACH);
-            memberRepository.save(member);
-        });
-        if (findId.isEmpty()) {
+        long id = jwtTokenIdDecoder.getCurrentUserId();
+        Optional<Member> findCoachId = memberRepository.findByMemberId(id);
+        if (findCoachId.isEmpty()) {
             throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
         }
+        findCoachId.ifPresent(member -> {
+            Coach coach = Coach.builder()
+                    .member(member)
+                    .build();
+
+            member.setCoach(coach);
+            member.setRole(Role.COACH);
+
+            coachRepository.save(coach);
+            memberRepository.save(member);
+        });
+
     }
 
     @Transactional
@@ -64,63 +79,97 @@ public class ProfileService {
 
     }
 
-    @Transactional
-    public void requestCoachAssignment(Long coachId) {
-        Long studentId = jwtTokenIdDecoder.extractIdFromTokenInHeader();
+    public void requestCoach(Long studentMemberId, Long coachMemberId) {
+        Member studentMember = memberRepository.findById(studentMemberId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid student ID"));
+        Student student = studentMember.getStudent();
 
-        Member studentMember = memberRepository.findById(studentId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
-        Member coachMember = memberRepository.findById(coachId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
-
-        if (coachMember.getRole() != Role.COACH) {
-            throw new BusinessException(ErrorCode.INVALID_ROLE);
+        if (student == null) {
+            student = Student.builder()
+                    .member(studentMember)
+                    .build();
+            studentMember.setStudent(student);
+            student = studentRepository.save(student);
         }
 
-        Coach coach = coachRepository.findByMemberId(coachId);
-        if (coach == null) {
-            coach = new Coach();
-            coach.setMember(coachMember);
-        }
-        coach.addPendingStudentId(studentId);
-        coachRepository.save(coach);
-    }
-
-    @Transactional
-    public List<MemberListDTO> requestedStudentList() {
-        Long coachId = jwtTokenIdDecoder.extractIdFromTokenInHeader();
-        Member coachMember = memberRepository.findById(coachId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
-
+        Member coachMember = memberRepository.findById(coachMemberId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid coach ID"));
         Coach coach = coachMember.getCoach();
 
-        if (coach == null) {
-            throw new BusinessException(ErrorCode.COACH_NOT_FOUND);
-        }
+        CoachAndStudent coachAndStudent = CoachAndStudent.builder()
+                .coach(coach)
+                .student(student)
+                .status(RequestStatus.PENDING)
+                .build();
 
-        List<MemberListDTO> studentList = new ArrayList<>();
+        System.out.println("student = " + student);
+        System.out.println("coach = " + coach);
+        coachAndStudentRepository.save(coachAndStudent);
+    }
 
-        coach.initPendingStudentIds();
+    public List<RequestStudentListDTO> getRequestStudentList() {
+        Coach coach = getCoach();
+        List<CoachAndStudent> coachAndStudentList = coachAndStudentRepository.findByCoachAndStatus(coach ,RequestStatus.PENDING);
+        List<RequestStudentListDTO> requestStudentList = new ArrayList<>();
 
-        List<Long> pendingStudentId = new ArrayList<>(coach.getPendingStudentIds());
-
-        if (!pendingStudentId.isEmpty()) {
-            List<Member> students = memberRepository.findAllByIdIn(pendingStudentId);
-
-            for (Member student : students) {
-                MemberListDTO studentDTO = MemberListDTO.builder()
-                        .id(student.getId())
-                        .name(student.getName())
-                        .build();
-                studentList.add(studentDTO);
+        for (CoachAndStudent coachAndStudent : coachAndStudentList) {
+            Student student = coachAndStudent.getStudent();
+            if (student != null) {
+                Member studentMember = student.getMember();
+                RequestStudentListDTO dto = new RequestStudentListDTO(studentMember.getId(), studentMember.getName());
+                requestStudentList.add(dto);
             }
         }
 
-        return studentList;
+        return requestStudentList;
     }
 
 
+    public void approveRequest(Long studentMemberId) {
+        Coach coach = getCoach();
+
+        Member studentMember = memberRepository.findById(studentMemberId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid student member ID"));
+        Student student = studentMember.getStudent();
+        if (student == null) {
+            throw new IllegalArgumentException("No Student entity found for the given member ID");
+        }
+
+        CoachAndStudent coachAndStudent = coachAndStudentRepository.findByCoach_IdAndStudent_Id(coach.getId(), student.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid request or the request does not exist"));
+
+        coachAndStudent.setStatus(RequestStatus.APPROVED);
+
+        studentMember.setRole(Role.STUDENT);
+        memberRepository.save(studentMember);
+
+        coachAndStudentRepository.save(coachAndStudent);
+    }
+
+    public void rejectRequest(Long requestId) {
+        Coach coach = getCoach();
+        Member studentMember = memberRepository.findById(requestId).orElseThrow(() -> new IllegalArgumentException("Invalid student member ID"));
+        Student student = studentMember.getStudent();
+        if (student == null) {
+            throw new IllegalArgumentException("No Student entity found for the given member ID");
+        }
+        CoachAndStudent coachAndStudent = coachAndStudentRepository.findByCoach_IdAndStudent_Id(coach.getId(), student.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid request or the request does not exist"));
+
+        coachAndStudent.setStatus(RequestStatus.REJECTED);
+        coachAndStudentRepository.save(coachAndStudent);
+    }
+
+    private Coach getCoach() {
+        long coachMemberId = jwtTokenIdDecoder.getCurrentUserId();
+        Member coachMember = memberRepository.findById(coachMemberId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid coach ID"));
+
+        Coach coach = coachMember.getCoach();
+        if (coach == null) {
+            throw new IllegalArgumentException("No Coach entity found for the given member ID");
+        }
+        return coach;
+    }
+
 }
-
-
-

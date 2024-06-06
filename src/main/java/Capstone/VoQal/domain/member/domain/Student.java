@@ -25,7 +25,7 @@ public class Student extends BaseEntity {
     private String lessonSong;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mamebr_id")
+    @JoinColumn(name = "member_id")
     private Member member;
 
 

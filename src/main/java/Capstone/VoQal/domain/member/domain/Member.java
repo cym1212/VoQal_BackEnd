@@ -45,11 +45,10 @@ public class Member extends BaseEntity {
 
     private String name;
 
-    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Student student;
 
-    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
-    @Getter
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Coach coach;
 
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
@@ -66,5 +65,11 @@ public class Member extends BaseEntity {
     public void changePassword(String newPassword) {
         this.password = newPassword;
     }
+    public void setStudent(Student student) {
+        this.student = student;
+    }
 
+    public void setCoach(Coach coach) {
+        this.coach = coach;
+    }
 }
