@@ -3,18 +3,16 @@ package Capstone.VoQal.domain.member.domain;
 import Capstone.VoQal.global.domain.BaseEntity;
 import Capstone.VoQal.global.enums.RequestStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @Entity
 @Table(name = "coach_and_student")
-public class CoachAndStudent extends BaseEntity  {
+public class CoachAndStudent extends BaseEntity {
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coach_id")
     private Coach coach;
@@ -24,9 +22,11 @@ public class CoachAndStudent extends BaseEntity  {
     private Student student;
 
     @Enumerated(EnumType.STRING)
+    @Setter
     private RequestStatus status;
 
-    public void setStatus(RequestStatus requestStatus) {
-        this.status = requestStatus;
-    }
+    private String lessonSongUrl;
+
+
+
 }

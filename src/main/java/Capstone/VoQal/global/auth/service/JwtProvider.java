@@ -2,7 +2,7 @@ package Capstone.VoQal.global.auth.service;
 
 
 import Capstone.VoQal.domain.member.domain.Member;
-import Capstone.VoQal.domain.member.repository.MemberRepository;
+import Capstone.VoQal.domain.member.repository.Member.MemberRepository;
 import Capstone.VoQal.global.auth.dto.GeneratedTokenDTO;
 import Capstone.VoQal.global.auth.dto.SecurityMemberDTO;
 import Capstone.VoQal.global.config.JwtProperties;
@@ -10,7 +10,6 @@ import Capstone.VoQal.global.error.exception.BusinessException;
 import io.jsonwebtoken.*;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import jakarta.xml.bind.DatatypeConverter;
 import lombok.Getter;

@@ -4,11 +4,11 @@ import Capstone.VoQal.domain.member.domain.Coach;
 import Capstone.VoQal.domain.member.domain.CoachAndStudent;
 import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.domain.member.domain.Student;
-import Capstone.VoQal.domain.member.repository.CoachAndStudentRepository;
-import Capstone.VoQal.domain.member.repository.CoachRepository;
-import Capstone.VoQal.domain.member.repository.StudentRepository;
+import Capstone.VoQal.domain.member.repository.CoachAndStudent.CoachAndStudentRepository;
+import Capstone.VoQal.domain.member.repository.Coach.CoachRepository;
+import Capstone.VoQal.domain.member.repository.Student.StudentRepository;
 import Capstone.VoQal.global.auth.dto.ChangeNicknameDTO;
-import Capstone.VoQal.domain.member.repository.MemberRepository;
+import Capstone.VoQal.domain.member.repository.Member.MemberRepository;
 import Capstone.VoQal.global.auth.dto.MemberListDTO;
 import Capstone.VoQal.global.auth.dto.RequestStudentListDTO;
 import Capstone.VoQal.global.enums.ErrorCode;
@@ -35,23 +35,16 @@ public class ProfileService {
 
     @Transactional
     public void setRoleToCoach() {
-        long id = jwtTokenIdDecoder.getCurrentUserId();
-        Optional<Member> findCoachId = memberRepository.findByMemberId(id);
-        if (findCoachId.isEmpty()) {
-            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
-        }
-        findCoachId.ifPresent(member -> {
-            Coach coach = Coach.builder()
-                    .member(member)
-                    .build();
+        Member member = getCurrentMember();
+        Coach coach = Coach.builder()
+                .member(member)
+                .build();
 
-            member.setCoach(coach);
-            member.setRole(Role.COACH);
+        member.setCoach(coach);
+        member.setRole(Role.COACH);
 
-            coachRepository.save(coach);
-            memberRepository.save(member);
-        });
-
+        coachRepository.save(coach);
+        memberRepository.save(member);
     }
 
     @Transactional
@@ -66,50 +59,19 @@ public class ProfileService {
 
     @Transactional
     public void updateNickname(Long id, ChangeNicknameDTO changeNicknameDTO) {
-        Optional<Member> findMemberId = memberRepository.findByMemberId(id);
-        if (findMemberId.isEmpty()) {
-            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
-        }
+        Member member = getMemberById(id);
         if (authService.dupliacteNickname(changeNicknameDTO.getNickname())) {
             throw new BusinessException(ErrorCode.NICKNAME_DUPLICATE);
         }
-        Member member = findMemberId.get();
         member.setNickName(changeNicknameDTO.getNickname());
         memberRepository.save(member);
-
     }
 
-    public void requestCoach(Long studentMemberId, Long coachMemberId) {
-        Member studentMember = memberRepository.findById(studentMemberId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid student ID"));
-        Student student = studentMember.getStudent();
 
-        if (student == null) {
-            student = Student.builder()
-                    .member(studentMember)
-                    .build();
-            studentMember.setStudent(student);
-            student = studentRepository.save(student);
-        }
-
-        Member coachMember = memberRepository.findById(coachMemberId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid coach ID"));
-        Coach coach = coachMember.getCoach();
-
-        CoachAndStudent coachAndStudent = CoachAndStudent.builder()
-                .coach(coach)
-                .student(student)
-                .status(RequestStatus.PENDING)
-                .build();
-
-        System.out.println("student = " + student);
-        System.out.println("coach = " + coach);
-        coachAndStudentRepository.save(coachAndStudent);
-    }
 
     public List<RequestStudentListDTO> getRequestStudentList() {
-        Coach coach = getCoach();
-        List<CoachAndStudent> coachAndStudentList = coachAndStudentRepository.findByCoachAndStatus(coach ,RequestStatus.PENDING);
+        Coach coach = getCurrentCoach();
+        List<CoachAndStudent> coachAndStudentList = coachAndStudentRepository.findByCoachIdAndStatus(coach.getId(), RequestStatus.PENDING);
         List<RequestStudentListDTO> requestStudentList = new ArrayList<>();
 
         for (CoachAndStudent coachAndStudent : coachAndStudentList) {
@@ -124,47 +86,73 @@ public class ProfileService {
         return requestStudentList;
     }
 
-
-    public void approveRequest(Long studentMemberId) {
-        Coach coach = getCoach();
-
-        Member studentMember = memberRepository.findById(studentMemberId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid student member ID"));
+    @Transactional
+    public void requestCoach(Long studentMemberId, Long coachMemberId) {
+        Member studentMember = getMemberById(studentMemberId);
         Student student = studentMember.getStudent();
+
         if (student == null) {
-            throw new IllegalArgumentException("No Student entity found for the given member ID");
+            student = Student.builder()
+                    .member(studentMember)
+                    .build();
+            studentMember.setStudent(student);
+            student = studentRepository.save(student);
         }
 
-        CoachAndStudent coachAndStudent = coachAndStudentRepository.findByCoach_IdAndStudent_Id(coach.getId(), student.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid request or the request does not exist"));
+        Member coachMember = getMemberById(coachMemberId);
+        Coach coach = coachMember.getCoach();
 
+
+        Optional<CoachAndStudent> existingRequest = coachAndStudentRepository.findByCoachIdAndStudentId(coach.getId(), student.getId());
+        if (existingRequest.isPresent() && existingRequest.get().getStatus() == RequestStatus.PENDING) {
+            throw new BusinessException(ErrorCode.NOT_PENDING_STATUS);
+        }
+
+        CoachAndStudent coachAndStudent = CoachAndStudent.builder()
+                .coach(coach)
+                .student(student)
+                .status(RequestStatus.PENDING)
+                .build();
+
+        coachAndStudentRepository.save(coachAndStudent);
+    }
+
+    @Transactional
+    public void approveRequest(Long studentMemberId) {
+        Coach coach = getCurrentCoach();
+        Member studentMember = getMemberById(studentMemberId);
+        Student student = studentMember.getStudent();
+        validateStudentEntity(student);
+
+        CoachAndStudent coachAndStudent = getCoachAndStudent(coach.getId(), student.getId());
+        if (coachAndStudent.getStatus() != RequestStatus.PENDING) {
+            throw new IllegalArgumentException("Invalid request status");
+        }
         coachAndStudent.setStatus(RequestStatus.APPROVED);
 
         studentMember.setRole(Role.STUDENT);
         memberRepository.save(studentMember);
-
         coachAndStudentRepository.save(coachAndStudent);
     }
 
+    @Transactional
     public void rejectRequest(Long requestId) {
-        Coach coach = getCoach();
-        Member studentMember = memberRepository.findById(requestId).orElseThrow(() -> new IllegalArgumentException("Invalid student member ID"));
+        Coach coach = getCurrentCoach();
+        Member studentMember = getMemberById(requestId);
         Student student = studentMember.getStudent();
-        if (student == null) {
-            throw new IllegalArgumentException("No Student entity found for the given member ID");
-        }
-        CoachAndStudent coachAndStudent = coachAndStudentRepository.findByCoach_IdAndStudent_Id(coach.getId(), student.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid request or the request does not exist"));
+        validateStudentEntity(student);
 
+        CoachAndStudent coachAndStudent = getCoachAndStudent(coach.getId(), student.getId());
+        if (coachAndStudent.getStatus() != RequestStatus.PENDING) {
+            throw new IllegalArgumentException("Invalid request status");
+        }
         coachAndStudent.setStatus(RequestStatus.REJECTED);
+
         coachAndStudentRepository.save(coachAndStudent);
     }
 
-    private Coach getCoach() {
-        long coachMemberId = jwtTokenIdDecoder.getCurrentUserId();
-        Member coachMember = memberRepository.findById(coachMemberId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid coach ID"));
-
+    private Coach getCurrentCoach() {
+        Member coachMember = getCurrentMember();
         Coach coach = coachMember.getCoach();
         if (coach == null) {
             throw new IllegalArgumentException("No Coach entity found for the given member ID");
@@ -172,4 +160,24 @@ public class ProfileService {
         return coach;
     }
 
+    private Member getCurrentMember() {
+        long memberId = jwtTokenIdDecoder.getCurrentUserId();
+        return getMemberById(memberId);
+    }
+
+    private Member getMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_MEMBER_ID));
+    }
+
+    private CoachAndStudent getCoachAndStudent(Long coachId, Long studentId) {
+        return coachAndStudentRepository.findByCoachIdAndStudentId(coachId, studentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_REQUEST));
+    }
+
+    private void validateStudentEntity(Student student) {
+        if (student == null) {
+            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
+        }
+    }
 }

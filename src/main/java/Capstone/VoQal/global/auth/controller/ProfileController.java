@@ -43,6 +43,8 @@ public class ProfileController {
 
     //todo
     // Exception 전부 커스텀 exception으로 바꾸기
+    // 노션 확인 후 추가로 구현해야할 로직 구현
+
 
     @PostMapping("/request")
     @Operation(summary = " 담당 코치 신청 ", description = "코치에게 담당코치로 신청합니다")

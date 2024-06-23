@@ -2,7 +2,7 @@ package Capstone.VoQal.global.auth.service;
 
 
 import Capstone.VoQal.domain.member.domain.Member;
-import Capstone.VoQal.domain.member.repository.MemberRepository;
+import Capstone.VoQal.domain.member.repository.Member.MemberRepository;
 import Capstone.VoQal.global.auth.dto.*;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.enums.Role;
