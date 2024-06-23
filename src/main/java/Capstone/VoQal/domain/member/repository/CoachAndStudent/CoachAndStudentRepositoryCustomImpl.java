@@ -1,9 +1,6 @@
 package Capstone.VoQal.domain.member.repository.CoachAndStudent;
 
-import Capstone.VoQal.domain.member.domain.CoachAndStudent;
-import Capstone.VoQal.domain.member.domain.Member;
-import Capstone.VoQal.domain.member.domain.QCoachAndStudent;
-import Capstone.VoQal.domain.member.domain.QMember;
+import Capstone.VoQal.domain.member.domain.*;
 import Capstone.VoQal.global.enums.RequestStatus;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
@@ -55,6 +52,20 @@ public class CoachAndStudentRepositoryCustomImpl implements CoachAndStudentRepos
         return queryFactory.selectFrom(coachAndStudent)
                 .where(coachAndStudent.coach.id.eq(coachId)
                         .and(coachAndStudent.status.eq(status)))
+                .fetch();
+    }
+
+    @Override
+    public List<CoachAndStudent> findApprovedStudentsByCoachId(Long coachMemberId) {
+        QCoachAndStudent coachAndStudent = QCoachAndStudent.coachAndStudent;
+        QStudent student = QStudent.student;
+        QMember member = QMember.member;
+
+        return queryFactory.selectFrom(coachAndStudent)
+                .join(coachAndStudent.student, student).fetchJoin()
+                .join(student.member, member).fetchJoin()
+                .where(coachAndStudent.coach.member.id.eq(coachMemberId)
+                        .and(coachAndStudent.status.eq(RequestStatus.APPROVED)))
                 .fetch();
     }
 

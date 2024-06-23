@@ -151,11 +151,27 @@ public class ProfileService {
         coachAndStudentRepository.save(coachAndStudent);
     }
 
+    public List<MemberListDTO> getStudentList() {
+        Member coach = getCurrentMember();
+        List<CoachAndStudent> approveStudent = coachAndStudentRepository.findApprovedStudentsByCoachId(coach.getId());
+        List<MemberListDTO> studentList = new ArrayList<>();
+        for (CoachAndStudent coachAndStudent : approveStudent) {
+            studentList.add(new MemberListDTO(coachAndStudent.getStudent().getId(),
+                    coachAndStudent.getStudent().getMember().getName()));
+        }
+        return studentList;
+    }
+
+
+
+
+
+
     private Coach getCurrentCoach() {
         Member coachMember = getCurrentMember();
         Coach coach = coachMember.getCoach();
         if (coach == null) {
-            throw new IllegalArgumentException("No Coach entity found for the given member ID");
+            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
         }
         return coach;
     }

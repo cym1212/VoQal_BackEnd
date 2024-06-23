@@ -11,5 +11,6 @@ public interface CoachAndStudentRepositoryCustom {
     Optional<Member> findMemberWithCoachAndStudentById(Long memberId);
     Optional<CoachAndStudent> findByCoachIdAndStudentId(Long coachId, Long studentId);
     List<CoachAndStudent> findByCoachIdAndStatus(Long coachId, RequestStatus status);
+    List<CoachAndStudent> findApprovedStudentsByCoachId(Long coachMemberId);
 
 }

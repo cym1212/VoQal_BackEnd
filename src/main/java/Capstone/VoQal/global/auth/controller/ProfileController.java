@@ -78,4 +78,11 @@ public class ProfileController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/student")
+    @Operation(summary = "담당 학생 조회 ", description = "본인이 담당하는 학생들의 리스트를 조회합니다.")
+    public List<MemberListDTO> studentList() {
+
+        List<MemberListDTO> studentList = profileService.getStudentList();
+        return studentList;
+    }
 }

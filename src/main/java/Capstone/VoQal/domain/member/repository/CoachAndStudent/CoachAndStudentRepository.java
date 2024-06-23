@@ -10,5 +10,7 @@ import java.util.Optional;
 
 public interface CoachAndStudentRepository extends JpaRepository<CoachAndStudent, Long>, CoachAndStudentRepositoryCustom {
 
+    List<CoachAndStudent> findByCoachId(Long coachId);
 
+    List<CoachAndStudent> findByStatus(RequestStatus status);
 }
