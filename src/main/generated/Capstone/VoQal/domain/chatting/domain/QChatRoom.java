@@ -23,20 +23,17 @@ public class QChatRoom extends EntityPathBase<ChatRoom> {
     public final Capstone.VoQal.global.domain.QBaseEntity _super = new Capstone.VoQal.global.domain.QBaseEntity(this);
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
+    public final DateTimePath<java.util.Date> createdAt = _super.createdAt;
 
     //inherited
     public final NumberPath<Long> id = _super.id;
 
     public final SetPath<MemberAndChatRoom, QMemberAndChatRoom> memberAndChatRoom = this.<MemberAndChatRoom, QMemberAndChatRoom>createSet("memberAndChatRoom", MemberAndChatRoom.class, QMemberAndChatRoom.class, PathInits.DIRECT2);
 
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> modifiedAt = _super.modifiedAt;
-
     public final StringPath title = createString("title");
+
+    //inherited
+    public final DateTimePath<java.util.Date> updatedAt = _super.updatedAt;
 
     public QChatRoom(String variable) {
         super(ChatRoom.class, forVariable(variable));

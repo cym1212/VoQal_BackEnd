@@ -29,8 +29,7 @@ public class ProfileController {
     @GetMapping("/role/coach")
     @Operation(summary = " 코치 조회 ", description = "학생일 경우를 선택했을 때 코치 리스트 조회")
     public List<MemberListDTO> getCoachList() {
-        List<MemberListDTO> coachList = profileService.getCoachList();
-        return coachList;
+        return profileService.getCoachList();
     }
 
     @PatchMapping("/{id}/change-nickname")
@@ -58,8 +57,7 @@ public class ProfileController {
     @GetMapping("/request")
     @Operation(summary = " 코치에게 신청한 학생 조회 ", description = "코치에게 담당코치로 신청한 학생의 목록을 조회합니다")
     public List<RequestStudentListDTO> getRequestStudentList() {
-        List<RequestStudentListDTO> requestStudentList = profileService.getRequestStudentList();
-        return requestStudentList;
+        return profileService.getRequestStudentList();
     }
 
     @PostMapping("/approve")
@@ -81,8 +79,13 @@ public class ProfileController {
     @GetMapping("/student")
     @Operation(summary = "담당 학생 조회 ", description = "본인이 담당하는 학생들의 리스트를 조회합니다.")
     public List<MemberListDTO> studentList() {
-
-        List<MemberListDTO> studentList = profileService.getStudentList();
-        return studentList;
+        return profileService.getStudentList();
     }
+
+    @DeleteMapping("{id}")
+    @Operation(summary = "담당 학생 삭제 ", description = "본인이 담당하는 학생을 삭제합니다.")
+    public void studentDelete(@PathVariable("id") Long id) {
+        profileService.deleteStudent(id);
+    }
+
 }

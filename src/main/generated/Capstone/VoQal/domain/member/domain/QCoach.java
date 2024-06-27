@@ -27,20 +27,16 @@ public class QCoach extends EntityPathBase<Coach> {
     public final SetPath<CoachAndStudent, QCoachAndStudent> coachAndStudents = this.<CoachAndStudent, QCoachAndStudent>createSet("coachAndStudents", CoachAndStudent.class, QCoachAndStudent.class, PathInits.DIRECT2);
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
+    public final DateTimePath<java.util.Date> createdAt = _super.createdAt;
 
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
-
-    //inherited
-    public final NumberPath<Long> id = _super.id;
+    public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final Capstone.VoQal.domain.lesson.domain.QLessonNote lessonNote;
 
     public final QMember member;
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> modifiedAt = _super.modifiedAt;
+    public final DateTimePath<java.util.Date> updatedAt = _super.updatedAt;
 
     public QCoach(String variable) {
         this(Coach.class, forVariable(variable), INITS);

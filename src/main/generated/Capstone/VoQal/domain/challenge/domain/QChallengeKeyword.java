@@ -25,16 +25,13 @@ public class QChallengeKeyword extends EntityPathBase<ChallengeKeyword> {
     public final ListPath<ChallengePost, QChallengePost> challengePost = this.<ChallengePost, QChallengePost>createList("challengePost", ChallengePost.class, QChallengePost.class, PathInits.DIRECT2);
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
+    public final DateTimePath<java.util.Date> createdAt = _super.createdAt;
 
     //inherited
     public final NumberPath<Long> id = _super.id;
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> modifiedAt = _super.modifiedAt;
+    public final DateTimePath<java.util.Date> updatedAt = _super.updatedAt;
 
     public QChallengeKeyword(String variable) {
         super(ChallengeKeyword.class, forVariable(variable));

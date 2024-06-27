@@ -163,8 +163,16 @@ public class ProfileService {
     }
 
 
+    @Transactional
+    public void deleteStudent(Long studentId) {
+        Member coach = getCurrentMember();
+        coachAndStudentRepository.deleteByCoachIdAndStudentId(coach.getId(), studentId);
+        Member member = getMemberById(studentId);
+        member.setRole(Role.GUEST);
+    }
 
-
+    //todo
+    // 로직 테스트 다시하기
 
 
     private Coach getCurrentCoach() {

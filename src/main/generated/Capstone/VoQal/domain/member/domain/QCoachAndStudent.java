@@ -27,22 +27,18 @@ public class QCoachAndStudent extends EntityPathBase<CoachAndStudent> {
     public final QCoach coach;
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
+    public final DateTimePath<java.util.Date> createdAt = _super.createdAt;
 
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
-
-    //inherited
-    public final NumberPath<Long> id = _super.id;
+    public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final StringPath lessonSongUrl = createString("lessonSongUrl");
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> modifiedAt = _super.modifiedAt;
 
     public final EnumPath<Capstone.VoQal.global.enums.RequestStatus> status = createEnum("status", Capstone.VoQal.global.enums.RequestStatus.class);
 
     public final QStudent student;
+
+    //inherited
+    public final DateTimePath<java.util.Date> updatedAt = _super.updatedAt;
 
     public QCoachAndStudent(String variable) {
         this(CoachAndStudent.class, forVariable(variable), INITS);

@@ -29,10 +29,7 @@ public class QMember extends EntityPathBase<Member> {
     public final QCoach coach;
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
+    public final DateTimePath<java.util.Date> createdAt = _super.createdAt;
 
     public final StringPath email = createString("email");
 
@@ -42,9 +39,6 @@ public class QMember extends EntityPathBase<Member> {
     public final SetPath<Capstone.VoQal.domain.chatting.domain.MemberAndChatRoom, Capstone.VoQal.domain.chatting.domain.QMemberAndChatRoom> memberAndChatRoom = this.<Capstone.VoQal.domain.chatting.domain.MemberAndChatRoom, Capstone.VoQal.domain.chatting.domain.QMemberAndChatRoom>createSet("memberAndChatRoom", Capstone.VoQal.domain.chatting.domain.MemberAndChatRoom.class, Capstone.VoQal.domain.chatting.domain.QMemberAndChatRoom.class, PathInits.DIRECT2);
 
     public final SetPath<Capstone.VoQal.domain.challenge.domain.MemberAndPostLike, Capstone.VoQal.domain.challenge.domain.QMemberAndPostLike> memberAndPostLike = this.<Capstone.VoQal.domain.challenge.domain.MemberAndPostLike, Capstone.VoQal.domain.challenge.domain.QMemberAndPostLike>createSet("memberAndPostLike", Capstone.VoQal.domain.challenge.domain.MemberAndPostLike.class, Capstone.VoQal.domain.challenge.domain.QMemberAndPostLike.class, PathInits.DIRECT2);
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> modifiedAt = _super.modifiedAt;
 
     public final StringPath name = createString("name");
 
@@ -59,6 +53,9 @@ public class QMember extends EntityPathBase<Member> {
     public final EnumPath<Capstone.VoQal.global.enums.Role> role = createEnum("role", Capstone.VoQal.global.enums.Role.class);
 
     public final QStudent student;
+
+    //inherited
+    public final DateTimePath<java.util.Date> updatedAt = _super.updatedAt;
 
     public QMember(String variable) {
         this(Member.class, forVariable(variable), INITS);

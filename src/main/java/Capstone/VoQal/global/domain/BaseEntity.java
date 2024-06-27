@@ -12,6 +12,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @NoArgsConstructor
@@ -20,17 +21,25 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(updatable = false)
-    @CreatedDate
-    private LocalDateTime createdAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
 
-    @LastModifiedDate
-    private LocalDateTime modifiedAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
 
-    @JsonIgnore
-    private LocalDateTime deletedAt;
+    @PrePersist
+    protected void onCreate() {
+        updatedAt = createdAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = new Date();
+    }
 }

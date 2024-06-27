@@ -29,20 +29,17 @@ public class QChallengePost extends EntityPathBase<ChallengePost> {
     public final StringPath challengeRecordUrl = createString("challengeRecordUrl");
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
+    public final DateTimePath<java.util.Date> createdAt = _super.createdAt;
 
     //inherited
     public final NumberPath<Long> id = _super.id;
 
     public final Capstone.VoQal.domain.member.domain.QMember member;
 
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> modifiedAt = _super.modifiedAt;
-
     public final StringPath thumbnailUrl = createString("thumbnailUrl");
+
+    //inherited
+    public final DateTimePath<java.util.Date> updatedAt = _super.updatedAt;
 
     public QChallengePost(String variable) {
         this(ChallengePost.class, forVariable(variable), INITS);

@@ -25,16 +25,10 @@ public class QReservation extends EntityPathBase<Reservation> {
     public final Capstone.VoQal.global.domain.QBaseEntity _super = new Capstone.VoQal.global.domain.QBaseEntity(this);
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
+    public final DateTimePath<java.util.Date> createdAt = _super.createdAt;
 
     //inherited
     public final NumberPath<Long> id = _super.id;
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> modifiedAt = _super.modifiedAt;
 
     public final DatePath<java.time.LocalDate> reservationDate = createDate("reservationDate", java.time.LocalDate.class);
 
@@ -43,6 +37,9 @@ public class QReservation extends EntityPathBase<Reservation> {
     public final NumberPath<Integer> roomNumber = createNumber("roomNumber", Integer.class);
 
     public final Capstone.VoQal.domain.member.domain.QStudent student;
+
+    //inherited
+    public final DateTimePath<java.util.Date> updatedAt = _super.updatedAt;
 
     public QReservation(String variable) {
         this(Reservation.class, forVariable(variable), INITS);

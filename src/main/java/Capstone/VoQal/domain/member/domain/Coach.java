@@ -20,9 +20,11 @@ import java.util.*;
 @Table(name = "coach")
 public class Coach extends BaseEntity {
 
-
+    @Id
+    private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
     @JoinColumn(name = "member_id")
     private Member member;
 

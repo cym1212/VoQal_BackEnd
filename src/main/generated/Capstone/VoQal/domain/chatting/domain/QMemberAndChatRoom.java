@@ -29,10 +29,7 @@ public class QMemberAndChatRoom extends EntityPathBase<MemberAndChatRoom> {
     public final QChatRoom chatRoom;
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
+    public final DateTimePath<java.util.Date> createdAt = _super.createdAt;
 
     //inherited
     public final NumberPath<Long> id = _super.id;
@@ -40,7 +37,7 @@ public class QMemberAndChatRoom extends EntityPathBase<MemberAndChatRoom> {
     public final Capstone.VoQal.domain.member.domain.QMember member;
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> modifiedAt = _super.modifiedAt;
+    public final DateTimePath<java.util.Date> updatedAt = _super.updatedAt;
 
     public QMemberAndChatRoom(String variable) {
         this(MemberAndChatRoom.class, forVariable(variable), INITS);

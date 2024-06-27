@@ -13,6 +13,10 @@ import lombok.*;
 @Table(name = "coach_and_student")
 public class CoachAndStudent extends BaseEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coach_id")
     private Coach coach;
