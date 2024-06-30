@@ -29,7 +29,7 @@ public class QChallengePost extends EntityPathBase<ChallengePost> {
     public final StringPath challengeRecordUrl = createString("challengeRecordUrl");
 
     //inherited
-    public final DateTimePath<java.util.Date> createdAt = _super.createdAt;
+    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
     //inherited
     public final NumberPath<Long> id = _super.id;
@@ -39,7 +39,7 @@ public class QChallengePost extends EntityPathBase<ChallengePost> {
     public final StringPath thumbnailUrl = createString("thumbnailUrl");
 
     //inherited
-    public final DateTimePath<java.util.Date> updatedAt = _super.updatedAt;
+    public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
     public QChallengePost(String variable) {
         this(ChallengePost.class, forVariable(variable), INITS);

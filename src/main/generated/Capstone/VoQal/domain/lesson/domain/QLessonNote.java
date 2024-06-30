@@ -29,7 +29,7 @@ public class QLessonNote extends EntityPathBase<LessonNote> {
     public final StringPath contents = createString("contents");
 
     //inherited
-    public final DateTimePath<java.util.Date> createdAt = _super.createdAt;
+    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
     //inherited
     public final NumberPath<Long> id = _super.id;
@@ -43,7 +43,7 @@ public class QLessonNote extends EntityPathBase<LessonNote> {
     public final Capstone.VoQal.domain.member.domain.QStudent student;
 
     //inherited
-    public final DateTimePath<java.util.Date> updatedAt = _super.updatedAt;
+    public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
     public QLessonNote(String variable) {
         this(LessonNote.class, forVariable(variable), INITS);

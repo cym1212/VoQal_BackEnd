@@ -22,9 +22,8 @@ public class SecurityConfig {
 
     private final JwtProvider jwtProvider;
 
-    private static final String STUDENT_COUNCIL_MANAGER = "STUDENT_COUNCIL_MANAGER";
-    private static final String CLUB_MANAGER = "CLUB_MANAGER";
-    private static final String GENERAL_STUDENT_COUNCIL = "GENERAL_STUDENT_COUNCIL";
+    private static final String COACH = "COACH";
+
     private static final String STUDENT = "STUDENT";
     private static final String ADMIN = "ADMIN";
 

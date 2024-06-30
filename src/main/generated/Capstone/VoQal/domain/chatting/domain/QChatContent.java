@@ -29,7 +29,7 @@ public class QChatContent extends EntityPathBase<ChatContent> {
     public final StringPath chatText = createString("chatText");
 
     //inherited
-    public final DateTimePath<java.util.Date> createdAt = _super.createdAt;
+    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
     //inherited
     public final NumberPath<Long> id = _super.id;
@@ -37,7 +37,7 @@ public class QChatContent extends EntityPathBase<ChatContent> {
     public final QMemberAndChatRoom memberAndChatRoom;
 
     //inherited
-    public final DateTimePath<java.util.Date> updatedAt = _super.updatedAt;
+    public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
     public QChatContent(String variable) {
         this(ChatContent.class, forVariable(variable), INITS);

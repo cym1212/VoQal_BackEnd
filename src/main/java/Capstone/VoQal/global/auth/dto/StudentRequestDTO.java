@@ -10,6 +10,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StudentRequestDTO {
-    private Long studentId;
     private Long coachId;
 }

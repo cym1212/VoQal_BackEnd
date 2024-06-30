@@ -27,7 +27,7 @@ public class QStudent extends EntityPathBase<Student> {
     public final SetPath<CoachAndStudent, QCoachAndStudent> coachAndStudents = this.<CoachAndStudent, QCoachAndStudent>createSet("coachAndStudents", CoachAndStudent.class, QCoachAndStudent.class, PathInits.DIRECT2);
 
     //inherited
-    public final DateTimePath<java.util.Date> createdAt = _super.createdAt;
+    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
     //inherited
     public final NumberPath<Long> id = _super.id;
@@ -41,7 +41,7 @@ public class QStudent extends EntityPathBase<Student> {
     public final SetPath<Capstone.VoQal.domain.reservation.domain.Reservation, Capstone.VoQal.domain.reservation.domain.QReservation> reservation = this.<Capstone.VoQal.domain.reservation.domain.Reservation, Capstone.VoQal.domain.reservation.domain.QReservation>createSet("reservation", Capstone.VoQal.domain.reservation.domain.Reservation.class, Capstone.VoQal.domain.reservation.domain.QReservation.class, PathInits.DIRECT2);
 
     //inherited
-    public final DateTimePath<java.util.Date> updatedAt = _super.updatedAt;
+    public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
     public QStudent(String variable) {
         this(Student.class, forVariable(variable), INITS);

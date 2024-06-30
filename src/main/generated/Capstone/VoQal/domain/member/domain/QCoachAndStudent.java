@@ -27,9 +27,10 @@ public class QCoachAndStudent extends EntityPathBase<CoachAndStudent> {
     public final QCoach coach;
 
     //inherited
-    public final DateTimePath<java.util.Date> createdAt = _super.createdAt;
+    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
-    public final NumberPath<Long> id = createNumber("id", Long.class);
+    //inherited
+    public final NumberPath<Long> id = _super.id;
 
     public final StringPath lessonSongUrl = createString("lessonSongUrl");
 
@@ -38,7 +39,7 @@ public class QCoachAndStudent extends EntityPathBase<CoachAndStudent> {
     public final QStudent student;
 
     //inherited
-    public final DateTimePath<java.util.Date> updatedAt = _super.updatedAt;
+    public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
     public QCoachAndStudent(String variable) {
         this(CoachAndStudent.class, forVariable(variable), INITS);

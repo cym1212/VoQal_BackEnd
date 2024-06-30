@@ -32,7 +32,7 @@ public class Member extends BaseEntity {
     @Setter
     private Role role;
 
-    @Column(length = 20, nullable = true)
+    @Column(length = 20, nullable = false)
     @Setter
     private String nickName;
 

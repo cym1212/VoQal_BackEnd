@@ -23,7 +23,7 @@ public class QPostLike extends EntityPathBase<PostLike> {
     public final Capstone.VoQal.global.domain.QBaseEntity _super = new Capstone.VoQal.global.domain.QBaseEntity(this);
 
     //inherited
-    public final DateTimePath<java.util.Date> createdAt = _super.createdAt;
+    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
     //inherited
     public final NumberPath<Long> id = _super.id;
@@ -31,7 +31,7 @@ public class QPostLike extends EntityPathBase<PostLike> {
     public final SetPath<MemberAndPostLike, QMemberAndPostLike> memberAndPostLike = this.<MemberAndPostLike, QMemberAndPostLike>createSet("memberAndPostLike", MemberAndPostLike.class, QMemberAndPostLike.class, PathInits.DIRECT2);
 
     //inherited
-    public final DateTimePath<java.util.Date> updatedAt = _super.updatedAt;
+    public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
     public QPostLike(String variable) {
         super(PostLike.class, forVariable(variable));

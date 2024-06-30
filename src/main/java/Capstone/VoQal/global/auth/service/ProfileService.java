@@ -9,6 +9,7 @@ import Capstone.VoQal.domain.member.repository.Coach.CoachRepository;
 import Capstone.VoQal.domain.member.repository.Student.StudentRepository;
 import Capstone.VoQal.global.auth.dto.ChangeNicknameDTO;
 import Capstone.VoQal.domain.member.repository.Member.MemberRepository;
+import Capstone.VoQal.global.auth.dto.GeneratedTokenDTO;
 import Capstone.VoQal.global.auth.dto.MemberListDTO;
 import Capstone.VoQal.global.auth.dto.RequestStudentListDTO;
 import Capstone.VoQal.global.enums.ErrorCode;
@@ -32,9 +33,10 @@ public class ProfileService {
     private final CoachAndStudentRepository coachAndStudentRepository;
     private final AuthService authService;
     private final JwtTokenIdDecoder jwtTokenIdDecoder;
+    private final JwtProvider jwtProvider;
 
     @Transactional
-    public void setRoleToCoach() {
+    public GeneratedTokenDTO setRoleToCoach() {
         Member member = getCurrentMember();
         Coach coach = Coach.builder()
                 .member(member)
@@ -45,6 +47,16 @@ public class ProfileService {
 
         coachRepository.save(coach);
         memberRepository.save(member);
+        return reissueMemberToken(member);
+    }
+
+    private GeneratedTokenDTO reissueMemberToken(Member member) {
+        String currentRefreshToken = member.getRefreshToken();
+        if (currentRefreshToken == null) {
+            throw new BusinessException(ErrorCode.MISMATCH_REFRESH_TOKEN);
+        }
+
+        return jwtProvider.reissueToken(currentRefreshToken);
     }
 
     @Transactional
@@ -87,8 +99,8 @@ public class ProfileService {
     }
 
     @Transactional
-    public void requestCoach(Long studentMemberId, Long coachMemberId) {
-        Member studentMember = getMemberById(studentMemberId);
+    public void requestCoach(Long coachMemberId) {
+        Member studentMember = getCurrentMember();
         Student student = studentMember.getStudent();
 
         if (student == null) {
@@ -102,10 +114,21 @@ public class ProfileService {
         Member coachMember = getMemberById(coachMemberId);
         Coach coach = coachMember.getCoach();
 
+        if (coach == null) {
+            coach = Coach.builder()
+                    .member(coachMember)
+                    .build();
+            coachMember.setCoach(coach);
+            coach = coachRepository.save(coach);
+        }
 
-        Optional<CoachAndStudent> existingRequest = coachAndStudentRepository.findByCoachIdAndStudentId(coach.getId(), student.getId());
-        if (existingRequest.isPresent() && existingRequest.get().getStatus() == RequestStatus.PENDING) {
-            throw new BusinessException(ErrorCode.NOT_PENDING_STATUS);
+
+        List<CoachAndStudent> existingRequests = coachAndStudentRepository.findByStudentId(student.getId());
+        boolean hasPendingOrApproved = existingRequests.stream()
+                .anyMatch(rel -> rel.getStatus() == RequestStatus.PENDING || rel.getStatus() == RequestStatus.APPROVED);
+
+        if (hasPendingOrApproved) {
+            throw new BusinessException(ErrorCode.WRONG_STATUS);
         }
 
         CoachAndStudent coachAndStudent = CoachAndStudent.builder()
@@ -118,7 +141,7 @@ public class ProfileService {
     }
 
     @Transactional
-    public void approveRequest(Long studentMemberId) {
+    public GeneratedTokenDTO approveRequest(Long studentMemberId) {
         Coach coach = getCurrentCoach();
         Member studentMember = getMemberById(studentMemberId);
         Student student = studentMember.getStudent();
@@ -133,6 +156,8 @@ public class ProfileService {
         studentMember.setRole(Role.STUDENT);
         memberRepository.save(studentMember);
         coachAndStudentRepository.save(coachAndStudent);
+        return reissueMemberToken(studentMember);
+        //todo 학생으로 역할이 선택됐으니 토큰을 재발급해야함
     }
 
     @Transactional

@@ -29,7 +29,7 @@ public class QMember extends EntityPathBase<Member> {
     public final QCoach coach;
 
     //inherited
-    public final DateTimePath<java.util.Date> createdAt = _super.createdAt;
+    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
     public final StringPath email = createString("email");
 
@@ -55,7 +55,7 @@ public class QMember extends EntityPathBase<Member> {
     public final QStudent student;
 
     //inherited
-    public final DateTimePath<java.util.Date> updatedAt = _super.updatedAt;
+    public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
     public QMember(String variable) {
         this(Member.class, forVariable(variable), INITS);

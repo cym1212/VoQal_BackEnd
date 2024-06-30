@@ -31,7 +31,7 @@ public enum ErrorCode {
     MEMBER_PROFILE_DUPLICATION(400, "M002", "이미 존재하는 회원입니다"),
     COACH_NOT_FOUND(400, "M004", "코치가 존재하지 않습니다"),
     INVALID_ROLE(400,"M005", "일치하는 역할이 아닙니다"),
-    NOT_PENDING_STATUS(400,"M006", "신청 상태가 아닙니다."),
+    WRONG_STATUS(400,"M006", "이미 신청했거나 담당 코치가 정해진 상태입니다."),
     INVALID_MEMBER_ID(400,"M007"," 잘못된 멤버ID입니다."),
 
     // Token

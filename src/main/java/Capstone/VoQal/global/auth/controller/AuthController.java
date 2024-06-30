@@ -38,24 +38,27 @@ public class AuthController {
 
     @PostMapping("/duplicate/nickname")
     @Operation(summary = "닉네임 중복 검사 로직", description = "닉네임이 중복되었는지 검사합니다.")
-    public ResponseEntity<String> duplicateNickname(@RequestBody DuplicateDTO.NickName duplicateNicknameDTO) {
+    public ResponseEntity<MessageDTO> duplicateNickname(@RequestBody DuplicateDTO.NickName duplicateNicknameDTO) {
         String requestNickname = duplicateNicknameDTO.getNickName();
-        boolean isDuplicate = authService.dupliacteNickname(requestNickname);
-        if (isDuplicate) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이미 사용 중인 닉네임 입니다");
+        boolean result = authService.dupliacteNickname(requestNickname);
+        if (result) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(MessageDTO.builder().message("닉네임이 중복되었습니다.").build());
+        } else {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(MessageDTO.builder().message("사용 가능한 닉네임입니다.").build());
         }
-        return ResponseEntity.ok("사용 가능한 닉네임 입니다");
     }
 
     @PostMapping("/duplicate/email")
     @Operation(summary = "이메일 검증 로직", description = "이메일이 중복되었는지 검사합니다")
-    public ResponseEntity<String> duplicateEmail(@RequestBody DuplicateDTO.Email duplicateEmailDTO) {
+    public ResponseEntity<MessageDTO> duplicateEmail(@RequestBody DuplicateDTO.Email duplicateEmailDTO) {
         String requsetEmail = duplicateEmailDTO.getEmail();
         boolean isDuplicate = authService.duplicateEmail(requsetEmail);
         if (isDuplicate) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이미 사용 중인 이메일 입니다");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(MessageDTO.builder().message("이미 사용중인 이메일입니다.").build());
         }
-        return ResponseEntity.ok("사용 가능한 이메일 입니다");
+        return ResponseEntity.status(HttpStatus.OK).body(MessageDTO.builder().message("사용 가능한 이메일 입니다.").build());
     }
 
 
@@ -69,27 +72,25 @@ public class AuthController {
     }
 
     // todo ( 모하지 발표 후 완료된 것들은 삭제 )
-    // 1. 컨트롤러에서 올바르지 않은 경우에 대한 응답값도 설정하기
-    // 2. mapper 로 코드 리펙토링 (고민중)
-    // 4. 너무 api 요청을 자주 해서 서버에 무리가 가는건 아닌지..
-    // 6. 역할 정하는 로직을 어떻게 처리할지
+    // 1. mapper 로 코드 리펙토링 (고민중)
+
 
 
     @PostMapping("/find/member")
     @Operation(summary = "회원인지 찾기 ", description = "이름과 전화번호 이메일을 사용해서 가입된 회원인지 확인합니다.")
-    public ResponseEntity<String> checkMember(@Valid @RequestBody  FindRequestDTO.Password findPasswordRequestDTO) {
+    public ResponseEntity<MessageDTO> checkMember(@Valid @RequestBody  FindRequestDTO.Password findPasswordRequestDTO) {
         boolean isChecked = authService.checkMember(findPasswordRequestDTO);
         if (isChecked) {
-            return ResponseEntity.ok("회원이 맞습니다");
+            return ResponseEntity.status(HttpStatus.OK).body(MessageDTO.builder().message("회원이 맞습니다.").build());
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("일치하는 회원 정보가 없습니다");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(MessageDTO.builder().message("일치하는 회원 정보가 없습니다").build());
     }
 
     @PostMapping("/reset/password")
     @Operation(summary = "비밀번호 재설정 로직 ", description = "이전에 검증할때 사용했던 이메일도 함께 첨부 바람, 비밀번호 재설정 로직")
-    public ResponseEntity<String> resetPassword(@Valid @RequestBody FindRequestDTO.ResetPassword resetPasswordDTO) {
+    public ResponseEntity<MessageDTO> resetPassword(@Valid @RequestBody FindRequestDTO.ResetPassword resetPasswordDTO) {
         authService.resetPassword(resetPasswordDTO);
-        return ResponseEntity.ok("성공적으로 변경되었습니다");
+        return ResponseEntity.status(HttpStatus.OK).body(MessageDTO.builder().message("성공적으로 변경되었습니다").build());
 
     }
 
