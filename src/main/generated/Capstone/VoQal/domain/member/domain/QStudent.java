@@ -30,6 +30,9 @@ public class QStudent extends EntityPathBase<Student> {
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
     //inherited
+    public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
+
+    //inherited
     public final NumberPath<Long> id = _super.id;
 
     public final Capstone.VoQal.domain.lesson.domain.QLessonNote lessonNote;
@@ -37,8 +40,6 @@ public class QStudent extends EntityPathBase<Student> {
     public final StringPath lessonSong = createString("lessonSong");
 
     public final QMember member;
-
-    public final SetPath<Capstone.VoQal.domain.reservation.domain.Reservation, Capstone.VoQal.domain.reservation.domain.QReservation> reservation = this.<Capstone.VoQal.domain.reservation.domain.Reservation, Capstone.VoQal.domain.reservation.domain.QReservation>createSet("reservation", Capstone.VoQal.domain.reservation.domain.Reservation.class, Capstone.VoQal.domain.reservation.domain.QReservation.class, PathInits.DIRECT2);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;

@@ -3,6 +3,7 @@ package Capstone.VoQal.domain.member.domain;
 import Capstone.VoQal.domain.challenge.domain.ChallengePost;
 import Capstone.VoQal.domain.challenge.domain.MemberAndPostLike;
 import Capstone.VoQal.domain.chatting.domain.MemberAndChatRoom;
+import Capstone.VoQal.domain.reservation.domain.Reservation;
 import Capstone.VoQal.global.domain.BaseEntity;
 import Capstone.VoQal.global.enums.Provider;
 import Capstone.VoQal.global.enums.Role;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
 import java.util.Set;
 
 @SuperBuilder
@@ -60,6 +62,9 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private Set<MemberAndChatRoom> memberAndChatRoom;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Reservation> reservations;
 
 
     public void changePassword(String newPassword) {

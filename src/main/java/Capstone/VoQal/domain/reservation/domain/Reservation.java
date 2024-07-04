@@ -1,14 +1,13 @@
 package Capstone.VoQal.domain.reservation.domain;
 
+import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.domain.member.domain.Student;
 import Capstone.VoQal.global.domain.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter
@@ -19,16 +18,25 @@ import java.time.LocalTime;
 @Table(name = "reservations")
 public class Reservation extends BaseEntity {
 
-    @Column(nullable = false)
-    private int roomNumber;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id", nullable = false)
+    private Room room;
 
-    @Column(nullable = false)
-    private LocalDate reservationDate;
+    private LocalDateTime startTime;
 
-    @Column(nullable = false)
-    private LocalTime reservationTime;
+    private LocalDateTime endTime;
+
 
     @ManyToOne( fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id")
-    private Student student;
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    public static class ReservationBuilder {
+        private Long id;
+
+        public ReservationBuilder id(Long id) {
+            this.id = id;
+            return this;
+        }
+    }
 }

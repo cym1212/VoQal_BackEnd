@@ -30,6 +30,9 @@ public class QCoachAndStudent extends EntityPathBase<CoachAndStudent> {
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
     //inherited
+    public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
+
+    //inherited
     public final NumberPath<Long> id = _super.id;
 
     public final StringPath lessonSongUrl = createString("lessonSongUrl");

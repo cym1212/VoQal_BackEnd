@@ -36,6 +36,5 @@ public class Student extends BaseEntity {
     @OneToMany(mappedBy = "student", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<CoachAndStudent> coachAndStudents;
 
-    @OneToMany(mappedBy = "student", fetch = FetchType.LAZY)
-    private Set<Reservation> reservation;
+
 }

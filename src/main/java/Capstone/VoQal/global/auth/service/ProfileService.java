@@ -1,5 +1,6 @@
 package Capstone.VoQal.global.auth.service;
 
+import Capstone.VoQal.domain.member.service.MemberService;
 import Capstone.VoQal.domain.member.domain.Coach;
 import Capstone.VoQal.domain.member.domain.CoachAndStudent;
 import Capstone.VoQal.domain.member.domain.Member;
@@ -12,6 +13,7 @@ import Capstone.VoQal.domain.member.repository.Member.MemberRepository;
 import Capstone.VoQal.global.auth.dto.GeneratedTokenDTO;
 import Capstone.VoQal.global.auth.dto.MemberListDTO;
 import Capstone.VoQal.global.auth.dto.RequestStudentListDTO;
+import Capstone.VoQal.global.dto.MessageDTO;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.enums.RequestStatus;
 import Capstone.VoQal.global.enums.Role;
@@ -32,12 +34,12 @@ public class ProfileService {
     private final StudentRepository studentRepository;
     private final CoachAndStudentRepository coachAndStudentRepository;
     private final AuthService authService;
-    private final JwtTokenIdDecoder jwtTokenIdDecoder;
     private final JwtProvider jwtProvider;
+    private final MemberService memberService;
 
     @Transactional
     public GeneratedTokenDTO setRoleToCoach() {
-        Member member = getCurrentMember();
+        Member member = memberService.getCurrentMember();
         Coach coach = Coach.builder()
                 .member(member)
                 .build();
@@ -71,7 +73,7 @@ public class ProfileService {
 
     @Transactional
     public void updateNickname(Long id, ChangeNicknameDTO changeNicknameDTO) {
-        Member member = getMemberById(id);
+        Member member = memberService.getMemberById(id);
         if (authService.dupliacteNickname(changeNicknameDTO.getNickname())) {
             throw new BusinessException(ErrorCode.NICKNAME_DUPLICATE);
         }
@@ -82,7 +84,7 @@ public class ProfileService {
 
 
     public List<RequestStudentListDTO> getRequestStudentList() {
-        Coach coach = getCurrentCoach();
+        Coach coach = memberService.getCurrentCoach();
         List<CoachAndStudent> coachAndStudentList = coachAndStudentRepository.findByCoachIdAndStatus(coach.getId(), RequestStatus.PENDING);
         List<RequestStudentListDTO> requestStudentList = new ArrayList<>();
 
@@ -100,7 +102,7 @@ public class ProfileService {
 
     @Transactional
     public void requestCoach(Long coachMemberId) {
-        Member studentMember = getCurrentMember();
+        Member studentMember = memberService.getCurrentMember();
         Student student = studentMember.getStudent();
 
         if (student == null) {
@@ -111,7 +113,7 @@ public class ProfileService {
             student = studentRepository.save(student);
         }
 
-        Member coachMember = getMemberById(coachMemberId);
+        Member coachMember = memberService.getMemberById(coachMemberId);
         Coach coach = coachMember.getCoach();
 
         if (coach == null) {
@@ -142,12 +144,12 @@ public class ProfileService {
 
     @Transactional
     public GeneratedTokenDTO approveRequest(Long studentMemberId) {
-        Coach coach = getCurrentCoach();
-        Member studentMember = getMemberById(studentMemberId);
+        Coach coach = memberService.getCurrentCoach();
+        Member studentMember = memberService.getMemberById(studentMemberId);
         Student student = studentMember.getStudent();
-        validateStudentEntity(student);
+        memberService.validateStudentEntity(student);
 
-        CoachAndStudent coachAndStudent = getCoachAndStudent(coach.getId(), student.getId());
+        CoachAndStudent coachAndStudent = memberService.getCoachAndStudent(coach.getId(), student.getId());
         if (coachAndStudent.getStatus() != RequestStatus.PENDING) {
             throw new IllegalArgumentException("Invalid request status");
         }
@@ -162,12 +164,12 @@ public class ProfileService {
 
     @Transactional
     public void rejectRequest(Long requestId) {
-        Coach coach = getCurrentCoach();
-        Member studentMember = getMemberById(requestId);
+        Coach coach = memberService.getCurrentCoach();
+        Member studentMember = memberService.getMemberById(requestId);
         Student student = studentMember.getStudent();
-        validateStudentEntity(student);
+        memberService.validateStudentEntity(student);
 
-        CoachAndStudent coachAndStudent = getCoachAndStudent(coach.getId(), student.getId());
+        CoachAndStudent coachAndStudent = memberService.getCoachAndStudent(coach.getId(), student.getId());
         if (coachAndStudent.getStatus() != RequestStatus.PENDING) {
             throw new IllegalArgumentException("Invalid request status");
         }
@@ -177,7 +179,7 @@ public class ProfileService {
     }
 
     public List<MemberListDTO> getStudentList() {
-        Member coach = getCurrentMember();
+        Member coach = memberService.getCurrentMember();
         List<CoachAndStudent> approveStudent = coachAndStudentRepository.findApprovedStudentsByCoachId(coach.getId());
         List<MemberListDTO> studentList = new ArrayList<>();
         for (CoachAndStudent coachAndStudent : approveStudent) {
@@ -189,44 +191,21 @@ public class ProfileService {
 
 
     @Transactional
-    public void deleteStudent(Long studentId) {
-        Member coach = getCurrentMember();
+    public MessageDTO deleteStudent(Long studentId) {
+        Member coach = memberService.getCurrentMember();
         coachAndStudentRepository.deleteByCoachIdAndStudentId(coach.getId(), studentId);
-        Member member = getMemberById(studentId);
+        Member member = memberService.getMemberById(studentId);
         member.setRole(Role.GUEST);
+        MessageDTO messageDTO = MessageDTO.builder()
+                .status(200)
+                .message("성공적으로 삭제되었습니다")
+                .build();
+        return messageDTO;
     }
 
     //todo
     // 로직 테스트 다시하기
 
 
-    private Coach getCurrentCoach() {
-        Member coachMember = getCurrentMember();
-        Coach coach = coachMember.getCoach();
-        if (coach == null) {
-            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
-        }
-        return coach;
-    }
 
-    private Member getCurrentMember() {
-        long memberId = jwtTokenIdDecoder.getCurrentUserId();
-        return getMemberById(memberId);
-    }
-
-    private Member getMemberById(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_MEMBER_ID));
-    }
-
-    private CoachAndStudent getCoachAndStudent(Long coachId, Long studentId) {
-        return coachAndStudentRepository.findByCoachIdAndStudentId(coachId, studentId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_REQUEST));
-    }
-
-    private void validateStudentEntity(Student student) {
-        if (student == null) {
-            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
-        }
-    }
 }

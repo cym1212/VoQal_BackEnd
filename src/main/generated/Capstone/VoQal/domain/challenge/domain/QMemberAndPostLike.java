@@ -28,6 +28,9 @@ public class QMemberAndPostLike extends EntityPathBase<MemberAndPostLike> {
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
     //inherited
+    public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
+
+    //inherited
     public final NumberPath<Long> id = _super.id;
 
     public final Capstone.VoQal.domain.member.domain.QMember member;

@@ -26,6 +26,9 @@ public class QChatRoom extends EntityPathBase<ChatRoom> {
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
     //inherited
+    public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
+
+    //inherited
     public final NumberPath<Long> id = _super.id;
 
     public final SetPath<MemberAndChatRoom, QMemberAndChatRoom> memberAndChatRoom = this.<MemberAndChatRoom, QMemberAndChatRoom>createSet("memberAndChatRoom", MemberAndChatRoom.class, QMemberAndChatRoom.class, PathInits.DIRECT2);

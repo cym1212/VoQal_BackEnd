@@ -26,6 +26,9 @@ public class QPostLike extends EntityPathBase<PostLike> {
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
     //inherited
+    public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
+
+    //inherited
     public final NumberPath<Long> id = _super.id;
 
     public final SetPath<MemberAndPostLike, QMemberAndPostLike> memberAndPostLike = this.<MemberAndPostLike, QMemberAndPostLike>createSet("memberAndPostLike", MemberAndPostLike.class, QMemberAndPostLike.class, PathInits.DIRECT2);

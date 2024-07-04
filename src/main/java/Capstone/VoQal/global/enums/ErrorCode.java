@@ -53,9 +53,11 @@ public enum ErrorCode {
 
     //Login
     INCOMPLETE_SIGNUP_INFO(400,"L001","회원가입 정보 누락! 누락된 정보를 입력해주세요"),
-    INVALID_PASSWORD(400,"L002","비밀번호가 일치하지 않습니다");
+    INVALID_PASSWORD(400,"L002","비밀번호가 일치하지 않습니다"),
 
-
+    //Reservation
+    RESERVATION_NOT_FOUND(400, "R001", "예약정보를 찾을 수 없습니다."),
+    RESERVATION_TIME_CONFLICT(400, "R002", "동일 시간에 예약이 존재합니다.");
 
 
 

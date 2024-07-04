@@ -31,6 +31,9 @@ public class QMember extends EntityPathBase<Member> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
+
     public final StringPath email = createString("email");
 
     //inherited
@@ -49,6 +52,8 @@ public class QMember extends EntityPathBase<Member> {
     public final StringPath phoneNumber = createString("phoneNumber");
 
     public final StringPath refreshToken = createString("refreshToken");
+
+    public final ListPath<Capstone.VoQal.domain.reservation.domain.Reservation, Capstone.VoQal.domain.reservation.domain.QReservation> reservations = this.<Capstone.VoQal.domain.reservation.domain.Reservation, Capstone.VoQal.domain.reservation.domain.QReservation>createList("reservations", Capstone.VoQal.domain.reservation.domain.Reservation.class, Capstone.VoQal.domain.reservation.domain.QReservation.class, PathInits.DIRECT2);
 
     public final EnumPath<Capstone.VoQal.global.enums.Role> role = createEnum("role", Capstone.VoQal.global.enums.Role.class);
 

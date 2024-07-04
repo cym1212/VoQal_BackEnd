@@ -56,7 +56,7 @@ public class JwtProvider {
 
         saveRefreshToken(securityMemberDTO.getId(), refreshToken);
 
-        return GeneratedTokenDTO.builder().accessToken(accessToken).refreshToken(refreshToken).build();
+        return GeneratedTokenDTO.builder().accessToken(accessToken).refreshToken(refreshToken).status(200).build();
     }
 
 
@@ -100,7 +100,7 @@ public class JwtProvider {
 
         memberRepository.save(member);
 
-        generatedTokenDTO = GeneratedTokenDTO.builder().accessToken(reissuedAccessToken).refreshToken(reissuedRefreshToken).build();
+        generatedTokenDTO = GeneratedTokenDTO.builder().accessToken(reissuedAccessToken).refreshToken(reissuedRefreshToken).status(200).build();
 
         return generatedTokenDTO;
     }

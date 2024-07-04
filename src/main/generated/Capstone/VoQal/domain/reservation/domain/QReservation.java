@@ -28,15 +28,18 @@ public class QReservation extends EntityPathBase<Reservation> {
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
     //inherited
+    public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
+
+    public final DateTimePath<java.time.LocalDateTime> endTime = createDateTime("endTime", java.time.LocalDateTime.class);
+
+    //inherited
     public final NumberPath<Long> id = _super.id;
 
-    public final DatePath<java.time.LocalDate> reservationDate = createDate("reservationDate", java.time.LocalDate.class);
+    public final Capstone.VoQal.domain.member.domain.QMember member;
 
-    public final TimePath<java.time.LocalTime> reservationTime = createTime("reservationTime", java.time.LocalTime.class);
+    public final QRoom room;
 
-    public final NumberPath<Integer> roomNumber = createNumber("roomNumber", Integer.class);
-
-    public final Capstone.VoQal.domain.member.domain.QStudent student;
+    public final DateTimePath<java.time.LocalDateTime> startTime = createDateTime("startTime", java.time.LocalDateTime.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
@@ -59,7 +62,8 @@ public class QReservation extends EntityPathBase<Reservation> {
 
     public QReservation(Class<? extends Reservation> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.student = inits.isInitialized("student") ? new Capstone.VoQal.domain.member.domain.QStudent(forProperty("student"), inits.get("student")) : null;
+        this.member = inits.isInitialized("member") ? new Capstone.VoQal.domain.member.domain.QMember(forProperty("member"), inits.get("member")) : null;
+        this.room = inits.isInitialized("room") ? new QRoom(forProperty("room")) : null;
     }
 
 }

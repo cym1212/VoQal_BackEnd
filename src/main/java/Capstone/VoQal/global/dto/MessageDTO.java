@@ -1,4 +1,4 @@
-package Capstone.VoQal.global.auth.dto;
+package Capstone.VoQal.global.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -11,4 +11,6 @@ import lombok.*;
 public class MessageDTO {
     @NotNull
     private final String message;
+
+    private final int status;
 }

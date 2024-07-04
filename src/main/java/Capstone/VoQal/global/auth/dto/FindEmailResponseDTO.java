@@ -14,4 +14,5 @@ public class FindEmailResponseDTO {
 
     @Email
     private String email;
+    private int status;
 }

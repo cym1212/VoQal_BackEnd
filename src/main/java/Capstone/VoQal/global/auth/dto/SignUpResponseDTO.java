@@ -15,5 +15,6 @@ public class SignUpResponseDTO {
     private String email;
     private String name;
     private String  phoneNum;
+    private int status;
 
 }

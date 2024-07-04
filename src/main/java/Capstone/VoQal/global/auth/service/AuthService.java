@@ -53,6 +53,7 @@ public class AuthService {
                 .email(member.getEmail())
                 .phoneNum(member.getPhoneNumber())
                 .nickName(member.getNickName())
+                .status(200)
                 .build();
     }
 
@@ -108,6 +109,7 @@ public class AuthService {
             Member findEmailMember = findMember.get();
             return FindEmailResponseDTO.builder()
                     .email(findEmailMember.getEmail())
+                    .status(200)
                     .build();
         }
         else {

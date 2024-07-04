@@ -3,6 +3,8 @@ package Capstone.VoQal.global.auth.controller;
 
 import Capstone.VoQal.global.auth.dto.*;
 import Capstone.VoQal.global.auth.service.ProfileService;
+import Capstone.VoQal.global.dto.MessageDTO;
+import Capstone.VoQal.global.dto.ResponseWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,15 +31,24 @@ public class ProfileController {
 
     @GetMapping("/role/coach")
     @Operation(summary = " 코치 조회 ", description = "학생일 경우를 선택했을 때 코치 리스트 조회")
-    public List<MemberListDTO> getCoachList() {
-        return profileService.getCoachList();
+    public ResponseEntity<ResponseWrapper<List<MemberListDTO>>> getCoachList() {
+        List<MemberListDTO> coachList = profileService.getCoachList();
+        ResponseWrapper<List<MemberListDTO>> memberList = ResponseWrapper.<List<MemberListDTO>>builder()
+                .status(HttpStatus.OK.value())
+                .data(coachList)
+                .build();
+        return ResponseEntity.ok(memberList);
     }
 
     @PatchMapping("/{id}/change-nickname")
     @Operation(summary = " 닉네임 변경 ", description = "닉네임을 변경하는 로직")
     public ResponseEntity<MessageDTO> updateNickname(@PathVariable("id") Long id, @RequestBody ChangeNicknameDTO changeNicknameDTO) {
         profileService.updateNickname(id, changeNicknameDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(MessageDTO.builder().message("닉네임 변경에 성공했습니다.").build());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(MessageDTO.builder()
+                        .message("닉네임 변경에 성공했습니다.")
+                        .status(HttpStatus.OK.value())
+                        .build());
 
     }
 
@@ -51,13 +62,22 @@ public class ProfileController {
     public ResponseEntity<MessageDTO> requestCoach(@RequestBody StudentRequestDTO studentRequestDTO) {
         Long coachId = studentRequestDTO.getCoachId();
         profileService.requestCoach(coachId);
-        return ResponseEntity.status(HttpStatus.OK).body(MessageDTO.builder().message("코치 신청이 완료되었습니다.").build());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(MessageDTO.builder()
+                        .message("코치 신청이 완료되었습니다.")
+                        .status(HttpStatus.OK.value())
+                        .build());
     }
 
     @GetMapping("/request")
     @Operation(summary = " 코치에게 신청한 학생 조회 ", description = "코치에게 담당코치로 신청한 학생의 목록을 조회합니다")
-    public List<RequestStudentListDTO> getRequestStudentList() {
-        return profileService.getRequestStudentList();
+    public ResponseEntity<ResponseWrapper<List<RequestStudentListDTO>>> getRequestStudentList() {
+        List<RequestStudentListDTO> requestStudentList = profileService.getRequestStudentList();
+        ResponseWrapper<List<RequestStudentListDTO>> requestDTO = ResponseWrapper.<List<RequestStudentListDTO>>builder()
+                .status(HttpStatus.OK.value())
+                .data(requestStudentList)
+                .build();
+        return ResponseEntity.ok(requestDTO);
     }
 
     @PostMapping("/approve")
@@ -73,19 +93,29 @@ public class ProfileController {
     public ResponseEntity<MessageDTO> rejectRequest(@RequestBody ApproveRequestDTO approveRequestDTO) {
         Long requestId = approveRequestDTO.getStudentId();
         profileService.rejectRequest(requestId);
-        return ResponseEntity.status(HttpStatus.OK).body(MessageDTO.builder().message("거절했습니다").build());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(MessageDTO.builder()
+                        .message("거절했습니다")
+                        .status(HttpStatus.OK.value())
+                        .build());
     }
 
     @GetMapping("/student")
     @Operation(summary = "담당 학생 조회 ", description = "본인이 담당하는 학생들의 리스트를 조회합니다.")
-    public List<MemberListDTO> studentList() {
-        return profileService.getStudentList();
+    public ResponseEntity<ResponseWrapper<List<MemberListDTO>>> studentList() {
+        List<MemberListDTO> studentList = profileService.getStudentList();
+        ResponseWrapper<List<MemberListDTO>> memberList = ResponseWrapper.<List<MemberListDTO>>builder()
+                .status(HttpStatus.OK.value())
+                .data(studentList)
+                .build();
+        return ResponseEntity.ok(memberList);
     }
 
     @DeleteMapping("{id}")
     @Operation(summary = "담당 학생 삭제 ", description = "본인이 담당하는 학생을 삭제합니다.")
-    public void studentDelete(@PathVariable("id") Long id) {
-        profileService.deleteStudent(id);
+    public ResponseEntity<MessageDTO> studentDelete(@PathVariable("id") Long id) {
+        MessageDTO deleted = profileService.deleteStudent(id);
+        return ResponseEntity.ok(deleted);
     }
 
 }
