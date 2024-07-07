@@ -8,6 +8,7 @@ import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.enums.Role;
 import Capstone.VoQal.global.error.exception.BusinessException;
 
+import Capstone.VoQal.global.jwt.service.JwtProvider;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

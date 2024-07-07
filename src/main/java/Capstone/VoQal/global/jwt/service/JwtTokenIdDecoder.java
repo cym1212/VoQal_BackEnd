@@ -1,4 +1,4 @@
-package Capstone.VoQal.global.auth.service;
+package Capstone.VoQal.global.jwt.service;
 
 import Capstone.VoQal.global.auth.dto.SecurityMemberDTO;
 import Capstone.VoQal.global.enums.ErrorCode;

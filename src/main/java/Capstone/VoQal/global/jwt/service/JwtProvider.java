@@ -1,4 +1,4 @@
-package Capstone.VoQal.global.auth.service;
+package Capstone.VoQal.global.jwt.service;
 
 
 import Capstone.VoQal.domain.member.domain.Member;

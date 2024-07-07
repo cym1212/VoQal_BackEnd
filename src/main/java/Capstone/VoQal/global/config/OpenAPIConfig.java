@@ -56,7 +56,7 @@ public class OpenAPIConfig {
                                 .url("https://github.com/VoQal-Project/VoQal_BackEnd")))
                 .servers(List.of(
                         new io.swagger.v3.oas.models.servers.Server().url("http://localhost:8080").description("Local HTTP server"),
-                        new io.swagger.v3.oas.models.servers.Server().url("https://voqal.codns.com").description("Production HTTPS server")
+                        new io.swagger.v3.oas.models.servers.Server().url("https://www.voqal.today").description("Production HTTPS server")
                 ));
     }
 

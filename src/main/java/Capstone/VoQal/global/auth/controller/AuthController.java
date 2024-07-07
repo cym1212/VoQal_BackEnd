@@ -3,7 +3,7 @@ package Capstone.VoQal.global.auth.controller;
 import Capstone.VoQal.global.auth.dto.*;
 import Capstone.VoQal.global.auth.service.AuthService;
 
-import Capstone.VoQal.global.auth.service.JwtProvider;
+import Capstone.VoQal.global.jwt.service.JwtProvider;
 import Capstone.VoQal.global.dto.MessageDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -66,7 +66,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(MessageDTO.builder()
                             .message("이미 사용중인 이메일입니다.")
-                            .status(HttpStatus.OK.value())
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build());
         }
         return ResponseEntity.status(HttpStatus.OK)
@@ -86,8 +86,7 @@ public class AuthController {
         return ResponseEntity.ok(findEmailResponseDTO);
     }
 
-    // todo ( 모하지 발표 후 완료된 것들은 삭제 )
-    // 1. mapper 로 코드 리펙토링 (고민중)
+
 
 
     @PostMapping("/find/member")

@@ -52,9 +52,6 @@ public class ProfileController {
 
     }
 
-    //todo
-    // Exception 전부 커스텀 exception으로 바꾸기
-    // 노션 확인 후 추가로 구현해야할 로직 구현
 
 
     @PostMapping("/request")

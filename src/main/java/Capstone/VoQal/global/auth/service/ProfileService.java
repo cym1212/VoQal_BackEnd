@@ -18,6 +18,7 @@ import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.enums.RequestStatus;
 import Capstone.VoQal.global.enums.Role;
 import Capstone.VoQal.global.error.exception.BusinessException;
+import Capstone.VoQal.global.jwt.service.JwtProvider;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -159,7 +160,7 @@ public class ProfileService {
         memberRepository.save(studentMember);
         coachAndStudentRepository.save(coachAndStudent);
         return reissueMemberToken(studentMember);
-        //todo 학생으로 역할이 선택됐으니 토큰을 재발급해야함
+
     }
 
     @Transactional

@@ -1,7 +1,7 @@
-package Capstone.VoQal.global.auth.filter;
+package Capstone.VoQal.global.jwt.filter;
 
 import Capstone.VoQal.global.auth.dto.SecurityMemberDTO;
-import Capstone.VoQal.global.auth.service.JwtProvider;
+import Capstone.VoQal.global.jwt.service.JwtProvider;
 import io.jsonwebtoken.Claims;
 
 import jakarta.servlet.FilterChain;

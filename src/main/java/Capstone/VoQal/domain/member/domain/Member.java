@@ -5,7 +5,6 @@ import Capstone.VoQal.domain.challenge.domain.MemberAndPostLike;
 import Capstone.VoQal.domain.chatting.domain.MemberAndChatRoom;
 import Capstone.VoQal.domain.reservation.domain.Reservation;
 import Capstone.VoQal.global.domain.BaseEntity;
-import Capstone.VoQal.global.enums.Provider;
 import Capstone.VoQal.global.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

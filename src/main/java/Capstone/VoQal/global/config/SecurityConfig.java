@@ -1,7 +1,7 @@
 package Capstone.VoQal.global.config;
 
-import Capstone.VoQal.global.auth.filter.JwtAuthFilter;
-import Capstone.VoQal.global.auth.service.JwtProvider;
+import Capstone.VoQal.global.jwt.filter.JwtAuthFilter;
+import Capstone.VoQal.global.jwt.service.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

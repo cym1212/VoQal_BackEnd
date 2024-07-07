@@ -1,6 +1,5 @@
 package Capstone.VoQal.global.auth.dto;
 
-import Capstone.VoQal.global.enums.Provider;
 import Capstone.VoQal.global.enums.Role;
 import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;

@@ -6,7 +6,7 @@ import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.domain.member.domain.Student;
 import Capstone.VoQal.domain.member.repository.CoachAndStudent.CoachAndStudentRepository;
 import Capstone.VoQal.domain.member.repository.Member.MemberRepository;
-import Capstone.VoQal.global.auth.service.JwtTokenIdDecoder;
+import Capstone.VoQal.global.jwt.service.JwtTokenIdDecoder;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.error.exception.BusinessException;
 import lombok.RequiredArgsConstructor;

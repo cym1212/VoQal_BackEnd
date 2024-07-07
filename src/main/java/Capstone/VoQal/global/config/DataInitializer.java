@@ -17,18 +17,15 @@ public class DataInitializer {
         return args -> {
             List<String> roomNames = List.of("1번방", "2번방", "3번방", "4번방", "5번방");
 
-            // 이미 존재하는 방 이름 조회
             List<String> existingRoomNames = roomRepository.findAllByRoomNameIn(roomNames)
                     .stream()
                     .map(Room::getRoomName)
                     .collect(Collectors.toList());
 
-            // 존재하지 않는 방 이름 필터링
             List<String> newRoomNames = roomNames.stream()
                     .filter(roomName -> !existingRoomNames.contains(roomName))
                     .collect(Collectors.toList());
 
-            // 새로운 방 생성
             newRoomNames.forEach(roomName -> roomRepository.save(new Room(roomName)));
         };
     }

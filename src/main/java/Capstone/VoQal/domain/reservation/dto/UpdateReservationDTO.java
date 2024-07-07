@@ -1,0 +1,18 @@
+package Capstone.VoQal.domain.reservation.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class UpdateReservationDTO {
+    private Long newRoomId;
+    private LocalDateTime newStartTime;
+    private LocalDateTime newEndTime;
+}
