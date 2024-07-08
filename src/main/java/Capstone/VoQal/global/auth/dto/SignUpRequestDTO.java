@@ -26,6 +26,7 @@ public class SignUpRequestDTO {
     @NotBlank
     private String phoneNum;
 
+    //todo 실제 배포 전에는 주석 풀기
     @NotBlank
 //    @Pattern(message = "잘못된 비밀번호 형식입니다."
 //            , regexp = "^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[$@$!%*#?&])[A-Za-z[0-9]$@$!%*#?&]{8,15}")

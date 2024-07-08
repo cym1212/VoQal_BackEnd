@@ -29,37 +29,7 @@ public class ReservationService {
     private final RoomRepository roomRepository;
     private final MemberService memberService;
 
-//    @Transactional(readOnly = true)
-//    public AvailableTimesDTO getAvailableTimes(GetAvailableTimeDTO getAvailableTimeDTO) {
-//        LocalDateTime startOfDay = getAvailableTimeDTO.getRequestDate().atStartOfDay();
-//        LocalDateTime endOfDay = getAvailableTimeDTO.getRequestDate().atTime(LocalTime.MAX);
-//
-//        List<Reservation> reservations = reservationRepository.findSameResrvationList(getAvailableTimeDTO.getRoomId(), startOfDay, endOfDay);
-//
-//        if (getAvailableTimeDTO.getRequestDate().isBefore(LocalDate.now())) {
-//            throw new BusinessException(ErrorCode.PAST_RESERVATION_NOT_ALLOWED);
-//        }
-//
-//        List<LocalDateTime> allTimes = new ArrayList<>();
-//        for (int i = 0; i < 24; i++) {
-//            allTimes.add(startOfDay.plusHours(i));
-//        }
-//
-//        List<LocalDateTime> reservedTimes = reservations.stream()
-//                .map(Reservation::getStartTime)
-//                .toList();
-//
-//        allTimes.removeAll(reservedTimes);
-//
-//        return AvailableTimesDTO.builder()
-//                .roomId(getAvailableTimeDTO.getRoomId())
-//                .availableTimes(allTimes)
-//                .build();
-//    }
 
-
-
-    // todo 예약시간 단위를 시간까지로 제한하는 설정 필요
     @Transactional(readOnly = true)
     public AvailableTimesDTO getAvailableTimes(GetAvailableTimeDTO getAvailableTimeDTO) {
         LocalDateTime startOfDay = getAvailableTimeDTO.getRequestDate().atStartOfDay();
@@ -72,7 +42,7 @@ public class ReservationService {
         }
 
         List<LocalTime> allTimes = new ArrayList<>();
-        for (int i = 0; i < 24; i++) {
+        for (int i = 10; i < 22; i++) {
             allTimes.add(LocalTime.of(i, 0));
         }
 
@@ -100,20 +70,24 @@ public class ReservationService {
         Room room = roomRepository.findById(reservationRequestDTO.getRoomId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_REQUEST));
 
-        Optional<Reservation> checkReservation = reservationRepository.findSameResrvation(
-                room.getId(),
-                reservationRequestDTO.getStartTime(),
-                reservationRequestDTO.getEndTime()
-        );
+        LocalDateTime startTime = reservationRequestDTO.getStartTime().truncatedTo(ChronoUnit.HOURS);
+        LocalDateTime endTime = reservationRequestDTO.getEndTime().truncatedTo(ChronoUnit.HOURS);
 
+        Optional<Reservation> checkReservation = reservationRepository.findSameResrvation(room.getId(), startTime, endTime);
         if (checkReservation.isPresent()) {
             throw new BusinessException(ErrorCode.RESERVATION_TIME_CONFLICT);
         }
 
+        if (reservationRequestDTO.getStartTime().isBefore(LocalDateTime.now())) {
+            throw new BusinessException(ErrorCode.PAST_RESERVATION_NOT_ALLOWED);
+        }
+        chechAvailableReservationTime(startTime, endTime);
+
+
         Reservation reservation = Reservation.builder()
                 .room(room)
-                .startTime(reservationRequestDTO.getStartTime())
-                .endTime(reservationRequestDTO.getEndTime())
+                .startTime(startTime)
+                .endTime(endTime)
                 .member(currentMember)
                 .build();
 
@@ -133,9 +107,9 @@ public class ReservationService {
         List<ReservationResponseDetailsDTO> responseDTOS = new ArrayList<>();
         for (Reservation reservation : reservations) {
             responseDTOS.add(new ReservationResponseDetailsDTO(reservation.getRoom().getId()
-                    ,reservation.getId()
-                    ,reservation.getStartTime()
-                    ,reservation.getEndTime()));
+                    , reservation.getId()
+                    , reservation.getStartTime()
+                    , reservation.getEndTime()));
         }
         return responseDTOS;
     }
@@ -152,7 +126,7 @@ public class ReservationService {
                 .endTime(reservation.getEndTime())
                 .build();
     }
-    
+
 
     @Transactional
     public void updateReservation(Long reservationId, UpdateReservationDTO updateReservationDTO) {
@@ -163,22 +137,27 @@ public class ReservationService {
         Room newRoom = roomRepository.findById(updateReservationDTO.getNewRoomId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_REQUEST));
 
-        LocalDateTime newStartTime = updateReservationDTO.getNewStartTime();
-        LocalDateTime newEndTime = updateReservationDTO.getNewEndTime();
+        if (updateReservationDTO.getNewStartTime().isBefore(LocalDateTime.now())) {
+            throw new BusinessException(ErrorCode.PAST_RESERVATION_NOT_ALLOWED);
+        }
+
+
+        LocalDateTime newStartTime = updateReservationDTO.getNewStartTime().truncatedTo(ChronoUnit.HOURS);
+        LocalDateTime newEndTime = updateReservationDTO.getNewEndTime().truncatedTo(ChronoUnit.HOURS);
 
         Optional<Reservation> conflictingReservations = reservationRepository.findSameResrvation(
                 newRoom.getId(), newStartTime, newEndTime);
 
-        if (conflictingReservations.isPresent() && !conflictingReservations.get().getId().equals(reservationId)) {
+        if (conflictingReservations.isPresent()) {
             throw new BusinessException(ErrorCode.RESERVATION_TIME_CONFLICT);
         }
+        chechAvailableReservationTime(updateReservationDTO.getNewStartTime(), updateReservationDTO.getNewEndTime());
 
         existingReservation.changeRoom(newRoom);
         existingReservation.reschedule(newStartTime, newEndTime);
 
         reservationRepository.save(existingReservation);
     }
-
 
 
     @Transactional
@@ -188,6 +167,15 @@ public class ReservationService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
         reservationRepository.deleteReservation(reservation.getId());
 
+    }
+
+    private static void chechAvailableReservationTime(LocalDateTime startTime, LocalDateTime endTime) {
+        LocalTime allowedStartTime = LocalTime.of(10, 0);
+        LocalTime allowedEndTime = LocalTime.of(22, 0);
+
+        if (startTime.toLocalTime().isBefore(allowedStartTime) || endTime.toLocalTime().isAfter(allowedEndTime)) {
+            throw new BusinessException(ErrorCode.NOT_AVAILABLE_RESERVATION_TIME);
+        }
     }
 
 

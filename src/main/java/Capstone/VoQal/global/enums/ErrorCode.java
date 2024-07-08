@@ -58,7 +58,8 @@ public enum ErrorCode {
     //Reservation
     RESERVATION_NOT_FOUND(400, "R001", "예약정보를 찾을 수 없습니다."),
     RESERVATION_TIME_CONFLICT(400, "R002", "동일 시간에 예약이 존재합니다."),
-    PAST_RESERVATION_NOT_ALLOWED(400,"R003","과거의 예약은 진행할 수 없습니다.");
+    PAST_RESERVATION_NOT_ALLOWED(400,"R003","과거의 예약은 진행할 수 없습니다."),
+    NOT_AVAILABLE_RESERVATION_TIME(400,"R004","예약 가능 시간이 아닙니다.");
 
 
 

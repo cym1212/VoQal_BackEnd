@@ -40,9 +40,11 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
     @Transactional
     @Override
     public List<Reservation> findNonDeletedByMemberId(Long memberId) {
+        LocalDateTime now = LocalDateTime.now();
         return queryFactory.selectFrom(reservation)
                 .where(reservation.member.id.eq(memberId)
-                        .and(reservation.deletedAt.isNull()))
+                        .and(reservation.deletedAt.isNull())
+                        .and(reservation.startTime.after(now)))
                 .fetch();
     }
 
@@ -60,11 +62,11 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 
     @Transactional
     @Override
-    public Optional<Reservation> findSameResrvation(Long roomId, LocalDateTime startOfDay, LocalDateTime endOfDay) {
+    public Optional<Reservation> findSameResrvation(Long roomId, LocalDateTime startTime, LocalDateTime endTime) {
         Reservation result = queryFactory.selectFrom(reservation)
                 .where(
                         reservation.room.id.eq(roomId)
-                                .and(reservation.startTime.between(startOfDay, endOfDay))
+                                .and(reservation.startTime.between(startTime, endTime))
                                 .and(reservation.deletedAt.isNull())
                 )
                 .fetchOne();
