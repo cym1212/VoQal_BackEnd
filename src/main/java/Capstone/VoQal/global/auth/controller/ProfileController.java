@@ -79,10 +79,14 @@ public class ProfileController {
 
     @PostMapping("/approve")
     @Operation(summary = " 코치에게 신청한 학생 승인 ", description = "코치에게 담당코치로 신청한 학생을 승인하여 담당 코치와 학생 관계가 됩니다.")
-    public ResponseEntity<GeneratedTokenDTO> approveRequest(@RequestBody ApproveRequestDTO approveRequestDTO) {
+    public ResponseEntity<MessageDTO> approveRequest(@RequestBody ApproveRequestDTO approveRequestDTO) {
         Long studentId = approveRequestDTO.getStudentId();
-        GeneratedTokenDTO generatedTokenDTO =profileService.approveRequest(studentId);
-        return ResponseEntity.status(HttpStatus.OK).body(generatedTokenDTO);
+        profileService.approveRequest(studentId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(MessageDTO.builder()
+                        .message("승인됐습니다.")
+                        .status(HttpStatus.OK.value())
+                        .build());
     }
 
     @PostMapping("/reject")
@@ -115,4 +119,10 @@ public class ProfileController {
         return ResponseEntity.ok(deleted);
     }
 
+    @GetMapping("/user/details")
+    @Operation(summary = "회원 정보 확인 ", description = "현재 로그인한 회원의 정보를 확인합니다.")
+    public ResponseEntity<MemberInfromationDTO> getCurrentUserDetails() {
+        MemberInfromationDTO infromationDTO = profileService.getCurrentUserDetails();
+        return ResponseEntity.ok().body(infromationDTO);
+    }
 }

@@ -8,11 +8,8 @@ import Capstone.VoQal.domain.member.domain.Student;
 import Capstone.VoQal.domain.member.repository.CoachAndStudent.CoachAndStudentRepository;
 import Capstone.VoQal.domain.member.repository.Coach.CoachRepository;
 import Capstone.VoQal.domain.member.repository.Student.StudentRepository;
-import Capstone.VoQal.global.auth.dto.ChangeNicknameDTO;
+import Capstone.VoQal.global.auth.dto.*;
 import Capstone.VoQal.domain.member.repository.Member.MemberRepository;
-import Capstone.VoQal.global.auth.dto.GeneratedTokenDTO;
-import Capstone.VoQal.global.auth.dto.MemberListDTO;
-import Capstone.VoQal.global.auth.dto.RequestStudentListDTO;
 import Capstone.VoQal.global.dto.MessageDTO;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.enums.RequestStatus;
@@ -144,7 +141,7 @@ public class ProfileService {
     }
 
     @Transactional
-    public GeneratedTokenDTO approveRequest(Long studentMemberId) {
+    public void approveRequest(Long studentMemberId) {
         Coach coach = memberService.getCurrentCoach();
         Member studentMember = memberService.getMemberById(studentMemberId);
         Student student = studentMember.getStudent();
@@ -152,15 +149,13 @@ public class ProfileService {
 
         CoachAndStudent coachAndStudent = memberService.getCoachAndStudent(coach.getId(), student.getId());
         if (coachAndStudent.getStatus() != RequestStatus.PENDING) {
-            throw new IllegalArgumentException("Invalid request status");
+            throw new BusinessException(ErrorCode.NOT_PENDING_STATUS);
         }
         coachAndStudent.setStatus(RequestStatus.APPROVED);
 
         studentMember.setRole(Role.STUDENT);
         memberRepository.save(studentMember);
         coachAndStudentRepository.save(coachAndStudent);
-        return reissueMemberToken(studentMember);
-
     }
 
     @Transactional
@@ -172,7 +167,7 @@ public class ProfileService {
 
         CoachAndStudent coachAndStudent = memberService.getCoachAndStudent(coach.getId(), student.getId());
         if (coachAndStudent.getStatus() != RequestStatus.PENDING) {
-            throw new IllegalArgumentException("Invalid request status");
+            throw new BusinessException(ErrorCode.NOT_PENDING_STATUS);
         }
         coachAndStudent.setStatus(RequestStatus.REJECTED);
 
@@ -204,9 +199,16 @@ public class ProfileService {
         return messageDTO;
     }
 
-    //todo
-    // 로직 테스트 다시하기
-
-
-
+    @Transactional
+    public MemberInfromationDTO getCurrentUserDetails() {
+        Member memberInfo = memberService.getCurrentMember();
+        return MemberInfromationDTO.builder()
+                .nickName(memberInfo.getNickName())
+                .role(String.valueOf(memberInfo.getRole()))
+                .name(memberInfo.getName())
+                .phoneNum(memberInfo.getPhoneNumber())
+                .email(memberInfo.getEmail())
+                .status(200)
+                .build();
+    }
 }
