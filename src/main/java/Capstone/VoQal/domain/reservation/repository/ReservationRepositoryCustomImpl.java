@@ -50,7 +50,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 
     @Transactional
     @Override
-    public List<Reservation> findSameResrvationList(Long roomId, LocalDateTime startOfDay, LocalDateTime endOfDay) {
+    public List<Reservation> findResrvationList(Long roomId, LocalDateTime startOfDay, LocalDateTime endOfDay) {
         return queryFactory.selectFrom(reservation)
                 .where(
                         reservation.room.id.eq(roomId)

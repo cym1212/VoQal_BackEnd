@@ -9,6 +9,8 @@ import Capstone.VoQal.domain.reservation.repository.ReservationRepository;
 import Capstone.VoQal.domain.reservation.repository.RoomRepository;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.error.exception.BusinessException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final RoomRepository roomRepository;
     private final MemberService memberService;
+    private final EntityManager entityManager;
 
 
     @Transactional(readOnly = true)
@@ -35,7 +38,9 @@ public class ReservationService {
         LocalDateTime startOfDay = getAvailableTimeDTO.getRequestDate().atStartOfDay();
         LocalDateTime endOfDay = getAvailableTimeDTO.getRequestDate().atTime(LocalTime.MAX);
 
-        List<Reservation> reservations = reservationRepository.findSameResrvationList(getAvailableTimeDTO.getRoomId(), startOfDay, endOfDay);
+        List<Reservation> reservations = reservationRepository.findResrvationList(getAvailableTimeDTO.getRoomId(), startOfDay, endOfDay);
+
+        reservations.forEach(reservation -> entityManager.lock(reservation, LockModeType.PESSIMISTIC_READ));
 
         if (getAvailableTimeDTO.getRequestDate().isBefore(LocalDate.now())) {
             throw new BusinessException(ErrorCode.PAST_RESERVATION_NOT_ALLOWED);
@@ -72,6 +77,8 @@ public class ReservationService {
 
         LocalDateTime startTime = reservationRequestDTO.getStartTime().truncatedTo(ChronoUnit.HOURS);
         LocalDateTime endTime = reservationRequestDTO.getEndTime().truncatedTo(ChronoUnit.HOURS);
+
+        entityManager.lock(room, LockModeType.PESSIMISTIC_WRITE);
 
         Optional<Reservation> checkReservation = reservationRepository.findSameResrvation(room.getId(), startTime, endTime);
         if (checkReservation.isPresent()) {
@@ -145,6 +152,8 @@ public class ReservationService {
         LocalDateTime newStartTime = updateReservationDTO.getNewStartTime().truncatedTo(ChronoUnit.HOURS);
         LocalDateTime newEndTime = updateReservationDTO.getNewEndTime().truncatedTo(ChronoUnit.HOURS);
 
+        entityManager.lock(existingReservation, LockModeType.PESSIMISTIC_WRITE);
+
         Optional<Reservation> conflictingReservations = reservationRepository.findSameResrvation(
                 newRoom.getId(), newStartTime, newEndTime);
 
@@ -152,6 +161,7 @@ public class ReservationService {
             throw new BusinessException(ErrorCode.RESERVATION_TIME_CONFLICT);
         }
         chechAvailableReservationTime(updateReservationDTO.getNewStartTime(), updateReservationDTO.getNewEndTime());
+
 
         existingReservation.changeRoom(newRoom);
         existingReservation.reschedule(newStartTime, newEndTime);
@@ -165,6 +175,9 @@ public class ReservationService {
 
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        entityManager.lock(reservation, LockModeType.PESSIMISTIC_WRITE);
+
         reservationRepository.deleteReservation(reservation.getId());
 
     }

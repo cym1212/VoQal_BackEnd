@@ -12,5 +12,5 @@ public interface ReservationRepositoryCustom {
 
     Optional<Reservation> findSameResrvation(Long roomId, LocalDateTime startOfDay, LocalDateTime endOfDay);
 
-    List<Reservation> findSameResrvationList(Long roomId, LocalDateTime startOfDay, LocalDateTime endOfDay);
+    List<Reservation> findResrvationList(Long roomId, LocalDateTime startOfDay, LocalDateTime endOfDay);
 }
