@@ -6,6 +6,7 @@ import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.error.exception.BusinessException;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -16,24 +17,21 @@ import java.util.Optional;
 import static Capstone.VoQal.domain.reservation.domain.QReservation.reservation;
 
 @Repository
+@RequiredArgsConstructor
 public class ReservationRepositoryCustomImpl implements ReservationRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
-    @Autowired
-    public ReservationRepositoryCustomImpl(JPAQueryFactory queryFactory) {
-        this.queryFactory = queryFactory;
-    }
 
     @Transactional
+    @Override
     public void deleteReservation(Long reservationId) {
-        QReservation qReservation = reservation;
         long updatedCount = queryFactory.update(reservation)
                 .set(reservation.deletedAt, LocalDateTime.now())
                 .where(reservation.id.eq(reservationId))
                 .execute();
 
         if (updatedCount == 0) {
-            throw new BusinessException(ErrorCode.RESERVATION_NOT_FOUND);
+            throw new BusinessException(ErrorCode.RESERVATION_NOT_FOUND_OR_ALREADY_DELETED);
         }
     }
 

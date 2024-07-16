@@ -1,6 +1,7 @@
 package Capstone.VoQal.domain.reservation.service;
 
 import Capstone.VoQal.domain.member.service.MemberService;
+import Capstone.VoQal.domain.member.service.MemberServiceImpl;
 import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.domain.reservation.domain.Reservation;
 import Capstone.VoQal.domain.reservation.domain.Room;
@@ -123,9 +124,8 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponseDTO getReservation(Long reservationId) {
-        Optional<Reservation> reservationDetails = reservationRepository.findById(reservationId);
-
-        Reservation reservation = reservationDetails.orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
 
         return ReservationResponseDTO.builder()
                 .roomId(reservation.getRoom().getId())
@@ -133,6 +133,7 @@ public class ReservationService {
                 .endTime(reservation.getEndTime())
                 .build();
     }
+
 
 
     @Transactional

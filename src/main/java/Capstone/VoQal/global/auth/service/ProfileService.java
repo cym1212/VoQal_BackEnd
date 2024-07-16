@@ -1,6 +1,7 @@
 package Capstone.VoQal.global.auth.service;
 
 import Capstone.VoQal.domain.member.service.MemberService;
+import Capstone.VoQal.domain.member.service.MemberServiceImpl;
 import Capstone.VoQal.domain.member.domain.Coach;
 import Capstone.VoQal.domain.member.domain.CoachAndStudent;
 import Capstone.VoQal.domain.member.domain.Member;
@@ -179,7 +180,8 @@ public class ProfileService {
         List<CoachAndStudent> approveStudent = coachAndStudentRepository.findApprovedStudentsByCoachId(coach.getId());
         List<MemberListDTO> studentList = new ArrayList<>();
         for (CoachAndStudent coachAndStudent : approveStudent) {
-            studentList.add(new MemberListDTO(coachAndStudent.getStudent().getId(),
+//            studentList.add(new MemberListDTO(coachAndStudent.getStudent().getMember().getId(),
+                    studentList.add(new MemberListDTO(coachAndStudent.getStudent().getId(),
                     coachAndStudent.getStudent().getMember().getName()));
         }
         return studentList;
@@ -210,5 +212,19 @@ public class ProfileService {
                 .email(memberInfo.getEmail())
                 .status(200)
                 .build();
+    }
+
+    @Transactional
+    public StudentStatusDTO getStudentStatus() {
+        Long memberId = memberService.getCurrentMemberId();
+        Optional<RequestStatus> studentStatus = coachAndStudentRepository.getStudentStatusByMemberId(memberId);
+
+        if (studentStatus.isPresent()) {
+            return StudentStatusDTO.builder()
+                    .status(studentStatus.get())
+                    .build();
+        } else {
+            throw new BusinessException(ErrorCode.NOT_STUDENT);
+        }
     }
 }

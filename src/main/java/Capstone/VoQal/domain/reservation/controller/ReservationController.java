@@ -100,7 +100,7 @@ public class ReservationController {
         return ResponseEntity.ok(reservation);
     }
 
-    @PutMapping("/reservation/{reservationId}")
+    @PatchMapping("/reservation/{reservationId}")
     @Operation(summary = "예약 수정", description = "기존에 존재하는 예약을 수정합니다.")
     public ResponseEntity<MessageDTO> updateReservation(@PathVariable("reservationId") Long reservationId, @RequestBody UpdateReservationDTO updateReservationDTO) {
         reservationService.updateReservation(reservationId, updateReservationDTO);

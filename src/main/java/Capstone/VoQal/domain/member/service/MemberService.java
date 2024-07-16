@@ -4,50 +4,20 @@ import Capstone.VoQal.domain.member.domain.Coach;
 import Capstone.VoQal.domain.member.domain.CoachAndStudent;
 import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.domain.member.domain.Student;
-import Capstone.VoQal.domain.member.repository.CoachAndStudent.CoachAndStudentRepository;
-import Capstone.VoQal.domain.member.repository.Member.MemberRepository;
-import Capstone.VoQal.global.jwt.service.JwtTokenIdDecoder;
-import Capstone.VoQal.global.enums.ErrorCode;
-import Capstone.VoQal.global.error.exception.BusinessException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
+public interface MemberService {
 
-@Service
-@RequiredArgsConstructor
-public class MemberService {
+    Coach getCurrentCoach();
 
-    private final JwtTokenIdDecoder jwtTokenIdDecoder;
-    private final MemberRepository memberRepository;
-    private final CoachAndStudentRepository coachAndStudentRepository;
+    Student getCurrentStudent(Long studentId);
 
-    public Coach getCurrentCoach() {
-        Member coachMember = getCurrentMember();
-        Coach coach = coachMember.getCoach();
-        if (coach == null) {
-            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
-        }
-        return coach;
-    }
+    Member getCurrentMember();
 
-    public Member getCurrentMember() {
-        long memberId = jwtTokenIdDecoder.getCurrentUserId();
-        return getMemberById(memberId);
-    }
+    Long getCurrentMemberId();
 
-    public Member getMemberById(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_MEMBER_ID));
-    }
+    Member getMemberById(Long memberId);
 
-    public CoachAndStudent getCoachAndStudent(Long coachId, Long studentId) {
-        return coachAndStudentRepository.findByCoachIdAndStudentId(coachId, studentId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_REQUEST));
-    }
+    CoachAndStudent getCoachAndStudent(Long coachId, Long studentId);
 
-    public void validateStudentEntity(Student student) {
-        if (student == null) {
-            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
-        }
-    }
+    void validateStudentEntity(Student student);
 }

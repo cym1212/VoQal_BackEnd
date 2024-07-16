@@ -55,12 +55,21 @@ public enum ErrorCode {
     INCOMPLETE_SIGNUP_INFO(400,"L001","회원가입 정보 누락! 누락된 정보를 입력해주세요"),
     INVALID_PASSWORD(400,"L002","비밀번호가 일치하지 않습니다"),
     NOT_PENDING_STATUS(400,"L003","신청 상태가 아닙니다"),
+    NOT_STUDENT(400,"L004", "역할이 학생이 아닙니다"),
+    NOT_APPROVED_STATUS(400,"L005","담당 코치-학생 상태가 아닙니다"),
 
     //Reservation
     RESERVATION_NOT_FOUND(400, "R001", "예약정보를 찾을 수 없습니다."),
     RESERVATION_TIME_CONFLICT(400, "R002", "동일 시간에 예약이 존재합니다."),
     PAST_RESERVATION_NOT_ALLOWED(400,"R003","과거의 예약은 진행할 수 없습니다."),
-    NOT_AVAILABLE_RESERVATION_TIME(400,"R004","예약 가능 시간이 아닙니다.");
+    NOT_AVAILABLE_RESERVATION_TIME(400,"R004","예약 가능 시간이 아닙니다."),
+    RESERVATION_NOT_FOUND_OR_ALREADY_DELETED(400, "R005", "예약정보를 찾을 수 없거나 이미 삭제된 예약입니다."),
+
+
+    //Lesson
+    LESSONNOTE_NOT_FOUND(400,"LN001","레슨 노트를 찾을 수 없습니다"),
+    LESSONNOTE_NOT_FOUND_OR_ALREADY_DELETED(400,"LN002","레슨노트를 찾을 수 없거나 이미 삭제된 노트입니다."),
+    LESSONNOTE_NOT_UPDATED(400,"LN003","레슨 노트가 변경되지 않았습니다");
 
 
 
@@ -74,4 +83,15 @@ public enum ErrorCode {
         this.code = code;
     }
 
+    public int getStatus() {
+        return status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getCode() {
+        return code;
+    }
 }

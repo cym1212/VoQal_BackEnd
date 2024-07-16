@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReservationRepositoryCustom {
-    public void deleteReservation(Long reservationId);
+    void deleteReservation(Long reservationId);
     List<Reservation> findNonDeletedByMemberId(Long memberId);
 
     Optional<Reservation> findSameResrvation(Long roomId, LocalDateTime startOfDay, LocalDateTime endOfDay);

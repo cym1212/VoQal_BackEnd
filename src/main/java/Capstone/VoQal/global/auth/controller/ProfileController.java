@@ -5,7 +5,13 @@ import Capstone.VoQal.global.auth.dto.*;
 import Capstone.VoQal.global.auth.service.ProfileService;
 import Capstone.VoQal.global.dto.MessageDTO;
 import Capstone.VoQal.global.dto.ResponseWrapper;
+import Capstone.VoQal.global.enums.ErrorCode;
+import Capstone.VoQal.global.error.exception.BusinessException;
+import Capstone.VoQal.global.error.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,8 +27,14 @@ public class ProfileController {
 
     private final ProfileService profileService;
 
+    //todo 스웨거 실패에 대한 응답값 설정하기
     @PostMapping("/role/coach")
-    @Operation(summary = " 코치로 역할 설정 로직 ", description = "역할을 코치로 설정할 경우")
+    @Operation(summary = " 코치로 역할 설정 로직 ", description = "역할을 코치로 설정할 경우",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공"),
+                    @ApiResponse(responseCode = "400", description = "잘못된 멤버ID입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            })
+
     public ResponseEntity<GeneratedTokenDTO> setRoleCoach() {
         GeneratedTokenDTO generatedTokenDTO = profileService.setRoleToCoach();
 
@@ -51,7 +63,6 @@ public class ProfileController {
                         .build());
 
     }
-
 
 
     @PostMapping("/request")
@@ -120,9 +131,17 @@ public class ProfileController {
     }
 
     @GetMapping("/user/details")
-    @Operation(summary = "회원 정보 확인 ", description = "현재 로그인한 회원의 정보를 확인합니다.")
+    @Operation(summary = "회원 정보 확인", description = "현재 로그인한 회원의 정보를 확인합니다.")
     public ResponseEntity<MemberInfromationDTO> getCurrentUserDetails() {
         MemberInfromationDTO infromationDTO = profileService.getCurrentUserDetails();
         return ResponseEntity.ok().body(infromationDTO);
     }
+
+    @GetMapping("/status/check")
+    @Operation(summary = "신청 정보 확인", description = "현재 학생의 신청상태를 확인합니다.")
+    public ResponseEntity<StudentStatusDTO> getStudentStatus() {
+        StudentStatusDTO studentStatusDTO = profileService.getStudentStatus();
+        return ResponseEntity.ok().body(studentStatusDTO);
+    }
+
 }

@@ -78,7 +78,6 @@ public class CoachAndStudentRepositoryCustomImpl implements CoachAndStudentRepos
     @Override
     @Transactional
     public void deleteByCoachIdAndStudentId(Long coachId, Long studentId) {
-        log.info("Deleting CoachAndStudent with coachId: {} and studentId: {}", coachId, studentId);
 
         QCoachAndStudent coachAndStudent = QCoachAndStudent.coachAndStudent;
 
@@ -87,7 +86,23 @@ public class CoachAndStudentRepositoryCustomImpl implements CoachAndStudentRepos
                         .and(coachAndStudent.student.id.eq(studentId)))
                 .execute();
 
-        log.info("Deleted count: {}", deletedCount);
+    }
+
+    @Transactional
+    public Optional<RequestStatus> getStudentStatusByMemberId(Long memberId) {
+        QMember qMember = QMember.member;
+        QStudent qStudent = QStudent.student;
+        QCoachAndStudent qCoachAndStudent = QCoachAndStudent.coachAndStudent;
+
+        RequestStatus status = queryFactory
+                .select(qCoachAndStudent.status)
+                .from(qCoachAndStudent)
+                .join(qCoachAndStudent.student, qStudent)
+                .join(qStudent.member, qMember)
+                .where(qMember.id.eq(memberId))
+                .fetchFirst();
+
+        return Optional.ofNullable(status);
     }
 
 

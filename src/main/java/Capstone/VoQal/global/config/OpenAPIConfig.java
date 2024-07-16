@@ -12,9 +12,7 @@ import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @OpenAPIDefinition(
         info = @Info(
@@ -67,4 +65,7 @@ public class OpenAPIConfig {
                 .pathsToMatch("/**")
                 .build();
     }
+
+
 }
+

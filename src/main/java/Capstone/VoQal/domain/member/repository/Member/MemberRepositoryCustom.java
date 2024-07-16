@@ -11,4 +11,6 @@ public interface MemberRepositoryCustom {
     void updateRefreshToken(Long id, String refreshToken);
     void updateRole(Long id, Role role);
     List<Member> findAllByIdIn(List<Long> id);
+
+    String findRoleById(Long memberId);
 }

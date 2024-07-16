@@ -28,6 +28,17 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
         return Optional.ofNullable(foundMember);
     }
 
+    public String findRoleById(Long memberId) {
+        QMember member = QMember.member;
+
+        String role = String.valueOf(queryFactory.select(member.role)
+                .from(member)
+                .where(member.id.eq(memberId))
+                .fetchOne());
+
+        return role;
+    }
+
     @Override
     @Transactional
     public void updateRefreshToken(Long id, String refreshToken) {
