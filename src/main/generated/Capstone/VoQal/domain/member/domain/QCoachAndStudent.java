@@ -24,7 +24,7 @@ public class QCoachAndStudent extends EntityPathBase<CoachAndStudent> {
 
     public final Capstone.VoQal.global.domain.QBaseEntity _super = new Capstone.VoQal.global.domain.QBaseEntity(this);
 
-    public final QCoach coach;
+    public final QMember coachMember;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
@@ -39,7 +39,7 @@ public class QCoachAndStudent extends EntityPathBase<CoachAndStudent> {
 
     public final EnumPath<Capstone.VoQal.global.enums.RequestStatus> status = createEnum("status", Capstone.VoQal.global.enums.RequestStatus.class);
 
-    public final QStudent student;
+    public final QMember studentMember;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
@@ -62,8 +62,8 @@ public class QCoachAndStudent extends EntityPathBase<CoachAndStudent> {
 
     public QCoachAndStudent(Class<? extends CoachAndStudent> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.coach = inits.isInitialized("coach") ? new QCoach(forProperty("coach"), inits.get("coach")) : null;
-        this.student = inits.isInitialized("student") ? new QStudent(forProperty("student"), inits.get("student")) : null;
+        this.coachMember = inits.isInitialized("coachMember") ? new QMember(forProperty("coachMember"), inits.get("coachMember")) : null;
+        this.studentMember = inits.isInitialized("studentMember") ? new QMember(forProperty("studentMember"), inits.get("studentMember")) : null;
     }
 
 }

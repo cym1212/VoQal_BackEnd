@@ -1,4 +1,4 @@
-package Capstone.VoQal.domain.lesson.domain;
+package Capstone.VoQal.domain.lesson.note.domain;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QLessonNote extends EntityPathBase<LessonNote> {
 
-    private static final long serialVersionUID = -1616110942L;
+    private static final long serialVersionUID = -2016591670L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -37,9 +37,13 @@ public class QLessonNote extends EntityPathBase<LessonNote> {
     //inherited
     public final NumberPath<Long> id = _super.id;
 
+    public final DatePath<java.time.LocalDate> lessonDate = createDate("lessonDate", java.time.LocalDate.class);
+
     public final StringPath lessonNoteTitle = createString("lessonNoteTitle");
 
-    public final StringPath recordUrl = createString("recordUrl");
+    public final Capstone.VoQal.domain.lesson.record.domain.QRecord record;
+
+    public final StringPath singer = createString("singer");
 
     public final StringPath songTitle = createString("songTitle");
 
@@ -67,6 +71,7 @@ public class QLessonNote extends EntityPathBase<LessonNote> {
     public QLessonNote(Class<? extends LessonNote> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.coach = inits.isInitialized("coach") ? new Capstone.VoQal.domain.member.domain.QCoach(forProperty("coach"), inits.get("coach")) : null;
+        this.record = inits.isInitialized("record") ? new Capstone.VoQal.domain.lesson.record.domain.QRecord(forProperty("record"), inits.get("record")) : null;
         this.student = inits.isInitialized("student") ? new Capstone.VoQal.domain.member.domain.QStudent(forProperty("student"), inits.get("student")) : null;
     }
 

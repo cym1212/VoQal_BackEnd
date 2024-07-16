@@ -35,7 +35,7 @@ public class QStudent extends EntityPathBase<Student> {
     //inherited
     public final NumberPath<Long> id = _super.id;
 
-    public final Capstone.VoQal.domain.lesson.domain.QLessonNote lessonNote;
+    public final ListPath<Capstone.VoQal.domain.lesson.note.domain.LessonNote, Capstone.VoQal.domain.lesson.note.domain.QLessonNote> lessonNote = this.<Capstone.VoQal.domain.lesson.note.domain.LessonNote, Capstone.VoQal.domain.lesson.note.domain.QLessonNote>createList("lessonNote", Capstone.VoQal.domain.lesson.note.domain.LessonNote.class, Capstone.VoQal.domain.lesson.note.domain.QLessonNote.class, PathInits.DIRECT2);
 
     public final StringPath lessonSong = createString("lessonSong");
 
@@ -62,7 +62,6 @@ public class QStudent extends EntityPathBase<Student> {
 
     public QStudent(Class<? extends Student> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.lessonNote = inits.isInitialized("lessonNote") ? new Capstone.VoQal.domain.lesson.domain.QLessonNote(forProperty("lessonNote"), inits.get("lessonNote")) : null;
         this.member = inits.isInitialized("member") ? new QMember(forProperty("member"), inits.get("member")) : null;
     }
 

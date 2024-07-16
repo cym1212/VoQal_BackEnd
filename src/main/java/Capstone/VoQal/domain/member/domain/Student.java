@@ -1,8 +1,7 @@
 package Capstone.VoQal.domain.member.domain;
 
 
-import Capstone.VoQal.domain.lesson.domain.LessonNote;
-import Capstone.VoQal.domain.reservation.domain.Reservation;
+import Capstone.VoQal.domain.lesson.note.domain.LessonNote;
 import Capstone.VoQal.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -29,9 +29,9 @@ public class Student extends BaseEntity {
     private Member member;
 
 
-    @OneToOne( fetch = FetchType.LAZY)
+    @OneToMany( fetch = FetchType.LAZY)
     @JoinColumn(name = "note_id")
-    private LessonNote lessonNote;
+    private List<LessonNote> lessonNote;
 
     @OneToMany(mappedBy = "student", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<CoachAndStudent> coachAndStudents;

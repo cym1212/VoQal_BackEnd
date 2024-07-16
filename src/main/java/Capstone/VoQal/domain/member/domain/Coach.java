@@ -1,7 +1,7 @@
 package Capstone.VoQal.domain.member.domain;
 
 
-import Capstone.VoQal.domain.lesson.domain.LessonNote;
+import Capstone.VoQal.domain.lesson.note.domain.LessonNote;
 import Capstone.VoQal.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -29,8 +29,8 @@ public class Coach extends BaseEntity {
     @OneToMany(mappedBy = "coach", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<CoachAndStudent> coachAndStudents;
 
-    @OneToOne(mappedBy = "coach", fetch = FetchType.LAZY)
-    private LessonNote lessonNote;
+    @OneToMany(mappedBy = "coach", fetch = FetchType.LAZY)
+    private List<LessonNote> lessonNote;
 
 
     public void setMember(Member member) {
