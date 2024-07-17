@@ -9,7 +9,7 @@ public interface MemberService {
 
     Coach getCurrentCoach();
 
-    Student getCurrentStudent(Long studentId);
+    Student getStudent(Long studentId);
 
     Member getCurrentMember();
 

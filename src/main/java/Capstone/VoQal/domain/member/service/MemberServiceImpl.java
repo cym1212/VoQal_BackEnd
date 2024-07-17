@@ -30,9 +30,10 @@ public class MemberServiceImpl implements MemberService {
         }
         return coach;
     }
-    @Override
-    public Student getCurrentStudent(Long studentrId) {
-        Member studentMember = getCurrentMember();
+
+        @Override
+    public Student getStudent(Long studentrId) {
+        Member studentMember = getMemberById(studentrId);
         Student student = studentMember.getStudent();
         if (student == null) {
             throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
@@ -40,11 +41,13 @@ public class MemberServiceImpl implements MemberService {
         return student;
     }
 
+
     @Override
     public Member getCurrentMember() {
         long memberId = jwtTokenIdDecoder.getCurrentUserId();
         return getMemberById(memberId);
     }
+
     @Override
     public Long getCurrentMemberId() {
         return jwtTokenIdDecoder.getCurrentUserId();

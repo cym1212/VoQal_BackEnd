@@ -33,6 +33,7 @@ public class ProfileController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공"),
                     @ApiResponse(responseCode = "400", description = "잘못된 멤버ID입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "토큰 관련 오류.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             })
 
     public ResponseEntity<GeneratedTokenDTO> setRoleCoach() {
@@ -53,7 +54,11 @@ public class ProfileController {
     }
 
     @PatchMapping("/{id}/change-nickname")
-    @Operation(summary = " 닉네임 변경 ", description = "닉네임을 변경하는 로직")
+    @Operation(summary = " 닉네임 변경 ", description = "닉네임을 변경하는 로직",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공"),
+                    @ApiResponse(responseCode = "400", description = "이미 사용중인 닉네임입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            })
     public ResponseEntity<MessageDTO> updateNickname(@PathVariable("id") Long id, @RequestBody ChangeNicknameDTO changeNicknameDTO) {
         profileService.updateNickname(id, changeNicknameDTO);
         return ResponseEntity.status(HttpStatus.OK)
@@ -64,7 +69,7 @@ public class ProfileController {
 
     }
 
-
+    // 코드 확인 후 Operation 설정 해야됨
     @PostMapping("/request")
     @Operation(summary = " 담당 코치 신청 ", description = "코치에게 담당코치로 신청합니다")
     public ResponseEntity<MessageDTO> requestCoach(@RequestBody StudentRequestDTO studentRequestDTO) {
@@ -89,7 +94,12 @@ public class ProfileController {
     }
 
     @PostMapping("/approve")
-    @Operation(summary = " 코치에게 신청한 학생 승인 ", description = "코치에게 담당코치로 신청한 학생을 승인하여 담당 코치와 학생 관계가 됩니다.")
+    @Operation(summary = " 코치에게 신청한 학생 승인 ", description = "코치에게 담당코치로 신청한 학생을 승인하여 담당 코치와 학생 관계가 됩니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공"),
+                    @ApiResponse(responseCode = "400", description = "신청 상태가 아닙니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청값입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            })
     public ResponseEntity<MessageDTO> approveRequest(@RequestBody ApproveRequestDTO approveRequestDTO) {
         Long studentId = approveRequestDTO.getStudentId();
         profileService.approveRequest(studentId);
@@ -101,7 +111,12 @@ public class ProfileController {
     }
 
     @PostMapping("/reject")
-    @Operation(summary = " 코치에게 신청한 학생 거절 ", description = "코치에게 담당코치로 신청한 학생을 거절합니다.")
+    @Operation(summary = " 코치에게 신청한 학생 거절 ", description = "코치에게 담당코치로 신청한 학생을 거절합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공"),
+                    @ApiResponse(responseCode = "400", description = "신청 상태가 아닙니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청값입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            })
     public ResponseEntity<MessageDTO> rejectRequest(@RequestBody ApproveRequestDTO approveRequestDTO) {
         Long requestId = approveRequestDTO.getStudentId();
         profileService.rejectRequest(requestId);
@@ -138,10 +153,18 @@ public class ProfileController {
     }
 
     @GetMapping("/status/check")
-    @Operation(summary = "신청 정보 확인", description = "현재 학생의 신청상태를 확인합니다.")
-    public ResponseEntity<StudentStatusDTO> getStudentStatus() {
+    @Operation(summary = "신청 정보 확인", description = "현재 학생의 신청상태를 확인합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공"),
+                    @ApiResponse(responseCode = "400", description = "역할이 학생이 아닙니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            })
+    public ResponseEntity<ResponseWrapper<StudentStatusDTO>> getStudentStatus() {
         StudentStatusDTO studentStatusDTO = profileService.getStudentStatus();
-        return ResponseEntity.ok().body(studentStatusDTO);
+        ResponseWrapper<StudentStatusDTO> resultStatus = ResponseWrapper.<StudentStatusDTO>builder()
+                .status(HttpStatus.OK.value())
+                .data(studentStatusDTO)
+                .build();
+        return ResponseEntity.ok().body(resultStatus);
     }
 
 }
