@@ -32,7 +32,7 @@ public class MemberServiceImpl implements MemberService {
         return coachMember;
     }
 
-        @Override
+    @Override
     public Member getStudent(Long studentrId) {
         Member studentMember = getMemberById(studentrId);
 
@@ -71,5 +71,14 @@ public class MemberServiceImpl implements MemberService {
         if (student == null) {
             throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
         }
+    }
+
+    @Override
+    public Long getCoachIdByStudentId(Long studentId) {
+        Long coachIdByStudentId = coachAndStudentRepository.findCoachIdByStudentId(studentId);
+        if (coachIdByStudentId == null) {
+            throw new BusinessException(ErrorCode.COACH_NOT_FOUND);
+        }
+        return coachIdByStudentId;
     }
 }

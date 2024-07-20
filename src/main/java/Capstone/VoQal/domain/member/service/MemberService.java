@@ -20,4 +20,6 @@ public interface MemberService {
     CoachAndStudent getCoachAndStudent(Long coachId, Long studentId);
 
     void validateStudentEntity(Student student);
+
+    Long getCoachIdByStudentId(Long studentId);
 }

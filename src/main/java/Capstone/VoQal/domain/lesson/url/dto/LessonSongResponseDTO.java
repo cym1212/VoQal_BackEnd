@@ -1,2 +1,13 @@
-package Capstone.VoQal.domain.lesson.url.dto;public class LessonSongResponseDTO {
+package Capstone.VoQal.domain.lesson.url.dto;
+
+
+import lombok.*;
+
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class LessonSongResponseDTO {
+    private int status;
+    private String lessonSongUrl;
 }

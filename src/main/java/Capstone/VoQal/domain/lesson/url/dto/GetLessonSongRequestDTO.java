@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LessonSongRequestDTO {
+public class GetLessonSongRequestDTO {
 
     private Long studentId;
 

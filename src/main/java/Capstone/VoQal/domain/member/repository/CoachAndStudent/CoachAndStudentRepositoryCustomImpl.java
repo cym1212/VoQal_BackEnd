@@ -94,6 +94,7 @@ public class CoachAndStudentRepositoryCustomImpl implements CoachAndStudentRepos
         return Optional.ofNullable(status);
     }
 
+    @Transactional
     public Long findCoachIdByStudentId(Long studentId) {
         QCoachAndStudent coachAndStudent = QCoachAndStudent.coachAndStudent;
         QStudent student = QStudent.student;

@@ -95,7 +95,7 @@ public class NoteService {
     @Transactional
     public List<LessonNoteResponseDTO> getAllLessonNoteForStudent() {
         Long currentStudent = memberService.getCurrentMemberId();
-        Long coach = coachAndStudentRepository.findCoachIdByStudentId(currentStudent);
+        Long coach = memberService.getCoachIdByStudentId(currentStudent);
 
         List<LessonNote> lessonNoteList = lessonNoteRepository.findNonDeletedByCoachIdAndStudentId(coach,currentStudent);
         List<LessonNoteResponseDTO> responseDTOS = new ArrayList<>();

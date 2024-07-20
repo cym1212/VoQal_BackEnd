@@ -61,12 +61,5 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .execute();
     }
 
-    @Override
-    public List<Member> findAllByIdIn(List<Long> id) {
-        QMember member = QMember.member;
 
-        return queryFactory.selectFrom(member)
-                .where(member.id.in(id))
-                .fetch();
-    }
 }
