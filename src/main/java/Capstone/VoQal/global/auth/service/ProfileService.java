@@ -1,7 +1,6 @@
 package Capstone.VoQal.global.auth.service;
 
 import Capstone.VoQal.domain.member.service.MemberService;
-import Capstone.VoQal.domain.member.service.MemberServiceImpl;
 import Capstone.VoQal.domain.member.domain.Coach;
 import Capstone.VoQal.domain.member.domain.CoachAndStudent;
 import Capstone.VoQal.domain.member.domain.Member;
@@ -143,10 +142,12 @@ public class ProfileService {
     public void approveRequest(Long studentMemberId) {
         Member coach = memberService.getCurrentCoach();
         Member studentMember = memberService.getMemberById(studentMemberId);
-        Student student = studentMember.getStudent();
-        memberService.validateStudentEntity(student);
+//        Student student = studentMember.getStudent();
+//        memberService.validateStudentEntity(student);
+        System.out.println("studentMember = " + studentMember.getId());
+        System.out.println("coach = " + coach.getId());
 
-        CoachAndStudent coachAndStudent = memberService.getCoachAndStudent(coach.getId(), student.getMember().getId());
+        CoachAndStudent coachAndStudent = memberService.getCoachAndStudentWithSignUp(coach.getId(), studentMember.getId());
         if (coachAndStudent.getStatus() != RequestStatus.PENDING) {
             throw new BusinessException(ErrorCode.NOT_PENDING_STATUS);
         }
@@ -164,7 +165,7 @@ public class ProfileService {
         Student student = studentMember.getStudent();
         memberService.validateStudentEntity(student);
 
-        CoachAndStudent coachAndStudent = memberService.getCoachAndStudent(coach.getId(), student.getMember().getId());
+        CoachAndStudent coachAndStudent = memberService.getCoachAndStudentWithSignUp(coach.getId(), student.getMember().getId());
         if (coachAndStudent.getStatus() != RequestStatus.PENDING) {
             throw new BusinessException(ErrorCode.NOT_PENDING_STATUS);
         }
@@ -191,11 +192,10 @@ public class ProfileService {
         coachAndStudentRepository.deleteByCoachIdAndStudentId(coach.getId(), studentId);
         Member member = memberService.getMemberById(studentId);
         member.setRole(Role.GUEST);
-        MessageDTO messageDTO = MessageDTO.builder()
+        return MessageDTO.builder()
                 .status(200)
                 .message("성공적으로 삭제되었습니다")
                 .build();
-        return messageDTO;
     }
 
     @Transactional

@@ -22,4 +22,6 @@ public interface MemberService {
     void validateStudentEntity(Student student);
 
     Long getCoachIdByStudentId(Long studentId);
+
+    CoachAndStudent getCoachAndStudentWithSignUp(Long coachId, Long studentId);
 }

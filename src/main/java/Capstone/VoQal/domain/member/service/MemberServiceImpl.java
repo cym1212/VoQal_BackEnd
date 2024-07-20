@@ -65,6 +65,11 @@ public class MemberServiceImpl implements MemberService {
         return coachAndStudentRepository.findByCoachIdAndStudentId(coachId, studentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_REQUEST));
     }
+    @Override
+    public CoachAndStudent getCoachAndStudentWithSignUp(Long coachId, Long studentId) {
+        return coachAndStudentRepository.findByCoachIdAndStudentIdWithPendingStatus(coachId, studentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_REQUEST));
+    }
 
     @Override
     public void validateStudentEntity(Student student) {

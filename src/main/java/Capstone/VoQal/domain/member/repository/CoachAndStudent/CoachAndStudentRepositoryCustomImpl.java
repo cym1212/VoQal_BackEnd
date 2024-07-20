@@ -32,6 +32,18 @@ public class CoachAndStudentRepositoryCustomImpl implements CoachAndStudentRepos
 
         return Optional.ofNullable(foundCoachAndStudent);
     }
+    @Override
+    public Optional<CoachAndStudent> findByCoachIdAndStudentIdWithPendingStatus(Long coachId, Long studentId) {
+        QCoachAndStudent coachAndStudent = QCoachAndStudent.coachAndStudent;
+
+        CoachAndStudent foundCoachAndStudent = queryFactory.selectFrom(coachAndStudent)
+                .where(coachAndStudent.coach.member.id.eq(coachId)
+                        .and(coachAndStudent.student.member.id.eq(studentId))
+                        .and(coachAndStudent.status.eq(RequestStatus.PENDING)))
+                .fetchOne();
+
+        return Optional.ofNullable(foundCoachAndStudent);
+    }
 
     @Override
     public List<CoachAndStudent> findByStudentId(Long studentId) {

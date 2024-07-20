@@ -6,6 +6,7 @@ import Capstone.VoQal.domain.lesson.url.dto.SetLessonSongUrlDTO;
 import Capstone.VoQal.domain.lesson.url.dto.UpdateLessonSongUrlDTO;
 import Capstone.VoQal.domain.member.domain.CoachAndStudent;
 import Capstone.VoQal.domain.member.domain.Member;
+import Capstone.VoQal.domain.member.repository.CoachAndStudent.CoachAndStudentRepository;
 import Capstone.VoQal.domain.member.repository.Member.MemberRepository;
 import Capstone.VoQal.domain.member.service.MemberService;
 import Capstone.VoQal.global.enums.ErrorCode;
@@ -22,6 +23,7 @@ public class LessonSongUrlService {
 
     private final MemberService memberService;
     private final MemberRepository memberRepository;
+    private final CoachAndStudentRepository coachAndStudentRepository;
 
     @Transactional
     public LessonSongResponseDTO getLessonSongUrl(GetLessonSongRequestDTO getLessonSongRequestDTO) {
@@ -41,9 +43,7 @@ public class LessonSongUrlService {
 
         CoachAndStudent coachAndStudent = memberService.getCoachAndStudent(currentCoach.getId(), setLessonSongUrlDTO.getStudentId());
 
-        coachAndStudent.toBuilder()
-                .lessonSongUrl(setLessonSongUrlDTO.getLessonSongUrl())
-                .build();
+        coachAndStudent.updateLessonSongUrl(setLessonSongUrlDTO.getLessonSongUrl());
 
         return LessonSongResponseDTO.builder()
                 .status(200)

@@ -22,4 +22,6 @@ public interface CoachAndStudentRepositoryCustom {
     List<CoachAndStudent> findByStudentId(Long studentId);
 
     Long findCoachIdByStudentId(Long studentId);
+
+    Optional<CoachAndStudent> findByCoachIdAndStudentIdWithPendingStatus(Long coachId, Long studentId);
 }
