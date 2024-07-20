@@ -1,13 +1,11 @@
 package Capstone.VoQal.domain.lesson.note.service;
 
 import Capstone.VoQal.domain.lesson.note.domain.LessonNote;
-import Capstone.VoQal.domain.lesson.note.dto.LessonNoteRequestDTO;
-import Capstone.VoQal.domain.lesson.note.dto.LessonNoteResponseDTO;
-import Capstone.VoQal.domain.lesson.note.dto.LessonNoteResponseDetailsDTO;
-import Capstone.VoQal.domain.lesson.note.dto.UpdateLessonNoteDTO;
+import Capstone.VoQal.domain.lesson.note.dto.*;
 import Capstone.VoQal.domain.lesson.note.repository.LessonNoteRepository;
-import Capstone.VoQal.domain.member.domain.Coach;
-import Capstone.VoQal.domain.member.domain.Student;
+import Capstone.VoQal.domain.member.domain.CoachAndStudent;
+import Capstone.VoQal.domain.member.domain.Member;
+import Capstone.VoQal.domain.member.repository.CoachAndStudent.CoachAndStudentRepository;
 import Capstone.VoQal.domain.member.service.MemberService;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.error.exception.BusinessException;
@@ -25,13 +23,14 @@ import java.util.List;
 public class NoteService {
     private final MemberService memberService;
     private final LessonNoteRepository lessonNoteRepository;
-
+    private final CoachAndStudentRepository coachAndStudentRepository;
 
 
     @Transactional
-    public List<LessonNoteResponseDTO> getAllLessonNote() {
-        Coach currentCoach = memberService.getCurrentCoach();
-        List<LessonNote> lessonNoteList = lessonNoteRepository.findNonDeletedByCoachId(currentCoach.getId());
+    public List<LessonNoteResponseDTO> getAllLessonNoteByCoach(GetLessonNoteDTO getLessonNoteDTO) {
+        Member currentCoach = memberService.getCurrentCoach();
+
+        List<LessonNote> lessonNoteList = lessonNoteRepository.findNonDeletedByCoachIdAndStudentId(currentCoach.getId(),getLessonNoteDTO.getStudentId());
         List<LessonNoteResponseDTO> responseDTOS = new ArrayList<>();
         for (LessonNote lessonNote : lessonNoteList) {
             responseDTOS.add(new LessonNoteResponseDTO(
@@ -45,7 +44,7 @@ public class NoteService {
     }
 
     @Transactional
-    public LessonNoteResponseDetailsDTO getLessonNote(Long lessonNoteId) {
+    public LessonNoteResponseDetailsDTO getLessonNoteByCoach(Long lessonNoteId) {
 
         LessonNote lessonNote = lessonNoteRepository.findById(lessonNoteId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.LESSONNOTE_NOT_FOUND));
@@ -59,15 +58,11 @@ public class NoteService {
                 .build();
 
     }
-
     @Transactional
-    public void createLessonNote(LessonNoteRequestDTO lessonNoteRequestDTO) {
-        Coach currentCoach = memberService.getCurrentCoach();
-        Student assignedStudent = memberService.getCurrentStudent(lessonNoteRequestDTO.getStudentId());
-        System.out.println("assignedStudent = " + assignedStudent);
-        System.out.println("currentCoach = " + currentCoach);
+    public void createLessonNoteByCoach(LessonNoteRequestDTO lessonNoteRequestDTO) {
+        Member currentCoach = memberService.getCurrentCoach();
 
-        memberService.getCoachAndStudent(currentCoach.getId(), lessonNoteRequestDTO.getStudentId());
+        CoachAndStudent coachAndStudent = memberService.getCoachAndStudent(currentCoach.getId(), lessonNoteRequestDTO.getStudentId());
 
         LessonNote lessonNote = LessonNote.builder()
                 .lessonNoteTitle(lessonNoteRequestDTO.getLessonNoteTitle())
@@ -75,25 +70,46 @@ public class NoteService {
                 .contents(lessonNoteRequestDTO.getContents())
                 .singer(lessonNoteRequestDTO.getSinger())
                 .songTitle(lessonNoteRequestDTO.getSongTitle())
-                .coach(currentCoach)
-                .student(assignedStudent)
+                .coachAndStudent(coachAndStudent)
                 .build();
 
         lessonNoteRepository.save(lessonNote);
 
     }
 
+
     @Transactional
-    public void updateLessonNote(Long lessonNoteId, UpdateLessonNoteDTO updateLessonNoteDTO) {
+    public void updateLessonNoteByCoach(Long lessonNoteId, UpdateLessonNoteDTO updateLessonNoteDTO) {
         lessonNoteRepository.updateLessonNote(lessonNoteId, updateLessonNoteDTO);
 
     }
 
-    public void deleteLessonNote(Long lessonNoteId) {
+    @Transactional
+    public void deleteLessonNoteByCoach(Long lessonNoteId) {
 
         LessonNote lessonNote = lessonNoteRepository.findById(lessonNoteId)
                         .orElseThrow(() -> new BusinessException(ErrorCode.LESSONNOTE_NOT_FOUND));
         lessonNoteRepository.deleteLessonNote(lessonNote.getId());
     }
+
+    @Transactional
+    public List<LessonNoteResponseDTO> getAllLessonNoteForStudent() {
+        Long currentStudent = memberService.getCurrentMemberId();
+        Long coach = coachAndStudentRepository.findCoachIdByStudentId(currentStudent);
+
+        List<LessonNote> lessonNoteList = lessonNoteRepository.findNonDeletedByCoachIdAndStudentId(coach,currentStudent);
+        List<LessonNoteResponseDTO> responseDTOS = new ArrayList<>();
+        for (LessonNote lessonNote : lessonNoteList) {
+            responseDTOS.add(new LessonNoteResponseDTO(
+                    lessonNote.getId(),
+                    lessonNote.getLessonNoteTitle(),
+                    lessonNote.getSongTitle(),
+                    lessonNote.getSinger(),
+                    lessonNote.getLessonDate()));
+        }
+        return responseDTOS;
+    }
+
+
 
 }

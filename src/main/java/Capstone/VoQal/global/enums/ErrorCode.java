@@ -34,6 +34,7 @@ public enum ErrorCode {
     WRONG_STATUS(400,"M006", "이미 신청했거나 담당 코치가 정해진 상태입니다."),
     INVALID_MEMBER_ID(400,"M007"," 잘못된 멤버ID입니다."),
 
+
     // Token
     MISMATCH_REFRESH_TOKEN(401, "T001", "유효하지 않은 리프레시 토큰입니다"),
     NO_PERMISSION(401, "T002", "요청에 대한 권한이 없습니다"),
@@ -57,6 +58,7 @@ public enum ErrorCode {
     NOT_PENDING_STATUS(400,"L003","신청 상태가 아닙니다"),
     NOT_STUDENT(400,"L004", "역할이 학생이 아닙니다"),
     NOT_APPROVED_STATUS(400,"L005","담당 코치-학생 상태가 아닙니다"),
+    NOT_COACH(400, "L006", "코치가 아닙니다"),
 
     //Reservation
     RESERVATION_NOT_FOUND(400, "R001", "예약정보를 찾을 수 없습니다."),

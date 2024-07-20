@@ -7,9 +7,9 @@ import Capstone.VoQal.domain.member.domain.Student;
 
 public interface MemberService {
 
-    Coach getCurrentCoach();
+    Member getCurrentCoach();
 
-    Student getStudent(Long studentId);
+    Member getStudent(Long studentId);
 
     Member getCurrentMember();
 

@@ -80,10 +80,9 @@ public class ProfileService {
         memberRepository.save(member);
     }
 
-
-
+    @Transactional
     public List<RequestStudentListDTO> getRequestStudentList() {
-        Coach coach = memberService.getCurrentCoach();
+        Member coach = memberService.getCurrentCoach();
         List<CoachAndStudent> coachAndStudentList = coachAndStudentRepository.findByCoachIdAndStatus(coach.getId(), RequestStatus.PENDING);
         List<RequestStudentListDTO> requestStudentList = new ArrayList<>();
 
@@ -123,8 +122,7 @@ public class ProfileService {
             coach = coachRepository.save(coach);
         }
 
-
-        List<CoachAndStudent> existingRequests = coachAndStudentRepository.findByStudentId(student.getId());
+        List<CoachAndStudent> existingRequests = coachAndStudentRepository.findByStudentId(student.getMember().getId());
         boolean hasPendingOrApproved = existingRequests.stream()
                 .anyMatch(rel -> rel.getStatus() == RequestStatus.PENDING || rel.getStatus() == RequestStatus.APPROVED);
 
@@ -143,12 +141,12 @@ public class ProfileService {
 
     @Transactional
     public void approveRequest(Long studentMemberId) {
-        Coach coach = memberService.getCurrentCoach();
+        Member coach = memberService.getCurrentCoach();
         Member studentMember = memberService.getMemberById(studentMemberId);
         Student student = studentMember.getStudent();
         memberService.validateStudentEntity(student);
 
-        CoachAndStudent coachAndStudent = memberService.getCoachAndStudent(coach.getId(), student.getId());
+        CoachAndStudent coachAndStudent = memberService.getCoachAndStudent(coach.getId(), student.getMember().getId());
         if (coachAndStudent.getStatus() != RequestStatus.PENDING) {
             throw new BusinessException(ErrorCode.NOT_PENDING_STATUS);
         }
@@ -160,13 +158,13 @@ public class ProfileService {
     }
 
     @Transactional
-    public void rejectRequest(Long requestId) {
-        Coach coach = memberService.getCurrentCoach();
-        Member studentMember = memberService.getMemberById(requestId);
+    public void rejectRequest(Long studentMemberId) {
+        Member coach = memberService.getCurrentCoach();
+        Member studentMember = memberService.getMemberById(studentMemberId);
         Student student = studentMember.getStudent();
         memberService.validateStudentEntity(student);
 
-        CoachAndStudent coachAndStudent = memberService.getCoachAndStudent(coach.getId(), student.getId());
+        CoachAndStudent coachAndStudent = memberService.getCoachAndStudent(coach.getId(), student.getMember().getId());
         if (coachAndStudent.getStatus() != RequestStatus.PENDING) {
             throw new BusinessException(ErrorCode.NOT_PENDING_STATUS);
         }
@@ -180,8 +178,7 @@ public class ProfileService {
         List<CoachAndStudent> approveStudent = coachAndStudentRepository.findApprovedStudentsByCoachId(coach.getId());
         List<MemberListDTO> studentList = new ArrayList<>();
         for (CoachAndStudent coachAndStudent : approveStudent) {
-//            studentList.add(new MemberListDTO(coachAndStudent.getStudent().getMember().getId(),
-                    studentList.add(new MemberListDTO(coachAndStudent.getStudent().getId(),
+            studentList.add(new MemberListDTO(coachAndStudent.getStudent().getMember().getId(),
                     coachAndStudent.getStudent().getMember().getName()));
         }
         return studentList;

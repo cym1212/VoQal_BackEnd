@@ -34,7 +34,7 @@ public class ReservationService {
     private final EntityManager entityManager;
 
 
-    @Transactional(readOnly = true)
+    @Transactional
     public AvailableTimesDTO getAvailableTimes(GetAvailableTimeDTO getAvailableTimeDTO) {
         LocalDateTime startOfDay = getAvailableTimeDTO.getRequestDate().atStartOfDay();
         LocalDateTime endOfDay = getAvailableTimeDTO.getRequestDate().atTime(LocalTime.MAX);
@@ -105,6 +105,7 @@ public class ReservationService {
                 .roomId(reservation.getRoom().getId())
                 .startTime(reservation.getStartTime())
                 .endTime(reservation.getEndTime())
+                .status(200)
                 .build();
     }
 
@@ -131,6 +132,7 @@ public class ReservationService {
                 .roomId(reservation.getRoom().getId())
                 .startTime(reservation.getStartTime())
                 .endTime(reservation.getEndTime())
+                .status(200)
                 .build();
     }
 

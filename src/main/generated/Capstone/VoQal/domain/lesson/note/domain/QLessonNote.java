@@ -24,7 +24,7 @@ public class QLessonNote extends EntityPathBase<LessonNote> {
 
     public final Capstone.VoQal.global.domain.QBaseEntity _super = new Capstone.VoQal.global.domain.QBaseEntity(this);
 
-    public final Capstone.VoQal.domain.member.domain.QCoach coach;
+    public final Capstone.VoQal.domain.member.domain.QCoachAndStudent coachAndStudent;
 
     public final StringPath contents = createString("contents");
 
@@ -47,8 +47,6 @@ public class QLessonNote extends EntityPathBase<LessonNote> {
 
     public final StringPath songTitle = createString("songTitle");
 
-    public final Capstone.VoQal.domain.member.domain.QStudent student;
-
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
@@ -70,9 +68,8 @@ public class QLessonNote extends EntityPathBase<LessonNote> {
 
     public QLessonNote(Class<? extends LessonNote> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.coach = inits.isInitialized("coach") ? new Capstone.VoQal.domain.member.domain.QCoach(forProperty("coach"), inits.get("coach")) : null;
+        this.coachAndStudent = inits.isInitialized("coachAndStudent") ? new Capstone.VoQal.domain.member.domain.QCoachAndStudent(forProperty("coachAndStudent"), inits.get("coachAndStudent")) : null;
         this.record = inits.isInitialized("record") ? new Capstone.VoQal.domain.lesson.record.domain.QRecord(forProperty("record"), inits.get("record")) : null;
-        this.student = inits.isInitialized("student") ? new Capstone.VoQal.domain.member.domain.QStudent(forProperty("student"), inits.get("student")) : null;
     }
 
 }

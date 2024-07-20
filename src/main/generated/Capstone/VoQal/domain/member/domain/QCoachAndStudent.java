@@ -24,7 +24,7 @@ public class QCoachAndStudent extends EntityPathBase<CoachAndStudent> {
 
     public final Capstone.VoQal.global.domain.QBaseEntity _super = new Capstone.VoQal.global.domain.QBaseEntity(this);
 
-    public final QMember coachMember;
+    public final QCoach coach;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
@@ -35,11 +35,13 @@ public class QCoachAndStudent extends EntityPathBase<CoachAndStudent> {
     //inherited
     public final NumberPath<Long> id = _super.id;
 
+    public final SetPath<Capstone.VoQal.domain.lesson.note.domain.LessonNote, Capstone.VoQal.domain.lesson.note.domain.QLessonNote> lessonNotes = this.<Capstone.VoQal.domain.lesson.note.domain.LessonNote, Capstone.VoQal.domain.lesson.note.domain.QLessonNote>createSet("lessonNotes", Capstone.VoQal.domain.lesson.note.domain.LessonNote.class, Capstone.VoQal.domain.lesson.note.domain.QLessonNote.class, PathInits.DIRECT2);
+
     public final StringPath lessonSongUrl = createString("lessonSongUrl");
 
     public final EnumPath<Capstone.VoQal.global.enums.RequestStatus> status = createEnum("status", Capstone.VoQal.global.enums.RequestStatus.class);
 
-    public final QMember studentMember;
+    public final QStudent student;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
@@ -62,8 +64,8 @@ public class QCoachAndStudent extends EntityPathBase<CoachAndStudent> {
 
     public QCoachAndStudent(Class<? extends CoachAndStudent> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.coachMember = inits.isInitialized("coachMember") ? new QMember(forProperty("coachMember"), inits.get("coachMember")) : null;
-        this.studentMember = inits.isInitialized("studentMember") ? new QMember(forProperty("studentMember"), inits.get("studentMember")) : null;
+        this.coach = inits.isInitialized("coach") ? new QCoach(forProperty("coach"), inits.get("coach")) : null;
+        this.student = inits.isInitialized("student") ? new QStudent(forProperty("student"), inits.get("student")) : null;
     }
 
 }

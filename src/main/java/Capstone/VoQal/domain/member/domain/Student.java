@@ -21,17 +21,11 @@ import java.util.Set;
 @Table(name = "student")
 public class Student extends BaseEntity {
 
-    @Column
-    private String lessonSong;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", referencedColumnName = "id")
     private Member member;
 
-
-    @OneToMany( fetch = FetchType.LAZY)
-    @JoinColumn(name = "note_id")
-    private List<LessonNote> lessonNote;
 
     @OneToMany(mappedBy = "student", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<CoachAndStudent> coachAndStudents;

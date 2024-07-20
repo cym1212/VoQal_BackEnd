@@ -35,10 +35,6 @@ public class QStudent extends EntityPathBase<Student> {
     //inherited
     public final NumberPath<Long> id = _super.id;
 
-    public final ListPath<Capstone.VoQal.domain.lesson.note.domain.LessonNote, Capstone.VoQal.domain.lesson.note.domain.QLessonNote> lessonNote = this.<Capstone.VoQal.domain.lesson.note.domain.LessonNote, Capstone.VoQal.domain.lesson.note.domain.QLessonNote>createList("lessonNote", Capstone.VoQal.domain.lesson.note.domain.LessonNote.class, Capstone.VoQal.domain.lesson.note.domain.QLessonNote.class, PathInits.DIRECT2);
-
-    public final StringPath lessonSong = createString("lessonSong");
-
     public final QMember member;
 
     //inherited

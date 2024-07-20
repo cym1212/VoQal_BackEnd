@@ -2,6 +2,7 @@ package Capstone.VoQal.domain.lesson.note.domain;
 
 
 import Capstone.VoQal.domain.lesson.record.domain.Record;
+import Capstone.VoQal.domain.member.domain.CoachAndStudent;
 import Capstone.VoQal.domain.member.domain.Student;
 import Capstone.VoQal.domain.member.domain.Coach;
 import Capstone.VoQal.global.domain.BaseEntity;
@@ -38,12 +39,8 @@ public class LessonNote extends BaseEntity {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coach_id")
-    private Coach coach;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id")
-    private Student student;
+    @JoinColumn(name = "coach_and_student_id")
+    private CoachAndStudent coachAndStudent;
 
     @OneToOne(mappedBy = "lessonNote", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private Record record;

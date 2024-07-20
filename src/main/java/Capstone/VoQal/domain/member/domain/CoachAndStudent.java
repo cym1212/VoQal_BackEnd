@@ -1,9 +1,12 @@
 package Capstone.VoQal.domain.member.domain;
 
+import Capstone.VoQal.domain.lesson.note.domain.LessonNote;
 import Capstone.VoQal.global.domain.BaseEntity;
 import Capstone.VoQal.global.enums.RequestStatus;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Set;
 
 @Getter
 @NoArgsConstructor
@@ -15,28 +18,26 @@ public class CoachAndStudent extends BaseEntity {
 
 
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "coach_id", referencedColumnName = "id")
-//    private Coach coach;
-//
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "student_id", referencedColumnName = "id")
-//    private Student student;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coach_id", referencedColumnName = "member_id")
+    private Coach coach;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coach_member_id", referencedColumnName = "id")
-    private Member coachMember;
+    @JoinColumn(name = "student_id", referencedColumnName = "member_id")
+    private Student student;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_member_id", referencedColumnName = "id")
-    private Member studentMember;
 
     @Enumerated(EnumType.STRING)
     @Setter
     private RequestStatus status;
 
+    @OneToMany(mappedBy = "coachAndStudent", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<LessonNote> lessonNotes;
+
     private String lessonSongUrl;
 
-
+    public void updateLessonSongUrl(String updateLessonSongUrl) {
+        this.lessonSongUrl = updateLessonSongUrl;
+    }
 
 }

@@ -3,7 +3,12 @@ package Capstone.VoQal.domain.lesson.note.repository;
 import Capstone.VoQal.domain.lesson.note.domain.LessonNote;
 import Capstone.VoQal.domain.lesson.note.domain.QLessonNote;
 import Capstone.VoQal.domain.lesson.note.dto.UpdateLessonNoteDTO;
+import Capstone.VoQal.domain.member.domain.QCoach;
+import Capstone.VoQal.domain.member.domain.QCoachAndStudent;
+import Capstone.VoQal.domain.member.domain.QMember;
+import Capstone.VoQal.domain.member.domain.QStudent;
 import Capstone.VoQal.global.enums.ErrorCode;
+import Capstone.VoQal.global.enums.RequestStatus;
 import Capstone.VoQal.global.error.exception.BusinessException;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -27,14 +32,33 @@ public class LessonNoteRepositoryCustomImpl implements LessonNoteRepositoryCusto
 
     @Transactional
     @Override
-    public List<LessonNote> findNonDeletedByCoachId(Long coachId) {
+    public List<LessonNote> findNonDeletedByCoachIdAndStudentId(Long coachId, Long studentId) {
+        QLessonNote lessonNote = QLessonNote.lessonNote;
+        QCoachAndStudent coachAndStudent = QCoachAndStudent.coachAndStudent;
+        QCoach coach = QCoach.coach;
+        QStudent student = QStudent.student;
+        QMember coachMember = new QMember("coachMember");
+        QMember studentMember = new QMember("studentMember");
+
         return queryFactory.selectFrom(lessonNote)
+                .join(lessonNote.coachAndStudent, coachAndStudent).fetchJoin()
+                .join(coachAndStudent.coach, coach).fetchJoin()
+                .join(coach.member, coachMember).fetchJoin()
+                .join(coachAndStudent.student, student).fetchJoin()
+                .join(student.member, studentMember).fetchJoin()
                 .where(
-                        lessonNote.coach.id.eq(coachId)
+                        coachMember.id.eq(coachId)
+                                .and(studentMember.id.eq(studentId))
                                 .and(lessonNote.deletedAt.isNull())
+                                .and(coachAndStudent.status.eq(RequestStatus.APPROVED))
                 )
                 .fetch();
     }
+
+
+
+
+
 
     @Transactional
     @Override

@@ -27,7 +27,6 @@ public class ProfileController {
 
     private final ProfileService profileService;
 
-    //todo 스웨거 실패에 대한 응답값 설정하기
     @PostMapping("/role/coach")
     @Operation(summary = " 코치로 역할 설정 로직 ", description = "역할을 코치로 설정할 경우",
             responses = {
@@ -118,8 +117,8 @@ public class ProfileController {
                     @ApiResponse(responseCode = "400", description = "잘못된 요청값입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
             })
     public ResponseEntity<MessageDTO> rejectRequest(@RequestBody ApproveRequestDTO approveRequestDTO) {
-        Long requestId = approveRequestDTO.getStudentId();
-        profileService.rejectRequest(requestId);
+        Long studentId = approveRequestDTO.getStudentId();
+        profileService.rejectRequest(studentId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageDTO.builder()
                         .message("거절했습니다")

@@ -22,15 +22,12 @@ public class Coach extends BaseEntity {
 
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", referencedColumnName = "id")
     private Member member;
 
 
     @OneToMany(mappedBy = "coach", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<CoachAndStudent> coachAndStudents;
-
-    @OneToMany(mappedBy = "coach", fetch = FetchType.LAZY)
-    private List<LessonNote> lessonNote;
 
 
     public void setMember(Member member) {

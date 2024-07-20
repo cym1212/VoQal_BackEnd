@@ -19,34 +19,27 @@ public class CoachAndStudentRepositoryCustomImpl implements CoachAndStudentRepos
     public CoachAndStudentRepositoryCustomImpl(JPAQueryFactory queryFactory) {
         this.queryFactory = queryFactory;
     }
-    //todo
-    // 코드 분석하기
-    // 그럼 코드가 어떤식으로 바뀌는지 확인
-    // 관련 개념들 정리해서 블로그 쓰기
-
-//    @Override
-//    public Optional<Member> findMemberWithCoachAndStudentById(Long memberId) {
-//        QMember member = QMember.member;
-//
-//        Member foundMember = queryFactory.selectFrom(member)
-//                .leftJoin(member.coach).fetchJoin()
-//                .leftJoin(member.student).fetchJoin()
-//                .where(member.id.eq(memberId))
-//                .fetchOne();
-//
-//        return Optional.ofNullable(foundMember);
-//    }
 
     @Override
     public Optional<CoachAndStudent> findByCoachIdAndStudentId(Long coachId, Long studentId) {
         QCoachAndStudent coachAndStudent = QCoachAndStudent.coachAndStudent;
 
         CoachAndStudent foundCoachAndStudent = queryFactory.selectFrom(coachAndStudent)
-                .where(coachAndStudent.coach.id.eq(coachId)
-                        .and(coachAndStudent.student.id.eq(studentId)))
+                .where(coachAndStudent.coach.member.id.eq(coachId)
+                        .and(coachAndStudent.student.member.id.eq(studentId))
+                        .and(coachAndStudent.status.eq(RequestStatus.APPROVED)))
                 .fetchOne();
 
         return Optional.ofNullable(foundCoachAndStudent);
+    }
+
+    @Override
+    public List<CoachAndStudent> findByStudentId(Long studentId) {
+        QCoachAndStudent coachAndStudent = QCoachAndStudent.coachAndStudent;
+
+        return queryFactory.selectFrom(coachAndStudent)
+                .where(coachAndStudent.student.member.id.eq(studentId))
+                .fetch();
     }
 
     @Override
@@ -54,7 +47,7 @@ public class CoachAndStudentRepositoryCustomImpl implements CoachAndStudentRepos
         QCoachAndStudent coachAndStudent = QCoachAndStudent.coachAndStudent;
 
         return queryFactory.selectFrom(coachAndStudent)
-                .where(coachAndStudent.coach.id.eq(coachId)
+                .where(coachAndStudent.coach.member.id.eq(coachId)
                         .and(coachAndStudent.status.eq(status)))
                 .fetch();
     }
@@ -73,19 +66,15 @@ public class CoachAndStudentRepositoryCustomImpl implements CoachAndStudentRepos
                 .fetch();
     }
 
-
-
     @Override
     @Transactional
     public void deleteByCoachIdAndStudentId(Long coachId, Long studentId) {
-
         QCoachAndStudent coachAndStudent = QCoachAndStudent.coachAndStudent;
 
         long deletedCount = queryFactory.delete(coachAndStudent)
-                .where(coachAndStudent.coach.id.eq(coachId)
-                        .and(coachAndStudent.student.id.eq(studentId)))
+                .where(coachAndStudent.coach.member.id.eq(coachId)
+                        .and(coachAndStudent.student.member.id.eq(studentId)))
                 .execute();
-
     }
 
     @Transactional
@@ -105,5 +94,20 @@ public class CoachAndStudentRepositoryCustomImpl implements CoachAndStudentRepos
         return Optional.ofNullable(status);
     }
 
+    public Long findCoachIdByStudentId(Long studentId) {
+        QCoachAndStudent coachAndStudent = QCoachAndStudent.coachAndStudent;
+        QStudent student = QStudent.student;
+        QMember studentMember = new QMember("studentMember");
+
+        return queryFactory.select(coachAndStudent.coach.member.id)
+                .from(coachAndStudent)
+                .join(coachAndStudent.student, student)
+                .join(student.member, studentMember)
+                .where(
+                        studentMember.id.eq(studentId)
+                                .and(coachAndStudent.status.eq(RequestStatus.APPROVED))
+                )
+                .fetchOne();
+    }
 
 }

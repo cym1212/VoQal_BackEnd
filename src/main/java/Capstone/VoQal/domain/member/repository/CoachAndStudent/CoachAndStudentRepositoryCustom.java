@@ -18,4 +18,8 @@ public interface CoachAndStudentRepositoryCustom {
     void deleteByCoachIdAndStudentId(Long coachId, Long studentId);
 
     Optional<RequestStatus> getStudentStatusByMemberId(Long memberId);
+
+    List<CoachAndStudent> findByStudentId(Long studentId);
+
+    Long findCoachIdByStudentId(Long studentId);
 }

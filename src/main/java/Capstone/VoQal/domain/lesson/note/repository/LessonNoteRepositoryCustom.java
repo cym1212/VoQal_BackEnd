@@ -8,9 +8,11 @@ import java.util.List;
 
 public interface LessonNoteRepositoryCustom {
 
-    List<LessonNote> findNonDeletedByCoachId(Long memberId);
+    List<LessonNote> findNonDeletedByCoachIdAndStudentId(Long memberId,Long studentId);
 
     void deleteLessonNote(Long lessonNoteId);
 
     void updateLessonNote(Long lessonNoteId, UpdateLessonNoteDTO updateLessonNoteDTO);
+
+
 }

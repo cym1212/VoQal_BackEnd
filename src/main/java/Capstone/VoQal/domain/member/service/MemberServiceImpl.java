@@ -6,6 +6,7 @@ import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.domain.member.domain.Student;
 import Capstone.VoQal.domain.member.repository.CoachAndStudent.CoachAndStudentRepository;
 import Capstone.VoQal.domain.member.repository.Member.MemberRepository;
+import Capstone.VoQal.global.enums.Role;
 import Capstone.VoQal.global.jwt.service.JwtTokenIdDecoder;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.error.exception.BusinessException;
@@ -22,23 +23,23 @@ public class MemberServiceImpl implements MemberService {
     private final CoachAndStudentRepository coachAndStudentRepository;
 
     @Override
-    public Coach getCurrentCoach() {
+    public Member getCurrentCoach() {
         Member coachMember = getCurrentMember();
-        Coach coach = coachMember.getCoach();
-        if (coach == null) {
-            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
+
+        if (coachMember.getRole() != Role.COACH) {
+            throw new BusinessException(ErrorCode.NOT_COACH);
         }
-        return coach;
+        return coachMember;
     }
 
         @Override
-    public Student getStudent(Long studentrId) {
+    public Member getStudent(Long studentrId) {
         Member studentMember = getMemberById(studentrId);
-        Student student = studentMember.getStudent();
-        if (student == null) {
+
+        if (studentMember.getRole() != Role.STUDENT) {
             throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
         }
-        return student;
+        return studentMember;
     }
 
 
@@ -49,14 +50,14 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Long getCurrentMemberId() {
-        return jwtTokenIdDecoder.getCurrentUserId();
-    }
-
-    @Override
     public Member getMemberById(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_MEMBER_ID));
+    }
+
+    @Override
+    public Long getCurrentMemberId() {
+        return jwtTokenIdDecoder.getCurrentUserId();
     }
 
     @Override
