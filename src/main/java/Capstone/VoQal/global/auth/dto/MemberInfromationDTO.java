@@ -1,6 +1,7 @@
 package Capstone.VoQal.global.auth.dto;
 
 
+import Capstone.VoQal.global.enums.Role;
 import lombok.*;
 
 @Getter
@@ -13,6 +14,6 @@ public class MemberInfromationDTO {
     private String email;
     private String name;
     private String phoneNum;
-    private String role;
-    private int status;
+    private Role role;
+    private String lessonSongUrl;
 }

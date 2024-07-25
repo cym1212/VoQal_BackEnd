@@ -144,8 +144,8 @@ public class ProfileService {
         Member studentMember = memberService.getMemberById(studentMemberId);
 //        Student student = studentMember.getStudent();
 //        memberService.validateStudentEntity(student);
-        System.out.println("studentMember = " + studentMember.getId());
-        System.out.println("coach = " + coach.getId());
+//        System.out.println("studentMember = " + studentMember.getId());
+//        System.out.println("coach = " + coach.getId());
 
         CoachAndStudent coachAndStudent = memberService.getCoachAndStudentWithSignUp(coach.getId(), studentMember.getId());
         if (coachAndStudent.getStatus() != RequestStatus.PENDING) {
@@ -158,6 +158,7 @@ public class ProfileService {
         coachAndStudentRepository.save(coachAndStudent);
     }
 
+
     @Transactional
     public void rejectRequest(Long studentMemberId) {
         Member coach = memberService.getCurrentCoach();
@@ -169,9 +170,8 @@ public class ProfileService {
         if (coachAndStudent.getStatus() != RequestStatus.PENDING) {
             throw new BusinessException(ErrorCode.NOT_PENDING_STATUS);
         }
-        coachAndStudent.setStatus(RequestStatus.REJECTED);
 
-        coachAndStudentRepository.save(coachAndStudent);
+        coachAndStudentRepository.delete(coachAndStudent);
     }
 
     public List<MemberListDTO> getStudentList() {
@@ -201,20 +201,13 @@ public class ProfileService {
     @Transactional
     public MemberInfromationDTO getCurrentUserDetails() {
         Member memberInfo = memberService.getCurrentMember();
-        return MemberInfromationDTO.builder()
-                .nickName(memberInfo.getNickName())
-                .role(String.valueOf(memberInfo.getRole()))
-                .name(memberInfo.getName())
-                .phoneNum(memberInfo.getPhoneNumber())
-                .email(memberInfo.getEmail())
-                .status(200)
-                .build();
+        return memberRepository.getCurrentUserDetails(memberInfo.getId());
     }
 
     @Transactional
     public StudentStatusDTO getStudentStatus() {
-        Long memberId = memberService.getCurrentMemberId();
-        Optional<RequestStatus> studentStatus = coachAndStudentRepository.getStudentStatusByMemberId(memberId);
+        Member memberId = memberService.getCurrentMember();
+        Optional<RequestStatus> studentStatus = coachAndStudentRepository.getStudentStatusByMemberId(memberId.getId());
 
         if (studentStatus.isPresent()) {
             return StudentStatusDTO.builder()

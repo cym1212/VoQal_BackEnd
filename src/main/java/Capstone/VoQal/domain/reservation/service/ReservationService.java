@@ -77,7 +77,7 @@ public class ReservationService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_REQUEST));
 
         LocalDateTime startTime = reservationRequestDTO.getStartTime().truncatedTo(ChronoUnit.HOURS);
-        LocalDateTime endTime = reservationRequestDTO.getEndTime().truncatedTo(ChronoUnit.HOURS);
+        LocalDateTime endTime = reservationRequestDTO.getEndTime().truncatedTo(ChronoUnit.HOURS).minusMinutes(1);
 
         entityManager.lock(room, LockModeType.PESSIMISTIC_WRITE);
 
@@ -90,7 +90,6 @@ public class ReservationService {
             throw new BusinessException(ErrorCode.PAST_RESERVATION_NOT_ALLOWED);
         }
         chechAvailableReservationTime(startTime, endTime);
-
 
         Reservation reservation = Reservation.builder()
                 .room(room)
@@ -108,6 +107,7 @@ public class ReservationService {
                 .status(200)
                 .build();
     }
+
 
     @Transactional
     public List<ReservationResponseDetailsDTO> getAllReservation() {
@@ -153,7 +153,7 @@ public class ReservationService {
 
 
         LocalDateTime newStartTime = updateReservationDTO.getNewStartTime().truncatedTo(ChronoUnit.HOURS);
-        LocalDateTime newEndTime = updateReservationDTO.getNewEndTime().truncatedTo(ChronoUnit.HOURS);
+        LocalDateTime newEndTime = updateReservationDTO.getNewEndTime().truncatedTo(ChronoUnit.HOURS).minusMinutes(1);
 
         entityManager.lock(existingReservation, LockModeType.PESSIMISTIC_WRITE);
 

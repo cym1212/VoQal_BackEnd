@@ -68,7 +68,6 @@ public class ProfileController {
 
     }
 
-    // 코드 확인 후 Operation 설정 해야됨
     @PostMapping("/request")
     @Operation(summary = " 담당 코치 신청 ", description = "코치에게 담당코치로 신청합니다")
     public ResponseEntity<MessageDTO> requestCoach(@RequestBody StudentRequestDTO studentRequestDTO) {
@@ -146,9 +145,13 @@ public class ProfileController {
 
     @GetMapping("/user/details")
     @Operation(summary = "회원 정보 확인", description = "현재 로그인한 회원의 정보를 확인합니다.")
-    public ResponseEntity<MemberInfromationDTO> getCurrentUserDetails() {
+    public ResponseEntity<ResponseWrapper<MemberInfromationDTO>> getCurrentUserDetails() {
         MemberInfromationDTO infromationDTO = profileService.getCurrentUserDetails();
-        return ResponseEntity.ok().body(infromationDTO);
+        ResponseWrapper<MemberInfromationDTO> resultData = ResponseWrapper.<MemberInfromationDTO>builder()
+                .status(HttpStatus.OK.value())
+                .data(infromationDTO)
+                .build();
+        return ResponseEntity.ok().body(resultData);
     }
 
     @GetMapping("/status/check")
