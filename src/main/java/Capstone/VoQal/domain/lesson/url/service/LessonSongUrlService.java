@@ -23,7 +23,6 @@ public class LessonSongUrlService {
 
     private final MemberService memberService;
     private final MemberRepository memberRepository;
-    private final CoachAndStudentRepository coachAndStudentRepository;
 
     @Transactional
     public LessonSongResponseDTO getLessonSongUrl(GetLessonSongRequestDTO getLessonSongRequestDTO) {
@@ -33,6 +32,8 @@ public class LessonSongUrlService {
         return LessonSongResponseDTO.builder()
                 .status(200)
                 .lessonSongUrl(coachAndStudent.getLessonSongUrl())
+                .singer(coachAndStudent.getSinger())
+                .songTitle(coachAndStudent.getSongTitle())
                 .build();
     }
 
@@ -43,11 +44,13 @@ public class LessonSongUrlService {
 
         CoachAndStudent coachAndStudent = memberService.getCoachAndStudent(currentCoach.getId(), setLessonSongUrlDTO.getStudentId());
 
-        coachAndStudent.updateLessonSongUrl(setLessonSongUrlDTO.getLessonSongUrl());
+        coachAndStudent.updateLessonSongUrl(setLessonSongUrlDTO.getLessonSongUrl(), setLessonSongUrlDTO.getSinger(), setLessonSongUrlDTO.getSongTitle());
 
         return LessonSongResponseDTO.builder()
                 .status(200)
                 .lessonSongUrl(coachAndStudent.getLessonSongUrl())
+                .singer(coachAndStudent.getSinger())
+                .songTitle(coachAndStudent.getSongTitle())
                 .build();
     }
 
@@ -57,7 +60,7 @@ public class LessonSongUrlService {
 
         CoachAndStudent coachAndStudent = memberService.getCoachAndStudent(currentCoach.getId(), studentId);
 
-        coachAndStudent.updateLessonSongUrl(updateLessonSongUrlDTO.getLessonSongUrl());
+        coachAndStudent.updateLessonSongUrl(updateLessonSongUrlDTO.getLessonSongUrl(), updateLessonSongUrlDTO.getSinger(), updateLessonSongUrlDTO.getSongTitle());
         return LessonSongResponseDTO.builder()
                 .status(200)
                 .lessonSongUrl(coachAndStudent.getLessonSongUrl())
@@ -69,23 +72,25 @@ public class LessonSongUrlService {
         Member currentCoach = memberService.getCurrentCoach();
 
         CoachAndStudent coachAndStudent = memberService.getCoachAndStudent(currentCoach.getId(), studentId);
-        coachAndStudent.updateLessonSongUrl(null);
+        coachAndStudent.updateLessonSongUrl(null, null, null);
     }
 
     @Transactional
     public LessonSongResponseDTO getLessonSongUrlForStudent() {
-        Long currentMemberId = memberService.getCurrentMemberId();
+        Member currentMemberId = memberService.getCurrentMember();
 
-        Optional<Member> memberId = memberRepository.findByMemberId(currentMemberId);
+        Optional<Member> memberId = memberRepository.findByMemberId(currentMemberId.getId());
         if (memberId.isEmpty()) {
             throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
         }
 
-        Long caochId = memberService.getCoachIdByStudentId(currentMemberId);
+        Long caochId = memberService.getCoachIdByStudentId(currentMemberId.getId());
 
-        CoachAndStudent coachAndStudent = memberService.getCoachAndStudent(caochId, currentMemberId);
+        CoachAndStudent coachAndStudent = memberService.getCoachAndStudent(caochId, currentMemberId.getId());
         return LessonSongResponseDTO.builder()
                 .lessonSongUrl(coachAndStudent.getLessonSongUrl())
+                .songTitle(coachAndStudent.getSongTitle())
+                .singer(coachAndStudent.getSinger())
                 .status(200)
                 .build();
     }

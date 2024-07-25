@@ -55,10 +55,6 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_MEMBER_ID));
     }
 
-    @Override
-    public Long getCurrentMemberId() {
-        return jwtTokenIdDecoder.getCurrentUserId();
-    }
 
     @Override
     public CoachAndStudent getCoachAndStudent(Long coachId, Long studentId) {

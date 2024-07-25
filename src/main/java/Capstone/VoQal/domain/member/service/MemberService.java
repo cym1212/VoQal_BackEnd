@@ -13,7 +13,6 @@ public interface MemberService {
 
     Member getCurrentMember();
 
-    Long getCurrentMemberId();
 
     Member getMemberById(Long memberId);
 

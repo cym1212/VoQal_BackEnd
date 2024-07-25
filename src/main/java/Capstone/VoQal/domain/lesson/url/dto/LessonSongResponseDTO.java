@@ -10,4 +10,7 @@ import lombok.*;
 public class LessonSongResponseDTO {
     private int status;
     private String lessonSongUrl;
+    private String singer;
+    private String songTitle;
+
 }

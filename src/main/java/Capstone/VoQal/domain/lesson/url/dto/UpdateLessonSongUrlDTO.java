@@ -12,4 +12,6 @@ import lombok.NoArgsConstructor;
 public class UpdateLessonSongUrlDTO {
 
         private String lessonSongUrl;
+        private String singer;
+        private String songTitle;
 }

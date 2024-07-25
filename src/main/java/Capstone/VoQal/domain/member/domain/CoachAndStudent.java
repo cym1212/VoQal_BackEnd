@@ -36,8 +36,14 @@ public class CoachAndStudent extends BaseEntity {
 
     private String lessonSongUrl;
 
-    public void updateLessonSongUrl(String updateLessonSongUrl) {
+    private String singer;
+
+    private String songTitle;
+
+    public void updateLessonSongUrl(String updateLessonSongUrl, String updateSigner, String updateSongTitle) {
         this.lessonSongUrl = updateLessonSongUrl;
+        this.singer = updateSigner;
+        this.songTitle = updateSongTitle;
     }
 
 }

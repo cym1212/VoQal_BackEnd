@@ -13,4 +13,6 @@ import lombok.NoArgsConstructor;
 public class SetLessonSongUrlDTO {
     private Long studentId;
     private String lessonSongUrl;
+    private String singer;
+    private String songTitle;
 }
