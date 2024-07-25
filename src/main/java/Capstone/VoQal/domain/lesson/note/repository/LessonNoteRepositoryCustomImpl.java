@@ -32,7 +32,7 @@ public class LessonNoteRepositoryCustomImpl implements LessonNoteRepositoryCusto
 
     @Transactional
     @Override
-    public List<LessonNote> findNonDeletedByCoachIdAndStudentId(Long coachId, Long studentId) {
+    public List<LessonNote> findNonDeletedNoteByCoachIdAndStudentId(Long coachId, Long studentId) {
         QLessonNote lessonNote = QLessonNote.lessonNote;
         QCoachAndStudent coachAndStudent = QCoachAndStudent.coachAndStudent;
         QCoach coach = QCoach.coach;
@@ -55,11 +55,6 @@ public class LessonNoteRepositoryCustomImpl implements LessonNoteRepositoryCusto
                 .fetch();
     }
 
-
-
-
-
-
     @Transactional
     @Override
     public void deleteLessonNote(Long lessonNoteId) {
@@ -72,6 +67,8 @@ public class LessonNoteRepositoryCustomImpl implements LessonNoteRepositoryCusto
             throw new BusinessException(ErrorCode.LESSONNOTE_NOT_FOUND_OR_ALREADY_DELETED);
         }
     }
+
+
     @Transactional
     @Override
     public void updateLessonNote(Long lessonNoteId, UpdateLessonNoteDTO updateLessonNoteDTO) {

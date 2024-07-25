@@ -39,6 +39,10 @@ public class QCoachAndStudent extends EntityPathBase<CoachAndStudent> {
 
     public final StringPath lessonSongUrl = createString("lessonSongUrl");
 
+    public final StringPath singer = createString("singer");
+
+    public final StringPath songTitle = createString("songTitle");
+
     public final EnumPath<Capstone.VoQal.global.enums.RequestStatus> status = createEnum("status", Capstone.VoQal.global.enums.RequestStatus.class);
 
     public final QStudent student;

@@ -41,7 +41,7 @@ public class QLessonNote extends EntityPathBase<LessonNote> {
 
     public final StringPath lessonNoteTitle = createString("lessonNoteTitle");
 
-    public final Capstone.VoQal.domain.lesson.record.domain.QRecord record;
+    public final Capstone.VoQal.domain.lesson.record.domain.QLessonRecord lessonRecord;
 
     public final StringPath singer = createString("singer");
 
@@ -69,7 +69,7 @@ public class QLessonNote extends EntityPathBase<LessonNote> {
     public QLessonNote(Class<? extends LessonNote> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.coachAndStudent = inits.isInitialized("coachAndStudent") ? new Capstone.VoQal.domain.member.domain.QCoachAndStudent(forProperty("coachAndStudent"), inits.get("coachAndStudent")) : null;
-        this.record = inits.isInitialized("record") ? new Capstone.VoQal.domain.lesson.record.domain.QRecord(forProperty("record"), inits.get("record")) : null;
+        this.lessonRecord = inits.isInitialized("lessonRecord") ? new Capstone.VoQal.domain.lesson.record.domain.QLessonRecord(forProperty("lessonRecord"), inits.get("lessonRecord")) : null;
     }
 
 }

@@ -26,11 +26,12 @@ public class NoteService {
     private final CoachAndStudentRepository coachAndStudentRepository;
 
 
+    //coach
     @Transactional
     public List<LessonNoteResponseDTO> getAllLessonNoteByCoach(GetLessonNoteDTO getLessonNoteDTO) {
         Member currentCoach = memberService.getCurrentCoach();
 
-        List<LessonNote> lessonNoteList = lessonNoteRepository.findNonDeletedByCoachIdAndStudentId(currentCoach.getId(),getLessonNoteDTO.getStudentId());
+        List<LessonNote> lessonNoteList = lessonNoteRepository.findNonDeletedNoteByCoachIdAndStudentId(currentCoach.getId(),getLessonNoteDTO.getStudentId());
         List<LessonNoteResponseDTO> responseDTOS = new ArrayList<>();
         for (LessonNote lessonNote : lessonNoteList) {
             responseDTOS.add(new LessonNoteResponseDTO(
@@ -43,8 +44,9 @@ public class NoteService {
         return responseDTOS;
     }
 
+    //coach, student
     @Transactional
-    public LessonNoteResponseDetailsDTO getLessonNoteByCoach(Long lessonNoteId) {
+    public LessonNoteResponseDetailsDTO getLessonNoteDetails(Long lessonNoteId) {
 
         LessonNote lessonNote = lessonNoteRepository.findById(lessonNoteId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.LESSONNOTE_NOT_FOUND));
@@ -58,6 +60,7 @@ public class NoteService {
                 .build();
 
     }
+    //coach
     @Transactional
     public void createLessonNoteByCoach(LessonNoteRequestDTO lessonNoteRequestDTO) {
         Member currentCoach = memberService.getCurrentCoach();
@@ -78,26 +81,29 @@ public class NoteService {
     }
 
 
+    //coach
     @Transactional
     public void updateLessonNoteByCoach(Long lessonNoteId, UpdateLessonNoteDTO updateLessonNoteDTO) {
         lessonNoteRepository.updateLessonNote(lessonNoteId, updateLessonNoteDTO);
 
     }
 
+    //coach, student
     @Transactional
-    public void deleteLessonNoteByCoach(Long lessonNoteId) {
+    public void deleteLessonNote(Long lessonNoteId) {
 
         LessonNote lessonNote = lessonNoteRepository.findById(lessonNoteId)
                         .orElseThrow(() -> new BusinessException(ErrorCode.LESSONNOTE_NOT_FOUND));
         lessonNoteRepository.deleteLessonNote(lessonNote.getId());
     }
 
+    //student
     @Transactional
     public List<LessonNoteResponseDTO> getAllLessonNoteForStudent() {
-        Long currentStudent = memberService.getCurrentMemberId();
-        Long coach = memberService.getCoachIdByStudentId(currentStudent);
+        Member currentStudent = memberService.getCurrentMember();
+        Long coach = memberService.getCoachIdByStudentId(currentStudent.getId());
 
-        List<LessonNote> lessonNoteList = lessonNoteRepository.findNonDeletedByCoachIdAndStudentId(coach,currentStudent);
+        List<LessonNote> lessonNoteList = lessonNoteRepository.findNonDeletedNoteByCoachIdAndStudentId(coach,currentStudent.getId());
         List<LessonNoteResponseDTO> responseDTOS = new ArrayList<>();
         for (LessonNote lessonNote : lessonNoteList) {
             responseDTOS.add(new LessonNoteResponseDTO(

@@ -1,10 +1,8 @@
 package Capstone.VoQal.domain.lesson.note.domain;
 
 
-import Capstone.VoQal.domain.lesson.record.domain.Record;
+import Capstone.VoQal.domain.lesson.record.domain.LessonRecord;
 import Capstone.VoQal.domain.member.domain.CoachAndStudent;
-import Capstone.VoQal.domain.member.domain.Student;
-import Capstone.VoQal.domain.member.domain.Coach;
 import Capstone.VoQal.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -43,5 +41,5 @@ public class LessonNote extends BaseEntity {
     private CoachAndStudent coachAndStudent;
 
     @OneToOne(mappedBy = "lessonNote", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    private Record record;
+    private LessonRecord lessonRecord;
 }
