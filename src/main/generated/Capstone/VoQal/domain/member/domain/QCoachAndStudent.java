@@ -37,6 +37,8 @@ public class QCoachAndStudent extends EntityPathBase<CoachAndStudent> {
 
     public final SetPath<Capstone.VoQal.domain.lesson.note.domain.LessonNote, Capstone.VoQal.domain.lesson.note.domain.QLessonNote> lessonNotes = this.<Capstone.VoQal.domain.lesson.note.domain.LessonNote, Capstone.VoQal.domain.lesson.note.domain.QLessonNote>createSet("lessonNotes", Capstone.VoQal.domain.lesson.note.domain.LessonNote.class, Capstone.VoQal.domain.lesson.note.domain.QLessonNote.class, PathInits.DIRECT2);
 
+    public final SetPath<Capstone.VoQal.domain.lesson.record.domain.LessonRecord, Capstone.VoQal.domain.lesson.record.domain.QLessonRecord> lessonRecords = this.<Capstone.VoQal.domain.lesson.record.domain.LessonRecord, Capstone.VoQal.domain.lesson.record.domain.QLessonRecord>createSet("lessonRecords", Capstone.VoQal.domain.lesson.record.domain.LessonRecord.class, Capstone.VoQal.domain.lesson.record.domain.QLessonRecord.class, PathInits.DIRECT2);
+
     public final StringPath lessonSongUrl = createString("lessonSongUrl");
 
     public final StringPath singer = createString("singer");

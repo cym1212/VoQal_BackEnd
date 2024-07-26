@@ -3,6 +3,11 @@ spring:
     import:
       - classpath:application-secret.yml
       - classpath:application-database.yml
+      - classpath:application-s3.yml
+  servlet:
+    multipart:
+      maxFileSize: 20MB
+      maxRequestSize: 100MB
 springdoc:
   swagger-ui:
     path: /swagger

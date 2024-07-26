@@ -11,18 +11,20 @@ import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
- * QRecord is a Querydsl query type for Record
+ * QLessonRecord is a Querydsl query type for LessonRecord
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QRecord extends EntityPathBase<Record> {
+public class QLessonRecord extends EntityPathBase<LessonRecord> {
 
-    private static final long serialVersionUID = -1136071312L;
+    private static final long serialVersionUID = -2107496056L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
-    public static final QRecord record = new QRecord("record");
+    public static final QLessonRecord lessonRecord = new QLessonRecord("lessonRecord");
 
     public final Capstone.VoQal.global.domain.QBaseEntity _super = new Capstone.VoQal.global.domain.QBaseEntity(this);
+
+    public final Capstone.VoQal.domain.member.domain.QCoachAndStudent coachAndStudent;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
@@ -35,29 +37,34 @@ public class QRecord extends EntityPathBase<Record> {
 
     public final Capstone.VoQal.domain.lesson.note.domain.QLessonNote lessonNote;
 
+    public final DatePath<java.time.LocalDate> recordDate = createDate("recordDate", java.time.LocalDate.class);
+
+    public final StringPath recordTitle = createString("recordTitle");
+
     public final StringPath recordUrl = createString("recordUrl");
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
-    public QRecord(String variable) {
-        this(Record.class, forVariable(variable), INITS);
+    public QLessonRecord(String variable) {
+        this(LessonRecord.class, forVariable(variable), INITS);
     }
 
-    public QRecord(Path<? extends Record> path) {
+    public QLessonRecord(Path<? extends LessonRecord> path) {
         this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
-    public QRecord(PathMetadata metadata) {
+    public QLessonRecord(PathMetadata metadata) {
         this(metadata, PathInits.getFor(metadata, INITS));
     }
 
-    public QRecord(PathMetadata metadata, PathInits inits) {
-        this(Record.class, metadata, inits);
+    public QLessonRecord(PathMetadata metadata, PathInits inits) {
+        this(LessonRecord.class, metadata, inits);
     }
 
-    public QRecord(Class<? extends Record> type, PathMetadata metadata, PathInits inits) {
+    public QLessonRecord(Class<? extends LessonRecord> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.coachAndStudent = inits.isInitialized("coachAndStudent") ? new Capstone.VoQal.domain.member.domain.QCoachAndStudent(forProperty("coachAndStudent"), inits.get("coachAndStudent")) : null;
         this.lessonNote = inits.isInitialized("lessonNote") ? new Capstone.VoQal.domain.lesson.note.domain.QLessonNote(forProperty("lessonNote"), inits.get("lessonNote")) : null;
     }
 

@@ -38,6 +38,7 @@ out/
 
 application-secret.yml
 application-database.yml
+application-s3.yml
 
 .DS_Store
 

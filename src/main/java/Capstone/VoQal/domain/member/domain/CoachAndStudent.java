@@ -1,6 +1,7 @@
 package Capstone.VoQal.domain.member.domain;
 
 import Capstone.VoQal.domain.lesson.note.domain.LessonNote;
+import Capstone.VoQal.domain.lesson.record.domain.LessonRecord;
 import Capstone.VoQal.global.domain.BaseEntity;
 import Capstone.VoQal.global.enums.RequestStatus;
 import jakarta.persistence.*;
@@ -33,6 +34,10 @@ public class CoachAndStudent extends BaseEntity {
 
     @OneToMany(mappedBy = "coachAndStudent", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<LessonNote> lessonNotes;
+
+    @OneToMany(mappedBy = "coachAndStudent", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<LessonRecord> lessonRecords;
+
 
     private String lessonSongUrl;
 
