@@ -49,9 +49,8 @@ public class RecordRepositoryCustomImpl implements RecordRepositoryCustom {
                 )
                 .fetch();
     }
-
     @Override
-    public void updateLessonRecord(Long recordId, LocalDate recordDate, String recordTitle, String recordUrl) {
+    public LessonRecord updateLessonRecord(Long recordId, LocalDate recordDate, String recordTitle, String recordUrl) {
         QLessonRecord lessonRecord = QLessonRecord.lessonRecord;
 
         long affectedRows = queryFactory.update(lessonRecord)
@@ -64,6 +63,10 @@ public class RecordRepositoryCustomImpl implements RecordRepositoryCustom {
         if (affectedRows == 0) {
             throw new BusinessException(ErrorCode.RECORD_NOT_FOUND);
         }
+
+        return queryFactory.selectFrom(lessonRecord)
+                .where(lessonRecord.id.eq(recordId))
+                .fetchOne();
     }
 
     @Override

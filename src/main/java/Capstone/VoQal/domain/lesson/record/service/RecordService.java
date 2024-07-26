@@ -90,12 +90,12 @@ public class RecordService {
 
         String uploadFile = s3UploadService.uploadFile(multipartFile, UploadUtils.LESSON_NOTE_RECORD, currentCoach.getId());
 
-        recordRepository.updateLessonRecord(recordId, updateUploadRequestDTO.getUpdateRecordDate(), updateUploadRequestDTO.getUpdateRecordTitle(), uploadFile);
+        LessonRecord updatedRecord = recordRepository.updateLessonRecord(recordId, updateUploadRequestDTO.getUpdateRecordDate(), updateUploadRequestDTO.getUpdateRecordTitle(), uploadFile);
 
         return UploadResponseDTO.builder()
-                .s3Url(uploadFile)
-                .recordDate(updateUploadRequestDTO.getUpdateRecordDate())
-                .recordTitle(updateUploadRequestDTO.getUpdateRecordTitle())
+                .s3Url(updatedRecord.getRecordUrl())
+                .recordDate(updatedRecord.getRecordDate())
+                .recordTitle(updatedRecord.getRecordTitle())
                 .build();
     }
 
