@@ -4,6 +4,7 @@ import Capstone.VoQal.domain.member.domain.*;
 import Capstone.VoQal.global.enums.RequestStatus;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
@@ -11,14 +12,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Slf4j
+@RequiredArgsConstructor
 public class CoachAndStudentRepositoryCustomImpl implements CoachAndStudentRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
-    public CoachAndStudentRepositoryCustomImpl(JPAQueryFactory queryFactory) {
-        this.queryFactory = queryFactory;
-    }
 
     @Override
     public Optional<CoachAndStudent> findByCoachIdAndStudentId(Long coachId, Long studentId) {

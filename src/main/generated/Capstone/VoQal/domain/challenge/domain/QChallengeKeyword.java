@@ -33,8 +33,14 @@ public class QChallengeKeyword extends EntityPathBase<ChallengeKeyword> {
     //inherited
     public final NumberPath<Long> id = _super.id;
 
+    public final StringPath keyword = createString("keyword");
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
+
+    public final BooleanPath used = createBoolean("used");
+
+    public final DatePath<java.time.LocalDate> usedDate = createDate("usedDate", java.time.LocalDate.class);
 
     public QChallengeKeyword(String variable) {
         super(ChallengeKeyword.class, forVariable(variable));

@@ -24,7 +24,7 @@ public class QMember extends EntityPathBase<Member> {
 
     public final Capstone.VoQal.global.domain.QBaseEntity _super = new Capstone.VoQal.global.domain.QBaseEntity(this);
 
-    public final Capstone.VoQal.domain.challenge.domain.QChallengePost challengePost;
+    public final SetPath<Capstone.VoQal.domain.challenge.domain.ChallengePost, Capstone.VoQal.domain.challenge.domain.QChallengePost> challengePost = this.<Capstone.VoQal.domain.challenge.domain.ChallengePost, Capstone.VoQal.domain.challenge.domain.QChallengePost>createSet("challengePost", Capstone.VoQal.domain.challenge.domain.ChallengePost.class, Capstone.VoQal.domain.challenge.domain.QChallengePost.class, PathInits.DIRECT2);
 
     public final QCoach coach;
 
@@ -80,7 +80,6 @@ public class QMember extends EntityPathBase<Member> {
 
     public QMember(Class<? extends Member> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.challengePost = inits.isInitialized("challengePost") ? new Capstone.VoQal.domain.challenge.domain.QChallengePost(forProperty("challengePost"), inits.get("challengePost")) : null;
         this.coach = inits.isInitialized("coach") ? new QCoach(forProperty("coach"), inits.get("coach")) : null;
         this.student = inits.isInitialized("student") ? new QStudent(forProperty("student"), inits.get("student")) : null;
     }

@@ -25,6 +25,7 @@ public enum ErrorCode {
     MISSING_SERVLET_REQUEST_PART(400, "C017", "MultipartFile의 필수 파라미터가 존재하지 않습니다"),
     INVALID_REQUEST(400,"C018", "잘못된 요청값입니다."),
     MULTIPART_FILE_NOT_FOUND(400,"C019","MultipartFile을 찾을 수 없습니다."),
+    REQUEST_FAILED(400,"C20","요청에 실패했습니다 다시 시도해주세요"),
 
 
     // Member
@@ -68,16 +69,17 @@ public enum ErrorCode {
     NOT_AVAILABLE_RESERVATION_TIME(400,"R004","예약 가능 시간이 아닙니다."),
     RESERVATION_NOT_FOUND_OR_ALREADY_DELETED(400, "R005", "예약정보를 찾을 수 없거나 이미 삭제된 예약입니다."),
 
-
     //Lesson
     LESSONNOTE_NOT_FOUND(400,"LN001","레슨 노트를 찾을 수 없습니다"),
     LESSONNOTE_NOT_FOUND_OR_ALREADY_DELETED(400,"LN002","레슨노트를 찾을 수 없거나 이미 삭제된 노트입니다."),
     LESSONNOTE_NOT_UPDATED(400,"LN003","레슨 노트가 변경되지 않았습니다"),
 
     //Record
-    RECORD_NOT_FOUND(400,"RD001","녹음 파일을 찾을 수 없습니다");
+    RECORD_NOT_FOUND(400,"RD001","녹음 파일을 찾을 수 없습니다"),
 
-
+    //ChallengePost
+    CHALLENGE_POST_NOT_FOUND(400,"CP001","챌린지 게시물을 찾을 수 없습니다"),
+    KEYWORD_NOT_FOUND(400,"CP001","키워드를 찾을 수 없습니다");
 
     private final String code;
     private final String message;

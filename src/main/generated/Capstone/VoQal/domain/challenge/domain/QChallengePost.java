@@ -39,6 +39,12 @@ public class QChallengePost extends EntityPathBase<ChallengePost> {
 
     public final Capstone.VoQal.domain.member.domain.QMember member;
 
+    public final NumberPath<Double> randomOrder = createNumber("randomOrder", Double.class);
+
+    public final StringPath singer = createString("singer");
+
+    public final StringPath songTitle = createString("songTitle");
+
     public final StringPath thumbnailUrl = createString("thumbnailUrl");
 
     //inherited

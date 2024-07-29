@@ -54,8 +54,8 @@ public class Member extends BaseEntity {
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Coach coach;
 
-    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
-    private ChallengePost challengePost;
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private Set<ChallengePost> challengePost;
 
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)

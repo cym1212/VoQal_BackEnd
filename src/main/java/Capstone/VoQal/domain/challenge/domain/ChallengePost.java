@@ -16,15 +16,24 @@ import lombok.NoArgsConstructor;
 @Table(name = "challenge_post")
 public class ChallengePost extends BaseEntity {
 
-    @OneToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
 
     private String challengeRecordUrl;
 
     private String thumbnailUrl;
 
-    @ManyToOne
+    private String songTitle;
+
+    private String singer;
+
+
+    @Column(name = "random_order")
+    private Double randomOrder;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challengeKeyword")
     private ChallengeKeyword challengeKeyword;
 }
