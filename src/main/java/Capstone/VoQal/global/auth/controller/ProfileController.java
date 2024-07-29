@@ -127,9 +127,9 @@ public class ProfileController {
 
     @GetMapping("/student")
     @Operation(summary = "담당 학생 조회 ", description = "본인이 담당하는 학생들의 리스트를 조회합니다.")
-    public ResponseEntity<ResponseWrapper<List<MemberListDTO>>> studentList() {
-        List<MemberListDTO> studentList = profileService.getStudentList();
-        ResponseWrapper<List<MemberListDTO>> memberList = ResponseWrapper.<List<MemberListDTO>>builder()
+    public ResponseEntity<ResponseWrapper<List<StudentListDTO>>> studentList() {
+        List<StudentListDTO> studentList = profileService.getStudentList();
+        ResponseWrapper<List<StudentListDTO>> memberList = ResponseWrapper.<List<StudentListDTO>>builder()
                 .status(HttpStatus.OK.value())
                 .data(studentList)
                 .build();

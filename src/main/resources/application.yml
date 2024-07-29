@@ -6,8 +6,8 @@ spring:
       - classpath:application-s3.yml
   servlet:
     multipart:
-      maxFileSize: 20MB
-      maxRequestSize: 100MB
+      maxFileSize: 10MB
+      maxRequestSize: 10MB
 springdoc:
   swagger-ui:
     path: /swagger

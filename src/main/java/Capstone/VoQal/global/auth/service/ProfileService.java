@@ -174,13 +174,16 @@ public class ProfileService {
         coachAndStudentRepository.delete(coachAndStudent);
     }
 
-    public List<MemberListDTO> getStudentList() {
+    public List<StudentListDTO> getStudentList() {
         Member coach = memberService.getCurrentMember();
-        List<CoachAndStudent> approveStudent = coachAndStudentRepository.findApprovedStudentsByCoachId(coach.getId());
-        List<MemberListDTO> studentList = new ArrayList<>();
-        for (CoachAndStudent coachAndStudent : approveStudent) {
-            studentList.add(new MemberListDTO(coachAndStudent.getStudent().getMember().getId(),
-                    coachAndStudent.getStudent().getMember().getName()));
+        List<CoachAndStudent> approvedStudent = coachAndStudentRepository.findApprovedStudentsByCoachId(coach.getId());
+        List<StudentListDTO> studentList = new ArrayList<>();
+        for (CoachAndStudent coachAndStudent : approvedStudent) {
+            studentList.add(new StudentListDTO(coachAndStudent.getStudent().getMember().getId(),
+                    coachAndStudent.getStudent().getMember().getName(),
+                    coachAndStudent.getLessonSongUrl(),
+                    coachAndStudent.getSinger(),
+                    coachAndStudent.getSongTitle()));
         }
         return studentList;
     }
