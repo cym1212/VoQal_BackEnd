@@ -86,6 +86,7 @@ public class RecordService {
             throw new BusinessException(ErrorCode.MULTIPART_FILE_NOT_FOUND);
         }
 
+        s3UploadService.copyFile(existingRecord.getRecordUrl(), UploadUtils.LESSON_NOTE_RECORD, UploadUtils.LESSON_NOTE_RECORD_DELETED);
         s3UploadService.deleteFile(existingRecord.getRecordUrl());
 
         String uploadFile = s3UploadService.uploadFile(multipartFile, UploadUtils.LESSON_NOTE_RECORD, currentCoach.getId());
@@ -105,6 +106,7 @@ public class RecordService {
         LessonRecord existingRecord = recordRepository.findById(recordId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RECORD_NOT_FOUND));
 
+        s3UploadService.copyFile(existingRecord.getRecordUrl(), UploadUtils.LESSON_NOTE_RECORD, UploadUtils.LESSON_NOTE_RECORD_DELETED);
         s3UploadService.deleteFile(existingRecord.getRecordUrl());
 
         recordRepository.deleteRecord(recordId);

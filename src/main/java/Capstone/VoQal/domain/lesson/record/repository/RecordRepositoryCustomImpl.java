@@ -1,6 +1,5 @@
 package Capstone.VoQal.domain.lesson.record.repository;
 
-import Capstone.VoQal.domain.lesson.note.domain.QLessonNote;
 import Capstone.VoQal.domain.lesson.record.domain.LessonRecord;
 import Capstone.VoQal.domain.lesson.record.domain.QLessonRecord;
 import Capstone.VoQal.domain.member.domain.QCoach;
@@ -61,7 +60,7 @@ public class RecordRepositoryCustomImpl implements RecordRepositoryCustom {
                 .execute();
 
         if (affectedRows == 0) {
-            throw new BusinessException(ErrorCode.RECORD_NOT_FOUND);
+            throw new BusinessException(ErrorCode.REQUEST_FAILED);
         }
 
         return queryFactory.selectFrom(lessonRecord)
@@ -80,7 +79,7 @@ public class RecordRepositoryCustomImpl implements RecordRepositoryCustom {
                 .execute();
 
         if (affectedRows == 0) {
-            throw new BusinessException(ErrorCode.RECORD_NOT_FOUND);
+            throw new BusinessException(ErrorCode.REQUEST_FAILED);
         }
     }
 }
