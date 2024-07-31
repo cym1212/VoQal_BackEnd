@@ -20,7 +20,6 @@ public class RecordController {
 
     private final RecordService recordService;
 
-    //todo 로직 테스트
 
     @PostMapping(value = "/create/record",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "녹음파일 업로드 ", description = "담당학생의 녹음파일을 업로드합니다.")

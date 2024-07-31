@@ -11,18 +11,20 @@ import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
- * QMemberAndPostLike is a Querydsl query type for MemberAndPostLike
+ * QChallengeLike is a Querydsl query type for ChallengeLike
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QMemberAndPostLike extends EntityPathBase<MemberAndPostLike> {
+public class QChallengeLike extends EntityPathBase<ChallengeLike> {
 
-    private static final long serialVersionUID = -663100231L;
+    private static final long serialVersionUID = 1710340479L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
-    public static final QMemberAndPostLike memberAndPostLike = new QMemberAndPostLike("memberAndPostLike");
+    public static final QChallengeLike challengeLike = new QChallengeLike("challengeLike");
 
     public final Capstone.VoQal.global.domain.QBaseEntity _super = new Capstone.VoQal.global.domain.QBaseEntity(this);
+
+    public final QChallengePost challengePost;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
@@ -35,31 +37,29 @@ public class QMemberAndPostLike extends EntityPathBase<MemberAndPostLike> {
 
     public final Capstone.VoQal.domain.member.domain.QMember member;
 
-    public final QPostLike postLike;
-
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
-    public QMemberAndPostLike(String variable) {
-        this(MemberAndPostLike.class, forVariable(variable), INITS);
+    public QChallengeLike(String variable) {
+        this(ChallengeLike.class, forVariable(variable), INITS);
     }
 
-    public QMemberAndPostLike(Path<? extends MemberAndPostLike> path) {
+    public QChallengeLike(Path<? extends ChallengeLike> path) {
         this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
-    public QMemberAndPostLike(PathMetadata metadata) {
+    public QChallengeLike(PathMetadata metadata) {
         this(metadata, PathInits.getFor(metadata, INITS));
     }
 
-    public QMemberAndPostLike(PathMetadata metadata, PathInits inits) {
-        this(MemberAndPostLike.class, metadata, inits);
+    public QChallengeLike(PathMetadata metadata, PathInits inits) {
+        this(ChallengeLike.class, metadata, inits);
     }
 
-    public QMemberAndPostLike(Class<? extends MemberAndPostLike> type, PathMetadata metadata, PathInits inits) {
+    public QChallengeLike(Class<? extends ChallengeLike> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.challengePost = inits.isInitialized("challengePost") ? new QChallengePost(forProperty("challengePost"), inits.get("challengePost")) : null;
         this.member = inits.isInitialized("member") ? new Capstone.VoQal.domain.member.domain.QMember(forProperty("member"), inits.get("member")) : null;
-        this.postLike = inits.isInitialized("postLike") ? new QPostLike(forProperty("postLike")) : null;
     }
 
 }

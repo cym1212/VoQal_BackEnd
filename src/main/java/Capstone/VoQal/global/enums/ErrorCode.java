@@ -28,6 +28,7 @@ public enum ErrorCode {
     REQUEST_FAILED(400,"C20","요청에 실패했습니다 다시 시도해주세요"),
 
 
+
     // Member
     MEMBER_NOT_FOUND(404, "M001", "존재하지 않는 회원입니다"),
     MEMBER_PROFILE_DUPLICATION(400, "M002", "이미 존재하는 회원입니다"),
@@ -40,6 +41,7 @@ public enum ErrorCode {
     // Token
     MISMATCH_REFRESH_TOKEN(401, "T001", "유효하지 않은 리프레시 토큰입니다"),
     NO_PERMISSION(401, "T002", "요청에 대한 권한이 없습니다"),
+    TOKEN_ERROR(403,"C21","토큰 관련 오류입니다"),
 
 
     // Post
@@ -78,8 +80,10 @@ public enum ErrorCode {
     RECORD_NOT_FOUND(400,"RD001","녹음 파일을 찾을 수 없습니다"),
 
     //ChallengePost
-    CHALLENGE_POST_NOT_FOUND(400,"CP001","챌린지 게시물을 찾을 수 없습니다"),
-    KEYWORD_NOT_FOUND(400,"CP001","키워드를 찾을 수 없습니다");
+    CHALLENGE_POST_NOT_FOUND(400,"CP001","챌린지 게시물을 찾을 수 없습니다."),
+    KEYWORD_NOT_FOUND(400,"CP002","키워드를 찾을 수 없습니다."),
+    LIKE_NOT_FOUND(400,"CP003", "좋아요를 찾을 수 없습니다."),
+    ALREADY_LIKED(400,"CP004", "이미 좋아요를 눌렀습니다.");
 
     private final String code;
     private final String message;

@@ -24,6 +24,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final Capstone.VoQal.global.domain.QBaseEntity _super = new Capstone.VoQal.global.domain.QBaseEntity(this);
 
+    public final SetPath<Capstone.VoQal.domain.challenge.domain.ChallengeLike, Capstone.VoQal.domain.challenge.domain.QChallengeLike> challengeLikes = this.<Capstone.VoQal.domain.challenge.domain.ChallengeLike, Capstone.VoQal.domain.challenge.domain.QChallengeLike>createSet("challengeLikes", Capstone.VoQal.domain.challenge.domain.ChallengeLike.class, Capstone.VoQal.domain.challenge.domain.QChallengeLike.class, PathInits.DIRECT2);
+
     public final SetPath<Capstone.VoQal.domain.challenge.domain.ChallengePost, Capstone.VoQal.domain.challenge.domain.QChallengePost> challengePost = this.<Capstone.VoQal.domain.challenge.domain.ChallengePost, Capstone.VoQal.domain.challenge.domain.QChallengePost>createSet("challengePost", Capstone.VoQal.domain.challenge.domain.ChallengePost.class, Capstone.VoQal.domain.challenge.domain.QChallengePost.class, PathInits.DIRECT2);
 
     public final QCoach coach;
@@ -40,8 +42,6 @@ public class QMember extends EntityPathBase<Member> {
     public final NumberPath<Long> id = _super.id;
 
     public final SetPath<Capstone.VoQal.domain.chatting.domain.MemberAndChatRoom, Capstone.VoQal.domain.chatting.domain.QMemberAndChatRoom> memberAndChatRoom = this.<Capstone.VoQal.domain.chatting.domain.MemberAndChatRoom, Capstone.VoQal.domain.chatting.domain.QMemberAndChatRoom>createSet("memberAndChatRoom", Capstone.VoQal.domain.chatting.domain.MemberAndChatRoom.class, Capstone.VoQal.domain.chatting.domain.QMemberAndChatRoom.class, PathInits.DIRECT2);
-
-    public final SetPath<Capstone.VoQal.domain.challenge.domain.MemberAndPostLike, Capstone.VoQal.domain.challenge.domain.QMemberAndPostLike> memberAndPostLike = this.<Capstone.VoQal.domain.challenge.domain.MemberAndPostLike, Capstone.VoQal.domain.challenge.domain.QMemberAndPostLike>createSet("memberAndPostLike", Capstone.VoQal.domain.challenge.domain.MemberAndPostLike.class, Capstone.VoQal.domain.challenge.domain.QMemberAndPostLike.class, PathInits.DIRECT2);
 
     public final StringPath name = createString("name");
 

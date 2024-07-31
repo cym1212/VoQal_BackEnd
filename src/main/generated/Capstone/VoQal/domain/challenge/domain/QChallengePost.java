@@ -26,6 +26,8 @@ public class QChallengePost extends EntityPathBase<ChallengePost> {
 
     public final QChallengeKeyword challengeKeyword;
 
+    public final SetPath<ChallengeLike, QChallengeLike> challengeLikes = this.<ChallengeLike, QChallengeLike>createSet("challengeLikes", ChallengeLike.class, QChallengeLike.class, PathInits.DIRECT2);
+
     public final StringPath challengeRecordUrl = createString("challengeRecordUrl");
 
     //inherited

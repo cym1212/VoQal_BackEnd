@@ -2,28 +2,28 @@ package Capstone.VoQal.domain.challenge.domain;
 
 import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.global.domain.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.Set;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "member_and_postlike")
-public class MemberAndPostLike extends BaseEntity {
+@Table(name = "challenge_like")
+public class ChallengeLike extends BaseEntity {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne
-    @JoinColumn(name = "postLike_id")
-    private PostLike postLike;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "challenge_post_id")
+    private ChallengePost challengePost;
+
 }

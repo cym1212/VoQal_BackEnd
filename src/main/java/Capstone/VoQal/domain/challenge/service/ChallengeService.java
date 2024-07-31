@@ -5,7 +5,7 @@ import Capstone.VoQal.domain.challenge.dto.CreateChallengeRequestDTO;
 import Capstone.VoQal.domain.challenge.dto.GetAllChallengeResponseDTO;
 import Capstone.VoQal.domain.challenge.dto.GetMyChallengeResponseDTO;
 import Capstone.VoQal.domain.challenge.dto.UpdateChallengeRequestDTO;
-import Capstone.VoQal.domain.challenge.repository.challenge.ChallengeRepository;
+import Capstone.VoQal.domain.challenge.repository.challenge.ChallengePostRepository;
 import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.domain.member.service.MemberService;
 import Capstone.VoQal.global.enums.ErrorCode;
@@ -32,38 +32,30 @@ public class ChallengeService {
 
     private final MemberService memberService;
     private final KeywordService keywordService;
-    private final ChallengeRepository challengeRepository;
+    private final ChallengePostRepository challengePostRepository;
     private final S3UploadService s3UploadService;
 
     // 모든 사용자의 챌린지 조회 + 일정 시간마다 랜덤한 순서로 인덱싱 후 가져와야함
     @Transactional
     public Page<GetAllChallengeResponseDTO> getAllChallengePosts(int page, int size) {
+        Member currentMember = memberService.getCurrentMember();
         Pageable pageable = PageRequest.of(page, size);
-        Page<ChallengePost> allNonDeletedPosts = challengeRepository.findAllNonDeletedPosts(pageable);
+        Page<GetAllChallengeResponseDTO> allNonDeletedPosts = challengePostRepository.findAllNonDeletedPostsWithLikes(currentMember.getId(), pageable);
         String todayKeyword = keywordService.getTodayKeyword();
 
-        List<GetAllChallengeResponseDTO> responseDTOs = allNonDeletedPosts.getContent().stream()
-                .map(post -> GetAllChallengeResponseDTO.builder()
-                        .todayKeyword(todayKeyword)
-                        .thumbnailUrl(post.getThumbnailUrl())
-                        .recordUrl(post.getChallengeRecordUrl())
-                        .songTitle(post.getSongTitle())
-                        .singer(post.getSinger())
-                        .nickName(post.getMember().getNickName())
-                        .build())
-                .collect(Collectors.toList());
+        allNonDeletedPosts.forEach(dto -> dto.setTodayKeyword(todayKeyword));
 
-        return new PageImpl<>(responseDTOs, pageable, allNonDeletedPosts.getTotalElements());
+        return allNonDeletedPosts;
     }
 
     @Transactional
     public void randomizePostOrder() {
-        challengeRepository.randomizePostOrder();
+        challengePostRepository.randomizePostOrder();
     }
 
     @Transactional
     public void deleteOldChallengePosts(LocalDateTime start, LocalDateTime end) {
-        challengeRepository.deleteOldChallengePosts(start, end);
+        challengePostRepository.deleteOldChallengePosts(start, end);
     }
 
     //본인이 올릴 챌린지 생성
@@ -85,7 +77,7 @@ public class ChallengeService {
                 .songTitle(createChallengeRequestDTO.getSongTitle())
                 .build();
 
-        challengeRepository.save(challengePost);
+        challengePostRepository.save(challengePost);
 
     }
 
@@ -93,7 +85,7 @@ public class ChallengeService {
     @Transactional
     public List<GetMyChallengeResponseDTO> getMyChallengePost () {
         Member currentMember = memberService.getCurrentMember();
-        List<ChallengePost> challengePosts = challengeRepository.findAllNonDeletedPostById(currentMember.getId());
+        List<ChallengePost> challengePosts = challengePostRepository.findAllNonDeletedPostById(currentMember.getId());
         List<GetMyChallengeResponseDTO> responseDTOS = new ArrayList<>();
         String todayKeyword = keywordService.getTodayKeyword();
         for (ChallengePost challengePost : challengePosts) {
@@ -119,7 +111,7 @@ public class ChallengeService {
             throw new BusinessException(ErrorCode.MULTIPART_FILE_NOT_FOUND);
         }
 
-        ChallengePost existingPost = challengeRepository.findById(challengePostId)
+        ChallengePost existingPost = challengePostRepository.findById(challengePostId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CHALLENGE_POST_NOT_FOUND));
 
         s3UploadService.copyFile(existingPost.getChallengeRecordUrl(), UploadUtils.CHALLENGE_RECORD, UploadUtils.CHALLENGE_RECORD_DELETED);
@@ -131,7 +123,7 @@ public class ChallengeService {
         String updateThumbnail = s3UploadService.uploadFile(thumbnail, UploadUtils.CHALLENGE_THUMBNAIL, currentMember.getId());
         String updateRecord = s3UploadService.uploadFile(record, UploadUtils.CHALLENGE_RECORD, currentMember.getId());
 
-        challengeRepository.updateChallengePost(challengePostId,updateThumbnail,updateRecord,updateChallengeRequestDTO.getUpdateSongTitle(),updateChallengeRequestDTO.getUpdateSinger() );
+        challengePostRepository.updateChallengePost(challengePostId,updateThumbnail,updateRecord,updateChallengeRequestDTO.getUpdateSongTitle(),updateChallengeRequestDTO.getUpdateSinger() );
 
     }
 
@@ -139,7 +131,7 @@ public class ChallengeService {
     //본인이 올린 챌린지 삭제
     @Transactional
     public void deleteChallengePost(Long challengePostId) {
-        ChallengePost existingPost = challengeRepository.findById(challengePostId)
+        ChallengePost existingPost = challengePostRepository.findById(challengePostId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CHALLENGE_POST_NOT_FOUND));
 
 
@@ -149,7 +141,7 @@ public class ChallengeService {
         s3UploadService.deleteFile(existingPost.getThumbnailUrl());
         s3UploadService.deleteFile(existingPost.getChallengeRecordUrl());
 
-        challengeRepository.deleteChallengePost(challengePostId);
+        challengePostRepository.deleteChallengePost(challengePostId);
 
     }
 

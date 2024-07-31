@@ -1,13 +1,15 @@
 package Capstone.VoQal.domain.challenge.repository.challenge;
 
 import Capstone.VoQal.domain.challenge.domain.ChallengePost;
+import Capstone.VoQal.domain.challenge.dto.ChallengePostWithLikesDTO;
+import Capstone.VoQal.domain.challenge.dto.GetAllChallengeResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface ChallengeRepositoryCustom {
+public interface ChallengePostRepositoryCustom {
 
     List<ChallengePost> findAllNonDeletedPostById(Long memberId);
 
@@ -15,9 +17,13 @@ public interface ChallengeRepositoryCustom {
 
     void deleteChallengePost(Long challengePostId);
 
-    Page<ChallengePost> findAllNonDeletedPosts(Pageable pageable);
+//    Page<ChallengePost> findAllNonDeletedPosts(Pageable pageable);
 
     void randomizePostOrder();
 
     void deleteOldChallengePosts(LocalDateTime start, LocalDateTime end);
+
+    List<ChallengePostWithLikesDTO> findAllChallengePostsWithLikeCountByMemberId(Long memberId);
+
+    Page<GetAllChallengeResponseDTO> findAllNonDeletedPostsWithLikes(Long memberId, Pageable pageable);
 }

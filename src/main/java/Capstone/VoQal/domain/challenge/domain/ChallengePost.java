@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -36,4 +38,8 @@ public class ChallengePost extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challengeKeyword")
     private ChallengeKeyword challengeKeyword;
+
+    @OneToMany(mappedBy = "challengePost")
+    private Set<ChallengeLike> challengeLikes;
+
 }

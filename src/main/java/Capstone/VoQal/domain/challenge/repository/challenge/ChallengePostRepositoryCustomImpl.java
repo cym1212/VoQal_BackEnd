@@ -1,10 +1,14 @@
 package Capstone.VoQal.domain.challenge.repository.challenge;
 
 import Capstone.VoQal.domain.challenge.domain.ChallengePost;
+import Capstone.VoQal.domain.challenge.domain.QChallengeLike;
 import Capstone.VoQal.domain.challenge.domain.QChallengePost;
+import Capstone.VoQal.domain.challenge.dto.ChallengePostWithLikesDTO;
+import Capstone.VoQal.domain.challenge.dto.GetAllChallengeResponseDTO;
 import Capstone.VoQal.domain.member.domain.QMember;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.error.exception.BusinessException;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -21,7 +25,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom{
+public class ChallengePostRepositoryCustomImpl implements ChallengePostRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
@@ -75,13 +79,27 @@ public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom{
         }
     }
 
-    @Override
-    public Page<ChallengePost> findAllNonDeletedPosts(Pageable pageable) {
-        QChallengePost qChallengePost = QChallengePost.challengePost;
 
-        List<ChallengePost> posts = queryFactory.selectFrom(qChallengePost)
+    @Transactional
+    @Override
+    public Page<GetAllChallengeResponseDTO> findAllNonDeletedPostsWithLikes(Long memberId, Pageable pageable) {
+        QChallengePost qChallengePost = QChallengePost.challengePost;
+        QChallengeLike qChallengeLike = QChallengeLike.challengeLike;
+
+        List<GetAllChallengeResponseDTO> posts = queryFactory.select(Projections.constructor(
+                        GetAllChallengeResponseDTO.class,
+                        qChallengePost.id,
+                        qChallengePost.challengeRecordUrl,
+                        qChallengePost.thumbnailUrl,
+                        qChallengePost.songTitle,
+                        qChallengePost.singer,
+                        qChallengePost.member.nickName,
+                        qChallengeLike.isNotNull().as("liked")
+                ))
+                .from(qChallengePost)
+                .leftJoin(qChallengeLike).on(qChallengePost.id.eq(qChallengeLike.challengePost.id).and(qChallengeLike.member.id.eq(memberId)))
                 .where(qChallengePost.deletedAt.isNull())
-                .orderBy(qChallengePost.randomOrder.asc()) // random_order 필드를 사용하여 랜덤 정렬
+                .orderBy(qChallengePost.randomOrder.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -92,6 +110,9 @@ public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom{
 
         return new PageImpl<>(posts, pageable, total);
     }
+
+
+
 
     @Override
     @Transactional
@@ -109,6 +130,29 @@ public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom{
                 .where(qChallengePost.createdAt.between(start, end))
                 .set(qChallengePost.deletedAt, LocalDateTime.now())
                 .execute();
+    }
+
+    @Transactional
+    @Override
+    public List<ChallengePostWithLikesDTO> findAllChallengePostsWithLikeCountByMemberId(Long memberId) {
+        QChallengePost qChallengePost = QChallengePost.challengePost;
+        QChallengeLike qChallengeLike = QChallengeLike.challengeLike;
+
+        return queryFactory.select(Projections.constructor(
+                        ChallengePostWithLikesDTO.class,
+                        qChallengePost.id,
+                        qChallengePost.challengeRecordUrl,
+                        qChallengePost.thumbnailUrl,
+                        qChallengePost.songTitle,
+                        qChallengePost.singer,
+                        qChallengeLike.count().as("likeCount")
+                ))
+                .from(qChallengePost)
+                .leftJoin(qChallengeLike).on(qChallengePost.id.eq(qChallengeLike.challengePost.id))
+                .where(qChallengePost.member.id.eq(memberId)
+                        .and(qChallengePost.deletedAt.isNull()))
+                .groupBy(qChallengePost.id)
+                .fetch();
     }
 
 }
