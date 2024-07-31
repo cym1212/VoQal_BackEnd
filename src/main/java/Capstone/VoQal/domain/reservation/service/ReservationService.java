@@ -1,7 +1,6 @@
 package Capstone.VoQal.domain.reservation.service;
 
 import Capstone.VoQal.domain.member.service.MemberService;
-import Capstone.VoQal.domain.member.service.MemberServiceImpl;
 import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.domain.reservation.domain.Reservation;
 import Capstone.VoQal.domain.reservation.domain.Room;

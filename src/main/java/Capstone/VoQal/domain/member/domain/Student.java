@@ -1,7 +1,6 @@
 package Capstone.VoQal.domain.member.domain;
 
 
-import Capstone.VoQal.domain.lesson.note.domain.LessonNote;
 import Capstone.VoQal.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 
-import java.util.List;
 import java.util.Set;
 
 @Getter

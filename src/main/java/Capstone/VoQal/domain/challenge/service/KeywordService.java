@@ -15,40 +15,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-//@RequiredArgsConstructor
-//@Service
-//public class KeywordService {
-//
-//    private final KeywordRepository keywordRepository;
-//    private final Set<Long> usedKeywords = new HashSet<>();
-//    @Getter
-//    private String todayKeyword;
-//    private int used = 0;
-//
-//
-//    // 100개의 키워드중에서 랜덤으로 가져오되 31개 전까지는 한번 가져왔던 키워드가 또 가져와지면 안됨
-//    public void updateDailyKeyword() {
-//        if (used >= 31) {
-//            usedKeywords.clear();
-//            keywordRepository.resetAllUsedKeywords();
-//            used = 0;
-//        }
-//
-//        Random random = new Random();
-//        Long keywordId;
-//        ChallengeKeyword keyword;
-//
-//        do {
-//            keywordId = (long) (random.nextInt(100) + 1);
-//            keyword = keywordRepository.findNonUsedKeywordById(keywordId);
-//        } while (usedKeywords.contains(keywordId) || keyword == null);
-//
-//        usedKeywords.add(keywordId);
-//        used++;
-//        todayKeyword= keyword.getKeyword();
-//    }
-//
-//}
 @RequiredArgsConstructor
 @Service
 public class KeywordService {

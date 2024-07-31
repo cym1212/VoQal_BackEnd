@@ -1,13 +1,11 @@
 package Capstone.VoQal.domain.reservation.repository;
 
-import Capstone.VoQal.domain.reservation.domain.QReservation;
 import Capstone.VoQal.domain.reservation.domain.Reservation;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.error.exception.BusinessException;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;

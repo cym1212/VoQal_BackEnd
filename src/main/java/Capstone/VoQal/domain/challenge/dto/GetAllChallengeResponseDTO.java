@@ -1,10 +1,7 @@
 package Capstone.VoQal.domain.challenge.dto;
 
 
-import Capstone.VoQal.domain.challenge.domain.ChallengePost;
 import lombok.*;
-
-import java.util.List;
 
 @Getter
 @Builder

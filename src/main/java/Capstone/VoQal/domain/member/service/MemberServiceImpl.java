@@ -1,6 +1,5 @@
 package Capstone.VoQal.domain.member.service;
 
-import Capstone.VoQal.domain.member.domain.Coach;
 import Capstone.VoQal.domain.member.domain.CoachAndStudent;
 import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.domain.member.domain.Student;

@@ -6,7 +6,6 @@ import Capstone.VoQal.domain.lesson.url.dto.SetLessonSongUrlDTO;
 import Capstone.VoQal.domain.lesson.url.dto.UpdateLessonSongUrlDTO;
 import Capstone.VoQal.domain.member.domain.CoachAndStudent;
 import Capstone.VoQal.domain.member.domain.Member;
-import Capstone.VoQal.domain.member.repository.CoachAndStudent.CoachAndStudentRepository;
 import Capstone.VoQal.domain.member.repository.Member.MemberRepository;
 import Capstone.VoQal.domain.member.service.MemberService;
 import Capstone.VoQal.global.enums.ErrorCode;

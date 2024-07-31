@@ -1,7 +1,6 @@
 package Capstone.VoQal.domain.member.repository.CoachAndStudent;
 
 import Capstone.VoQal.domain.member.domain.CoachAndStudent;
-import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.global.enums.RequestStatus;
 
 import java.util.List;

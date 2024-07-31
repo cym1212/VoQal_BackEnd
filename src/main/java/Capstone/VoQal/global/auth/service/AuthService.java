@@ -5,7 +5,6 @@ import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.domain.member.repository.Member.MemberRepository;
 import Capstone.VoQal.global.auth.dto.*;
 import Capstone.VoQal.global.enums.ErrorCode;
-import Capstone.VoQal.global.enums.Role;
 import Capstone.VoQal.global.error.exception.BusinessException;
 
 import Capstone.VoQal.global.jwt.service.JwtProvider;
@@ -36,7 +35,6 @@ public class AuthService {
         if (findEmail.isPresent()) {
             throw new BusinessException(ErrorCode.MEMBER_PROFILE_DUPLICATION);
         }
-        Role role = GUEST;
 
         String hashedPassword = passwordEncoder.encode(signUpRequestDTO.getPassword());
         Member member = Member.builder()
@@ -46,7 +44,7 @@ public class AuthService {
                 .nickName(signUpRequestDTO.getNickName())
                 .password(hashedPassword)
                 .build();
-        member.setRole(role);
+        member.setRole(GUEST);
 
         memberRepository.save(member);
         return SignUpResponseDTO.builder()
@@ -76,9 +74,7 @@ public class AuthService {
                         .nickName(member.getNickName())
                         .build();
 
-                GeneratedTokenDTO generatedTokenDTO = jwtProvider.generateTokens(securityMemberDTO);
-
-                return generatedTokenDTO;
+                return jwtProvider.generateTokens(securityMemberDTO);
             } else {
                 throw new BusinessException(ErrorCode.INVALID_PASSWORD);
             }

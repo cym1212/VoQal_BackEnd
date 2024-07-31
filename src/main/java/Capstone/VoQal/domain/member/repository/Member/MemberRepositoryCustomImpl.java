@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -36,12 +35,10 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
     public String findRoleById(Long memberId) {
         QMember member = QMember.member;
 
-        String role = String.valueOf(queryFactory.select(member.role)
+        return String.valueOf(queryFactory.select(member.role)
                 .from(member)
                 .where(member.id.eq(memberId))
                 .fetchOne());
-
-        return role;
     }
 
     @Override

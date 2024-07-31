@@ -4,7 +4,6 @@ import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.global.auth.dto.MemberInfromationDTO;
 import Capstone.VoQal.global.enums.Role;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface MemberRepositoryCustom {

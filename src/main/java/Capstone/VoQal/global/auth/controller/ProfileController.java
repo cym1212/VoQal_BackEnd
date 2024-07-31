@@ -5,8 +5,6 @@ import Capstone.VoQal.global.auth.dto.*;
 import Capstone.VoQal.global.auth.service.ProfileService;
 import Capstone.VoQal.global.dto.MessageDTO;
 import Capstone.VoQal.global.dto.ResponseWrapper;
-import Capstone.VoQal.global.enums.ErrorCode;
-import Capstone.VoQal.global.error.exception.BusinessException;
 import Capstone.VoQal.global.error.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
