@@ -43,14 +43,14 @@ public class LessonNoteController {
 
     @GetMapping("/lessonNote/{lessonNoteId}")
     @Operation(summary = "레슨 노트 상세 조회 ", description = "담당학생의 레슨 노트를 상세 조회합니다.")
-    public ResponseEntity<LessonNoteResponseDetailsDTO> getLessonNote(@PathVariable("lessonnoteId") Long lessonnoteId) {
+    public ResponseEntity<LessonNoteResponseDetailsDTO> getLessonNote(@PathVariable("lessonNoteId") Long lessonnoteId) {
         LessonNoteResponseDetailsDTO detailsDTO = noteService.getLessonNoteDetails(lessonnoteId);
         return ResponseEntity.ok(detailsDTO);
     }
 
     @PatchMapping("/lessonNote/{lessonNoteId}")
     @Operation(summary = "레슨 노트 수정 ", description = "담당학생의 레슨 노트를 수정합니다.")
-    public ResponseEntity<MessageDTO> updateLessonNote(@PathVariable("lessonnoteId") Long lessonnoteId, @RequestBody UpdateLessonNoteDTO updateLessonNoteDTO) {
+    public ResponseEntity<MessageDTO> updateLessonNote(@PathVariable("lessonNoteId") Long lessonnoteId, @RequestBody UpdateLessonNoteDTO updateLessonNoteDTO) {
         noteService.updateLessonNoteByCoach(lessonnoteId, updateLessonNoteDTO);
         return ResponseEntity.ok().body(MessageDTO.builder()
                 .status(HttpStatus.OK.value())
@@ -61,7 +61,7 @@ public class LessonNoteController {
 
     @DeleteMapping("/lessonNote/{lessonNoteId}")
     @Operation(summary = "레슨 노트 삭제 ", description = "담당학생의 레슨 노트를 삭제합니다.")
-    public ResponseEntity<MessageDTO> deleteLessonNote (@PathVariable("lessonnoteId") Long lessonnoteId) {
+    public ResponseEntity<MessageDTO> deleteLessonNote (@PathVariable("lessonNoteId") Long lessonnoteId) {
         noteService.deleteLessonNote(lessonnoteId);
         return ResponseEntity.ok().body(MessageDTO.builder()
                 .status(HttpStatus.OK.value())
