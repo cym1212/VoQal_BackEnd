@@ -2,6 +2,7 @@ package Capstone.VoQal.global.config;
 
 import Capstone.VoQal.global.jwt.filter.JwtAuthFilter;
 import Capstone.VoQal.global.jwt.service.JwtProvider;
+import Capstone.VoQal.infra.GeoIP.filter.IPAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtProvider jwtProvider;
+    private final IPAuthenticationFilter ipAuthenticationFilter;
 
     private static final String COACH = "COACH";
 
@@ -44,6 +46,7 @@ public class SecurityConfig {
                     auth.anyRequest().authenticated();
                 })
                 .addFilterBefore(new JwtAuthFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(ipAuthenticationFilter,JwtAuthFilter.class)
                 .logout(Customizer.withDefaults());
 
         return httpSecurity.build();

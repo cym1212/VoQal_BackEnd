@@ -9,6 +9,10 @@ spring:
     multipart:
       maxFileSize: 10MB
       maxRequestSize: 10MB
+geoip2:
+  database:
+    path: GeoLite2-Country.mmdb
+
 springdoc:
   swagger-ui:
     path: /swagger

@@ -84,6 +84,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'org.webjars:webjars-locator-core'
 	implementation 'org.webjars:stomp-websocket:2.3.4'
+
+	//Geo IP
+	implementation("com.maxmind.geoip2:geoip2:2.16.1")
+
 }
 
 tasks.named('test') {

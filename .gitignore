@@ -41,5 +41,6 @@ application-database.yml
 application-s3.yml
 application-webhook-discord.yml
 
+
 .DS_Store
 
