@@ -43,9 +43,13 @@ public class LessonNoteController {
 
     @GetMapping("/lessonNote/{lessonNoteId}")
     @Operation(summary = "레슨 노트 상세 조회 ", description = "담당학생의 레슨 노트를 상세 조회합니다.")
-    public ResponseEntity<LessonNoteResponseDetailsDTO> getLessonNote(@PathVariable("lessonNoteId") Long lessonnoteId) {
+    public ResponseEntity<ResponseWrapper<LessonNoteResponseDetailsDTO>> getLessonNote(@PathVariable("lessonNoteId") Long lessonnoteId) {
         LessonNoteResponseDetailsDTO detailsDTO = noteService.getLessonNoteDetails(lessonnoteId);
-        return ResponseEntity.ok(detailsDTO);
+        ResponseWrapper<LessonNoteResponseDetailsDTO> result = ResponseWrapper.<LessonNoteResponseDetailsDTO>builder()
+                .status(HttpStatus.OK.value())
+                .data(detailsDTO)
+                .build();
+        return ResponseEntity.ok(result);
     }
 
     @PatchMapping("/lessonNote/{lessonNoteId}")
