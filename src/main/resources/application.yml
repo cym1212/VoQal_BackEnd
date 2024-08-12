@@ -9,6 +9,9 @@ spring:
     multipart:
       maxFileSize: 10MB
       maxRequestSize: 10MB
+  web:
+    resources:
+      add-mappings: false # 정적 리소스 제공 비활성화
 geoip2:
   database:
     path: GeoLite2-Country.mmdb
