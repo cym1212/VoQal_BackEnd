@@ -41,8 +41,6 @@ public class QMember extends EntityPathBase<Member> {
     //inherited
     public final NumberPath<Long> id = _super.id;
 
-    public final SetPath<Capstone.VoQal.domain.chatting.domain.MemberAndChatRoom, Capstone.VoQal.domain.chatting.domain.QMemberAndChatRoom> memberAndChatRoom = this.<Capstone.VoQal.domain.chatting.domain.MemberAndChatRoom, Capstone.VoQal.domain.chatting.domain.QMemberAndChatRoom>createSet("memberAndChatRoom", Capstone.VoQal.domain.chatting.domain.MemberAndChatRoom.class, Capstone.VoQal.domain.chatting.domain.QMemberAndChatRoom.class, PathInits.DIRECT2);
-
     public final StringPath name = createString("name");
 
     public final StringPath nickName = createString("nickName");

@@ -40,7 +40,9 @@ application-secret.yml
 application-database.yml
 application-s3.yml
 application-webhook-discord.yml
+application-firebase.yml
 
+voqal-firebase-admin-sdk.json
 
 .DS_Store
 

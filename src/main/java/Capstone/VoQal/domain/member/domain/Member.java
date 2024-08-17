@@ -2,7 +2,6 @@ package Capstone.VoQal.domain.member.domain;
 
 import Capstone.VoQal.domain.challenge.domain.ChallengeLike;
 import Capstone.VoQal.domain.challenge.domain.ChallengePost;
-import Capstone.VoQal.domain.chatting.domain.MemberAndChatRoom;
 import Capstone.VoQal.domain.reservation.domain.Reservation;
 import Capstone.VoQal.global.domain.BaseEntity;
 import Capstone.VoQal.global.enums.Role;
@@ -61,8 +60,6 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private Set<ChallengeLike> challengeLikes;
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
-    private Set<MemberAndChatRoom> memberAndChatRoom;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Reservation> reservations;
