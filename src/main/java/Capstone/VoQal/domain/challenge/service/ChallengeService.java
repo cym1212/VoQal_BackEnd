@@ -35,7 +35,7 @@ public class ChallengeService {
 
     // 모든 사용자의 챌린지 조회 + 일정 시간마다 랜덤한 순서로 인덱싱 후 가져와야함
     @Transactional
-    public Page<GetAllChallengeResponseDTO> getAllChallengePosts(int page, int size) {
+    public List<GetAllChallengeResponseDTO> getAllChallengePosts(int page, int size) {
         Member currentMember = memberService.getCurrentMember();
         Pageable pageable = PageRequest.of(page, size);
         Page<GetAllChallengeResponseDTO> allNonDeletedPosts = challengePostRepository.findAllNonDeletedPostsWithLikes(currentMember.getId(), pageable);
@@ -43,7 +43,8 @@ public class ChallengeService {
 
         allNonDeletedPosts.forEach(dto -> dto.setTodayKeyword(todayKeyword));
 
-        return allNonDeletedPosts;
+        // 페이지네이션 정보 없이 컨텐츠 리스트만 반환
+        return allNonDeletedPosts.getContent();
     }
 
     @Transactional

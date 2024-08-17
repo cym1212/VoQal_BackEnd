@@ -27,11 +27,11 @@ public class ChallengeController {
 
     @GetMapping
     @Operation(summary = "앱 사용자가 올린 모든 챌린지 게시물을 조회합니다 ", description = "앱 사용자가 올린 게시물을 페이징 하여 조회합니다. 페이지 갯수와 사이즈를 지정하면 그것에 맞게 조회합니다.")
-    public ResponseEntity<ResponseWrapper<Page<GetAllChallengeResponseDTO>>> getAllChallengePosts(
+    public ResponseEntity<ResponseWrapper<List<GetAllChallengeResponseDTO>>> getAllChallengePosts(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "20") int size) {
-        Page<GetAllChallengeResponseDTO> response =  challengeService.getAllChallengePosts(page, size);
-        ResponseWrapper<Page<GetAllChallengeResponseDTO>> responseWrapper = ResponseWrapper.<Page<GetAllChallengeResponseDTO>>builder()
+        List<GetAllChallengeResponseDTO> response =  challengeService.getAllChallengePosts(page, size);
+        ResponseWrapper<List<GetAllChallengeResponseDTO>> responseWrapper = ResponseWrapper.<List<GetAllChallengeResponseDTO>>builder()
                 .status(HttpStatus.OK.value())
                 .data(response)
                 .build();
