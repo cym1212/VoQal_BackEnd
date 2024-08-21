@@ -8,6 +8,7 @@ import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.enums.Role;
 import Capstone.VoQal.global.error.exception.BusinessException;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -69,27 +70,47 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
         QMember member = QMember.member;
         QCoachAndStudent coachAndStudent = QCoachAndStudent.coachAndStudent;
 
+        // 멤버 기본 정보 조회
         MemberInfromationDTO memberInfromationDTO = queryFactory
-                .select(Projections.constructor(
+                .select(Projections.fields(
                         MemberInfromationDTO.class,
-                        member.nickName,
-                        member.email,
-                        member.name,
-                        member.phoneNumber,
-                        member.role,
-                        coachAndStudent.lessonSongUrl
+                        member.nickName.as("nickName"),
+                        member.email.as("email"),
+                        member.name.as("name"),
+                        member.phoneNumber.as("phoneNum"),
+                        member.role.as("role")
                 ))
                 .from(member)
-                .leftJoin(coachAndStudent)
-                .on(coachAndStudent.student.member.id.eq(member.id))
                 .where(member.id.eq(memberId))
                 .fetchOne();
 
+        // 멤버가 존재하지 않을 경우 예외 발생
         if (memberInfromationDTO == null) {
             throw new BusinessException(ErrorCode.INVALID_MEMBER_ID);
         }
 
+        // 학생일 경우, 코치 이름과 레슨 정보를 추가로 조회
+        if (memberInfromationDTO.getRole() == Role.STUDENT) {
+            String assignedCoach = queryFactory
+                    .select(coachAndStudent.coach.member.name)
+                    .from(coachAndStudent)
+                    .where(coachAndStudent.student.member.id.eq(memberId))
+                    .fetchOne();
+
+            String lessonSongUrl = queryFactory
+                    .select(coachAndStudent.lessonSongUrl)
+                    .from(coachAndStudent)
+                    .where(coachAndStudent.student.member.id.eq(memberId))
+                    .fetchOne();
+
+            memberInfromationDTO = memberInfromationDTO.withAssignedCoach(assignedCoach)
+                    .withLessonSongUrl(lessonSongUrl);
+        }
+
         return memberInfromationDTO;
     }
+
+
+
 
 }
