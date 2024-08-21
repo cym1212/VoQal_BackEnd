@@ -80,25 +80,11 @@ public class ChallengeService {
 
     //본인이 올렸던 챌린지 조회
     @Transactional
-    public List<GetMyChallengeResponseDTO> getMyChallengePost () {
+    public List<GetMyChallengeResponseDTO> getMyChallengePost() {
         Member currentMember = memberService.getCurrentMember();
-        List<ChallengePost> challengePosts = challengePostRepository.findAllNonDeletedPostById(currentMember.getId());
-        List<GetMyChallengeResponseDTO> responseDTOS = new ArrayList<>();
-        String todayKeyword = keywordService.getTodayKeyword();
-        for (ChallengePost challengePost : challengePosts) {
-            responseDTOS.add(new GetMyChallengeResponseDTO(
-                    challengePost.getThumbnailUrl(),
-                    challengePost.getChallengeRecordUrl(),
-                    challengePost.getId(),
-                    todayKeyword,
-                    challengePost.getSongTitle(),
-                    challengePost.getSinger(),
-                    challengePost.getMember().getNickName()
-            ));
-        }
-
-        return responseDTOS;
+        return challengePostRepository.findAllNonDeletedPostById(currentMember.getId());
     }
+
 
     //본인이 올린 챌린지 수정
     @Transactional

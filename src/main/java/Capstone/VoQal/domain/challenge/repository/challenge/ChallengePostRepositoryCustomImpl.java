@@ -5,6 +5,7 @@ import Capstone.VoQal.domain.challenge.domain.QChallengeLike;
 import Capstone.VoQal.domain.challenge.domain.QChallengePost;
 import Capstone.VoQal.domain.challenge.dto.ChallengePostWithLikesDTO;
 import Capstone.VoQal.domain.challenge.dto.GetAllChallengeResponseDTO;
+import Capstone.VoQal.domain.challenge.dto.GetMyChallengeResponseDTO;
 import Capstone.VoQal.domain.member.domain.QMember;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.error.exception.BusinessException;
@@ -32,16 +33,32 @@ public class ChallengePostRepositoryCustomImpl implements ChallengePostRepositor
     @PersistenceContext
     private EntityManager entityManager;
 
+
     @Override
     @Transactional
-    public List<ChallengePost> findAllNonDeletedPostById(Long memberId) {
+    public List<GetMyChallengeResponseDTO> findAllNonDeletedPostById(Long memberId) {
         QChallengePost qChallengePost = QChallengePost.challengePost;
         QMember qMember = QMember.member;
+        QChallengeLike qChallengeLike = QChallengeLike.challengeLike;
 
-        return queryFactory.selectFrom(qChallengePost)
-                .leftJoin(qChallengePost.member, qMember).fetchJoin()
+        return queryFactory
+                .select(Projections.constructor(
+                        GetMyChallengeResponseDTO.class,
+                        qChallengePost.thumbnailUrl,
+                        qChallengePost.challengeRecordUrl,
+                        qChallengePost.id.as("challengePostId"),
+                        qChallengePost.songTitle,
+                        qChallengePost.singer,
+                        qMember.nickName,
+                        qChallengeLike.count().as("likeCount")
+                ))
+                .from(qChallengePost)
+                .leftJoin(qChallengePost.member, qMember)
+                .leftJoin(qChallengeLike).on(qChallengeLike.challengePost.eq(qChallengePost))
                 .where(qChallengePost.member.id.eq(memberId)
                         .and(qChallengePost.deletedAt.isNull()))
+                .groupBy(qChallengePost.id, qMember.nickName)
+                .orderBy(qChallengePost.createdAt.desc())
                 .fetch();
     }
 
@@ -110,9 +127,6 @@ public class ChallengePostRepositoryCustomImpl implements ChallengePostRepositor
 
         return new PageImpl<>(posts, pageable, total);
     }
-
-
-
 
 
     @Override

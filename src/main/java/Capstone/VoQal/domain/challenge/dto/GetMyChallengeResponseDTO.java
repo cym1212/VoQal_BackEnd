@@ -14,9 +14,9 @@ public class GetMyChallengeResponseDTO {
     private String thumbnailUrl;
     private String recordUrl;
     private Long challengePostId;
-    private String challengeKeyword;
     private String songTitle;
     private String singer;
     private String nickName;
+    private Long likeCount;
 
 }
