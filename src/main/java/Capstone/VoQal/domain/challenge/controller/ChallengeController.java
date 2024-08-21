@@ -5,11 +5,11 @@ import Capstone.VoQal.domain.challenge.dto.GetAllChallengeResponseDTO;
 import Capstone.VoQal.domain.challenge.dto.GetMyChallengeResponseDTO;
 import Capstone.VoQal.domain.challenge.dto.UpdateChallengeRequestDTO;
 import Capstone.VoQal.domain.challenge.service.ChallengeService;
+import Capstone.VoQal.domain.challenge.service.KeywordService;
 import Capstone.VoQal.global.dto.MessageDTO;
 import Capstone.VoQal.global.dto.ResponseWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +24,7 @@ import java.util.List;
 public class ChallengeController {
 
     private final ChallengeService challengeService;
+    private final KeywordService keywordService;
 
     @GetMapping
     @Operation(summary = "앱 사용자가 올린 모든 챌린지 게시물을 조회합니다 ", description = "앱 사용자가 올린 게시물을 페이징 하여 조회합니다. 페이지 갯수와 사이즈를 지정하면 그것에 맞게 조회합니다.")
@@ -85,4 +86,11 @@ public class ChallengeController {
                 .message("성공적으로 삭제되었습니다.")
                 .build());
     }
+
+    @GetMapping("/keyword")
+    @Operation(summary = "챌린지 키워드 조회 로직 ", description = "오늘의 챌린지 키워드를 조회합니다.")
+    public String  getKeyword() {
+        return keywordService.getTodayKeyword();
+    }
+
 }

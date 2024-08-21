@@ -89,8 +89,8 @@ public class ChallengePostRepositoryCustomImpl implements ChallengePostRepositor
         List<GetAllChallengeResponseDTO> posts = queryFactory.select(Projections.constructor(
                         GetAllChallengeResponseDTO.class,
                         qChallengePost.id,
-                        qChallengePost.challengeRecordUrl,
                         qChallengePost.thumbnailUrl,
+                        qChallengePost.challengeRecordUrl,
                         qChallengePost.songTitle,
                         qChallengePost.singer,
                         qChallengePost.member.nickName,
@@ -110,6 +110,7 @@ public class ChallengePostRepositoryCustomImpl implements ChallengePostRepositor
 
         return new PageImpl<>(posts, pageable, total);
     }
+
 
 
 

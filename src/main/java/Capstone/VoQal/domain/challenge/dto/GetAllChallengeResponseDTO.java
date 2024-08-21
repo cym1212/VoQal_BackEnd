@@ -6,12 +6,9 @@ import lombok.*;
 @Getter
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class GetAllChallengeResponseDTO {
 
     private Long challengeId;
-    @Setter
-    private String todayKeyword;
     private String thumbnailUrl;
     private String recordUrl;
     private String songTitle;

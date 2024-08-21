@@ -39,9 +39,7 @@ public class ChallengeService {
         Member currentMember = memberService.getCurrentMember();
         Pageable pageable = PageRequest.of(page, size);
         Page<GetAllChallengeResponseDTO> allNonDeletedPosts = challengePostRepository.findAllNonDeletedPostsWithLikes(currentMember.getId(), pageable);
-        String todayKeyword = keywordService.getTodayKeyword();
 
-        allNonDeletedPosts.forEach(dto -> dto.setTodayKeyword(todayKeyword));
 
         // 페이지네이션 정보 없이 컨텐츠 리스트만 반환
         return allNonDeletedPosts.getContent();
