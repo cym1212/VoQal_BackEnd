@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class AuthController {
+public class       AuthController {
     private final AuthService authService;
     private final JwtProvider jwtProvider;
 
@@ -151,6 +151,21 @@ public class AuthController {
                         .status(HttpStatus.OK.value())
                         .build());
 
+    }
+
+    @DeleteMapping("/delete/member")
+    @Operation(summary = "회원 탈퇴 로직 ", description = "회원 탈퇴 로직(물리적 삭제), ver2에 논리적 삭제로 리펙토링 예정",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공"),
+                    @ApiResponse(responseCode = "400", description = "잘못된 Member ID 입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            })
+    public ResponseEntity<MessageDTO> deleteMember() {
+        authService.deleteMember();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(MessageDTO.builder()
+                        .message("성공적으로 탈퇴되었습니다")
+                        .status(HttpStatus.OK.value())
+                        .build());
     }
 
     @PatchMapping("/tokens")

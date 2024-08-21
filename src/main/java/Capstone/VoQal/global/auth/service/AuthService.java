@@ -3,6 +3,7 @@ package Capstone.VoQal.global.auth.service;
 
 import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.domain.member.repository.Member.MemberRepository;
+import Capstone.VoQal.domain.member.service.MemberService;
 import Capstone.VoQal.global.auth.dto.*;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.error.exception.BusinessException;
@@ -27,6 +28,7 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
+    private final MemberService memberService;
 
 
     @Transactional
@@ -135,7 +137,14 @@ public class AuthService {
             throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
         }
     }
+    @Transactional
+    public void deleteMember() {
+        Long memberId = memberService.getCurrentMember().getId();
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_MEMBER_ID));
 
+        memberRepository.delete(member);
+    }
 
 }
 

@@ -39,7 +39,7 @@ public class ChallengePost extends BaseEntity {
     @JoinColumn(name = "challengeKeyword")
     private ChallengeKeyword challengeKeyword;
 
-    @OneToMany(mappedBy = "challengePost")
+    @OneToMany(mappedBy = "challengePost",cascade = CascadeType.ALL)
     private Set<ChallengeLike> challengeLikes;
 
 }
