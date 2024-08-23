@@ -8,7 +8,11 @@ import Capstone.VoQal.domain.challenge.service.ChallengeService;
 import Capstone.VoQal.domain.challenge.service.KeywordService;
 import Capstone.VoQal.global.dto.MessageDTO;
 import Capstone.VoQal.global.dto.ResponseWrapper;
+import Capstone.VoQal.global.error.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -40,7 +44,12 @@ public class ChallengeController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "챌린지 작성 로직 ", description = " 챌린지를 업로드 합니다.")
+    @Operation(summary = "챌린지 작성 로직 ", description = " 챌린지를 업로드 합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공"),
+                    @ApiResponse(responseCode = "400", description = "Multipart File을 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "잘못된 멤버 ID 입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            })
     public ResponseEntity<MessageDTO> createChallengePost(
             @RequestPart(value = "thumbnail") MultipartFile thumbnail,
             @RequestPart(value = "record") MultipartFile record,
@@ -64,7 +73,13 @@ public class ChallengeController {
     }
 
     @PatchMapping(value = "/{challengePostId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "챌린지 수정 로직 ", description = "본인이 작성한 챌린지를 수정합니다.")
+    @Operation(summary = "챌린지 수정 로직 ", description = "본인이 작성한 챌린지를 수정합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공"),
+                    @ApiResponse(responseCode = "400", description = "요청에 실패했습니다. 다시 요청해주세요", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "Multipart File을 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "챌린지 게시물을 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            })
     public ResponseEntity<MessageDTO> updateChallengePost(
             @PathVariable("challengePostId") Long challengePostId,
             @RequestPart(value ="thumbnail") MultipartFile thumbnail,
@@ -78,7 +93,12 @@ public class ChallengeController {
     }
 
     @DeleteMapping("/{challengePostId}")
-    @Operation(summary = "챌린지 삭제 로직 ", description = "본인이 작성한 챌린지를 삭제합니다.")
+    @Operation(summary = "챌린지 삭제 로직 ", description = "본인이 작성한 챌린지를 삭제합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공"),
+                    @ApiResponse(responseCode = "400", description = "요청에 실패했습니다. 다시 요청해주세요", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "챌린지 게시물을 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            })
     public ResponseEntity<MessageDTO> deleteChallengePost(@PathVariable("challengePostId") Long challengePostId) {
         challengeService.deleteChallengePost(challengePostId);
         return ResponseEntity.ok().body(MessageDTO.builder()

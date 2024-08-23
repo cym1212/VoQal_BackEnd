@@ -1,6 +1,5 @@
 package Capstone.VoQal.domain.challenge.repository.challenge;
 
-import Capstone.VoQal.domain.challenge.domain.ChallengePost;
 import Capstone.VoQal.domain.challenge.domain.QChallengeLike;
 import Capstone.VoQal.domain.challenge.domain.QChallengePost;
 import Capstone.VoQal.domain.challenge.dto.ChallengePostWithLikesDTO;

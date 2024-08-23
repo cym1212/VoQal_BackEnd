@@ -41,7 +41,11 @@ public class RecordController {
     }
 
     @GetMapping("/record")
-    @Operation(summary = "녹음파일 전체 조회 ", description = "담당학생의 녹음파일을 전체 조회합니다.")
+    @Operation(summary = "녹음파일 전체 조회 ", description = "담당학생의 녹음파일을 전체 조회합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공"),
+                    @ApiResponse(responseCode = "400", description = "코치가 아닙니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            })
     public ResponseEntity<ResponseWrapper<List<LessonRecordResponseDTO>>> getAllRecordsByCoach(@ModelAttribute GetRecordUrlDTO getRecordUrlDTO) {
         List<LessonRecordResponseDTO> responseDTOS = recordService.getAllRecordsByCoach(getRecordUrlDTO);
         ResponseWrapper<List<LessonRecordResponseDTO>> result = ResponseWrapper.<List<LessonRecordResponseDTO>>builder()
@@ -55,7 +59,14 @@ public class RecordController {
 
 
     @PatchMapping(value = "/record/{recordId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "녹음파일 수정", description = "담당학생의 녹음파일을 수정합니다.")
+    @Operation(summary = "녹음파일 수정", description = "담당학생의 녹음파일을 수정합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공"),
+                    @ApiResponse(responseCode = "400", description = "코치가 아닙니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "녹음파일을 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "Multipart File을 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "요청에 실패했습니다. 다시 요청해주세요.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            })
     public ResponseEntity<ResponseWrapper<UploadResponseDTO>> updateRecord(@PathVariable("recordId") Long recordId,
                                                                            @RequestPart("recordFile") MultipartFile recordFile,
                                                                            @RequestPart(value = "request", required = false) UpdateUploadRequestDTO request) {
@@ -69,7 +80,12 @@ public class RecordController {
 
 
     @DeleteMapping("/record/{recordId}")
-    @Operation(summary = "녹음파일 삭제 ", description = "담당학생의 녹음파일을 삭제합니다.")
+    @Operation(summary = "녹음파일 삭제 ", description = "담당학생의 녹음파일을 삭제합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공"),
+                    @ApiResponse(responseCode = "400", description = "녹음파일을 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "요청에 실패했습니다. 다시 요청해주세요.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            })
     public ResponseEntity<MessageDTO> deleteRecord (@PathVariable("recordId") Long recordId) {
         recordService.deleteRecord(recordId);
         return ResponseEntity.ok().body(MessageDTO.builder()
@@ -79,7 +95,12 @@ public class RecordController {
     }
 
     @GetMapping("/record/student")
-    @Operation(summary = "녹음파일 전체 조회 - 학생입장 ", description = "담당코치가 작성한 녹음파일 전체 조회합니다.")
+    @Operation(summary = "녹음파일 전체 조회 - 학생입장 ", description = "담당코치가 작성한 녹음파일 전체 조회합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공"),
+                    @ApiResponse(responseCode = "400", description = "코치를 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "잘못된 멤버 ID 입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            })
     public ResponseEntity<ResponseWrapper<List<LessonRecordResponseDTO>>> getAllRecordsForStudent() {
         List<LessonRecordResponseDTO> responseDTOS = recordService.getAllRecordsForStudent();
         ResponseWrapper<List<LessonRecordResponseDTO>> result = ResponseWrapper.<List<LessonRecordResponseDTO>>builder()

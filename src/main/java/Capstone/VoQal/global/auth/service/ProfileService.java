@@ -142,10 +142,6 @@ public class ProfileService {
     public void approveRequest(Long studentMemberId) {
         Member coach = memberService.getCurrentCoach();
         Member studentMember = memberService.getMemberById(studentMemberId);
-//        Student student = studentMember.getStudent();
-//        memberService.validateStudentEntity(student);
-//        System.out.println("studentMember = " + studentMember.getId());
-//        System.out.println("coach = " + coach.getId());
 
         CoachAndStudent coachAndStudent = memberService.getCoachAndStudentWithSignUp(coach.getId(), studentMember.getId());
         if (coachAndStudent.getStatus() != RequestStatus.PENDING) {

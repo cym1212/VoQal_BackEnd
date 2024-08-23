@@ -8,6 +8,7 @@ import Capstone.VoQal.global.error.exception.BusinessException;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class KeywordService {
 
     private final KeywordRepository keywordRepository;
@@ -37,6 +39,7 @@ public class KeywordService {
 
         // 사용되지 않은 키워드를 한 번에 모두 가져옵니다.
         List<ChallengeKeyword> availableKeywords = keywordRepository.findAvailableKeywords();
+        log.info("test");
         if (availableKeywords.isEmpty()) {
             throw new BusinessException(ErrorCode.KEYWORD_NOT_FOUND);
         }

@@ -7,7 +7,11 @@ import Capstone.VoQal.domain.chatting.dto.ChatRoomInfo;
 import Capstone.VoQal.domain.chatting.service.ChatService;
 import Capstone.VoQal.global.dto.MessageDTO;
 import Capstone.VoQal.global.dto.ResponseWrapper;
+import Capstone.VoQal.global.error.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +31,11 @@ public class ChatController {
 
     // 채팅방 생성 또는 가져오기
     @PostMapping("/room/{studentId}")
-    @Operation(summary = "채팅방 id 조회(없으면 생성) - 코치 입장", description = "코치 입장 - 담당 학생의 id를 입력하면 그 학생과의 채팅방이 존재하는지 확인한 후 있으면 채팅방 id를 리턴 없으면 생성후 리턴합니다.")
+    @Operation(summary = "채팅방 id 조회(없으면 생성) - 코치 입장", description = "코치 입장 - 담당 학생의 id를 입력하면 그 학생과의 채팅방이 존재하는지 확인한 후 있으면 채팅방 id를 리턴 없으면 생성후 리턴합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공"),
+                    @ApiResponse(responseCode = "400", description = "코치가 아닙니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            })
     public ResponseEntity<ResponseWrapper<String>> getOrCreateChatRoom(@PathVariable(value = "studentId")Long studentId) throws ExecutionException, InterruptedException {
 
         String id = chatService.getOrCreateChatRoom(studentId).getId();
@@ -63,7 +71,11 @@ public class ChatController {
 
     //학생입장
     @PostMapping("/room")
-    @Operation(summary = "학생입장 - 채팅방 id 조회 (없으면 생성)", description = "학생입장 - 코치와의 채팅 방이 존재하는지 확인한 후 있으면 채팅방 id 리턴 없으면 생성후 리턴합니다.")
+    @Operation(summary = "학생입장 - 채팅방 id 조회 (없으면 생성)", description = "학생입장 - 코치와의 채팅 방이 존재하는지 확인한 후 있으면 채팅방 id 리턴 없으면 생성후 리턴합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공"),
+                    @ApiResponse(responseCode = "400", description = "잘못된 멤버 ID 입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            })
     public ResponseEntity<ResponseWrapper<Map<String, Object>>> getOrCreateChatRoomForStudent() throws ExecutionException, InterruptedException {
         ChatRoomInfo chatRoomInfo = chatService.getOrCreateChatRoomForStudent();
 
