@@ -110,6 +110,7 @@ public class ChallengePostRepositoryCustomImpl implements ChallengePostRepositor
                         qChallengePost.songTitle,
                         qChallengePost.singer,
                         qChallengePost.member.nickName,
+                        qChallengePost.createdAt,
                         qChallengeLike.isNotNull().as("liked")
                 ))
                 .from(qChallengePost)

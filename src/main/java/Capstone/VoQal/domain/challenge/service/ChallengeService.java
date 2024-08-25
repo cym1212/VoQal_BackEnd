@@ -96,6 +96,13 @@ public class ChallengeService {
         ChallengePost existingPost = challengePostRepository.findById(challengePostId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CHALLENGE_POST_NOT_FOUND));
 
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime fiveMinutesAgo = now.minusMinutes(5);
+
+        if (existingPost.getCreatedAt().isBefore(fiveMinutesAgo)) {
+            throw new BusinessException(ErrorCode.CAN_NOT_UPDATE);
+        }
+
         s3UploadService.copyFile(existingPost.getChallengeRecordUrl(), UploadUtils.CHALLENGE_RECORD, UploadUtils.CHALLENGE_RECORD_DELETED);
         s3UploadService.copyFile(existingPost.getThumbnailUrl(), UploadUtils.CHALLENGE_THUMBNAIL, UploadUtils.CHALLENGE_THUMBNAIL_DELETED);
 
@@ -105,7 +112,7 @@ public class ChallengeService {
         String updateThumbnail = s3UploadService.uploadFile(thumbnail, UploadUtils.CHALLENGE_THUMBNAIL, currentMember.getId());
         String updateRecord = s3UploadService.uploadFile(record, UploadUtils.CHALLENGE_RECORD, currentMember.getId());
 
-        challengePostRepository.updateChallengePost(challengePostId,updateThumbnail,updateRecord,updateChallengeRequestDTO.getUpdateSongTitle(),updateChallengeRequestDTO.getUpdateSinger() );
+        challengePostRepository.updateChallengePost(challengePostId, updateThumbnail, updateRecord, updateChallengeRequestDTO.getUpdateSongTitle(), updateChallengeRequestDTO.getUpdateSinger());
 
     }
 

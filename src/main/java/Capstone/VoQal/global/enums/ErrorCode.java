@@ -81,9 +81,10 @@ public enum ErrorCode {
 
     //ChallengePost
     CHALLENGE_POST_NOT_FOUND(400,"CP001","챌린지 게시물을 찾을 수 없습니다."),
-    KEYWORD_NOT_FOUND(400,"CP002","키워드를 찾을 수 없습니다."),
-    LIKE_NOT_FOUND(400,"CP003", "좋아요를 찾을 수 없습니다."),
-    ALREADY_LIKED(400,"CP004", "이미 좋아요를 눌렀습니다.");
+    CAN_NOT_UPDATE(400,"CP002","시간이 지나 챌린지 게시물을 수정할 수 없습니다"),
+    KEYWORD_NOT_FOUND(400,"CP003","키워드를 찾을 수 없습니다."),
+    LIKE_NOT_FOUND(400,"CP004", "좋아요를 찾을 수 없습니다."),
+    ALREADY_LIKED(400,"CP005", "이미 좋아요를 눌렀습니다.");
 
     private final String code;
     private final String message;

@@ -78,6 +78,7 @@ public class ChallengeController {
                     @ApiResponse(responseCode = "200", description = "성공"),
                     @ApiResponse(responseCode = "400", description = "요청에 실패했습니다. 다시 요청해주세요", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
                     @ApiResponse(responseCode = "400", description = "Multipart File을 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "시간이 지나 챌린지 게시물을 수정할 수 없습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
                     @ApiResponse(responseCode = "400", description = "챌린지 게시물을 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             })
     public ResponseEntity<MessageDTO> updateChallengePost(
