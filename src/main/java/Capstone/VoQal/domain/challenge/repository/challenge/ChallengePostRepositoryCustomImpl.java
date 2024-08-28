@@ -49,6 +49,7 @@ public class ChallengePostRepositoryCustomImpl implements ChallengePostRepositor
                         qChallengePost.songTitle,
                         qChallengePost.singer,
                         qMember.nickName,
+                        qChallengePost.createdAt,
                         qChallengeLike.count().as("likeCount")
                 ))
                 .from(qChallengePost)
