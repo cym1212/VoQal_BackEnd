@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 public class GetLikedPostDTO {
     private Long challengeId;
 
+    private String nickName;
+
     private String challengeRecordUrl;
 
     private String thumbnailUrl;

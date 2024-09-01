@@ -73,6 +73,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
         MemberInfromationDTO memberInfromationDTO = queryFactory
                 .select(Projections.fields(
                         MemberInfromationDTO.class,
+                        member.id.as("memberId"),  // memberId 추가
                         member.nickName.as("nickName"),
                         member.email.as("email"),
                         member.name.as("name"),

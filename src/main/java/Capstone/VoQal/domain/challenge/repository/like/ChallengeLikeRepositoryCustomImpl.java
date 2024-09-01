@@ -46,6 +46,7 @@ public class ChallengeLikeRepositoryCustomImpl implements ChallengeLikeRepositor
         return queryFactory.select(Projections.constructor(
                         GetLikedPostDTO.class,
                         qChallengePost.id,
+                        qChallengePost.member.nickName,
                         qChallengePost.challengeRecordUrl,
                         qChallengePost.thumbnailUrl,
                         qChallengePost.songTitle,

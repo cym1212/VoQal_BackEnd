@@ -10,6 +10,7 @@ import lombok.*;
 @Builder
 public class MemberInfromationDTO {
 
+    private Long memberId;
     private String nickName;
     private String email;
     private String name;
@@ -21,6 +22,7 @@ public class MemberInfromationDTO {
     // 필요 시 별도의 메서드를 추가하여 새로운 인스턴스를 반환하는 방식 사용
     public MemberInfromationDTO withAssignedCoach(String assignedCoach) {
         return MemberInfromationDTO.builder()
+                .memberId(this.memberId)
                 .nickName(this.nickName)
                 .email(this.email)
                 .name(this.name)
@@ -33,6 +35,7 @@ public class MemberInfromationDTO {
 
     public MemberInfromationDTO withLessonSongUrl(String lessonSongUrl) {
         return MemberInfromationDTO.builder()
+                .memberId(this.memberId)
                 .nickName(this.nickName)
                 .email(this.email)
                 .name(this.name)
