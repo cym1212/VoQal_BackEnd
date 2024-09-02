@@ -2,6 +2,7 @@ package Capstone.VoQal.domain.challenge.service;
 
 
 import Capstone.VoQal.domain.challenge.domain.ChallengeKeyword;
+import Capstone.VoQal.domain.challenge.dto.KeywordDTO;
 import Capstone.VoQal.domain.challenge.repository.keyword.KeywordRepository;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.error.exception.BusinessException;
@@ -23,7 +24,6 @@ public class KeywordService {
 
     private final KeywordRepository keywordRepository;
     private final Set<Long> usedKeywords = new HashSet<>();
-    @Getter
     private String todayKeyword;
     private int used = 0;
     private static final int MAX_KEYWORDS = 100;
@@ -39,7 +39,6 @@ public class KeywordService {
 
         // 사용되지 않은 키워드를 한 번에 모두 가져옵니다.
         List<ChallengeKeyword> availableKeywords = keywordRepository.findAvailableKeywords();
-        log.info("test");
         if (availableKeywords.isEmpty()) {
             throw new BusinessException(ErrorCode.KEYWORD_NOT_FOUND);
         }
@@ -57,5 +56,20 @@ public class KeywordService {
 
         // 키워드를 사용된 상태로 업데이트합니다.
         keywordRepository.markKeywordAsUsed(keyword.getId());
+    }
+
+    @Transactional
+    public KeywordDTO getKeywordAndColor() {
+        if (todayKeyword == null) {
+            throw new BusinessException(ErrorCode.KEYWORD_NOT_FOUND);
+        }
+
+        ChallengeKeyword challengeKeyword = keywordRepository.findByKeyword(todayKeyword)
+                .orElseThrow(() -> new BusinessException(ErrorCode.KEYWORD_NOT_FOUND));
+
+        return KeywordDTO.builder()
+                .keyword(challengeKeyword.getKeyword())
+                .color(challengeKeyword.getColor())
+                .build();
     }
 }

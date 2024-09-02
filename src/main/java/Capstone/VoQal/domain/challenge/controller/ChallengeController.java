@@ -1,9 +1,6 @@
 package Capstone.VoQal.domain.challenge.controller;
 
-import Capstone.VoQal.domain.challenge.dto.CreateChallengeRequestDTO;
-import Capstone.VoQal.domain.challenge.dto.GetAllChallengeResponseDTO;
-import Capstone.VoQal.domain.challenge.dto.GetMyChallengeResponseDTO;
-import Capstone.VoQal.domain.challenge.dto.UpdateChallengeRequestDTO;
+import Capstone.VoQal.domain.challenge.dto.*;
 import Capstone.VoQal.domain.challenge.service.ChallengeService;
 import Capstone.VoQal.domain.challenge.service.KeywordService;
 import Capstone.VoQal.global.dto.MessageDTO;
@@ -110,8 +107,8 @@ public class ChallengeController {
 
     @GetMapping("/keyword")
     @Operation(summary = "챌린지 키워드 조회 로직 ", description = "오늘의 챌린지 키워드를 조회합니다.")
-    public String  getKeyword() {
-        return keywordService.getTodayKeyword();
+    public KeywordDTO getKeyword() {
+        return keywordService.getKeywordAndColor();
     }
 
 }

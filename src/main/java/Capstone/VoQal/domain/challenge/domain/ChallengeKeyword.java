@@ -23,10 +23,12 @@ public class ChallengeKeyword extends BaseEntity {
     private String keyword;
     private boolean used;
     private LocalDate usedDate;
+    private String color;
 
-    public ChallengeKeyword(String keyword, boolean used, LocalDate usedDate) {
+    public ChallengeKeyword(String keyword, boolean used, LocalDate usedDate,String color) {
         this.keyword = keyword;
         this.used = used;
         this.usedDate = usedDate;
+        this.color = color;
     }
 }
