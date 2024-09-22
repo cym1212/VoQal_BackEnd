@@ -17,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.ExecutionException;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -159,7 +161,7 @@ public class       AuthController {
                     @ApiResponse(responseCode = "200", description = "성공"),
                     @ApiResponse(responseCode = "400", description = "잘못된 Member ID 입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             })
-    public ResponseEntity<MessageDTO> deleteMember() {
+    public ResponseEntity<MessageDTO> deleteMember() throws ExecutionException, InterruptedException {
         authService.deleteMember();
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MessageDTO.builder()
@@ -179,6 +181,16 @@ public class       AuthController {
         return jwtProvider.reissueToken(tokenModifyRequest.getRefreshToken());
     }
 
+    @PatchMapping("/logout")
+    @Operation(summary = "로그아웃", description = "refresh token을 비웁니다. 프론트측에서도 access token을 처리해주세요.")
+    public ResponseEntity<MessageDTO> logout() {
+        authService.logout();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(MessageDTO.builder()
+                        .message("성공적으로 로그아웃되었습니다")
+                        .status(HttpStatus.OK.value())
+                        .build());
+    }
 
     @PostMapping("/test")
     public String test() {

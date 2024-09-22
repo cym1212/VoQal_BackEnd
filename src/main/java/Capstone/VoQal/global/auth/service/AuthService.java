@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 import static Capstone.VoQal.global.enums.Role.GUEST;
 
@@ -137,15 +138,24 @@ public class AuthService {
             throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
         }
     }
+
+
     @Transactional
-    public void deleteMember() {
+    public void deleteMember() throws ExecutionException, InterruptedException {
         Long memberId = memberService.getCurrentMember().getId();
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_MEMBER_ID));
 
-        memberRepository.delete(member);
+        memberService.deleteMember();
     }
 
+
+    @Transactional
+    public void logout() {
+        Long currentMember = memberService.getCurrentMember().getId();
+
+        memberRepository.invalidateRefreshToken(currentMember);
+    }
 }
 
 
