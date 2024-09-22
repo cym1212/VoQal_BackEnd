@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @AllArgsConstructor
 public class HomeController {
 
-    @GetMapping("/test")
+    @GetMapping("/")
     @ResponseBody
     public String getRoot() {
         return "Hello World";

@@ -4,6 +4,8 @@ import Capstone.VoQal.domain.member.domain.CoachAndStudent;
 import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.domain.member.domain.Student;
 
+import java.util.concurrent.ExecutionException;
+
 public interface MemberService {
 
     Member getCurrentCoach();
@@ -22,4 +24,6 @@ public interface MemberService {
     Long getCoachIdByStudentId(Long studentId);
 
     CoachAndStudent getCoachAndStudentWithSignUp(Long coachId, Long studentId);
+
+    public void deleteMember() throws ExecutionException, InterruptedException;
 }

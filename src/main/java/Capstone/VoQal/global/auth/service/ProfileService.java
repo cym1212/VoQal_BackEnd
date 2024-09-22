@@ -1,5 +1,6 @@
 package Capstone.VoQal.global.auth.service;
 
+import Capstone.VoQal.domain.member.service.CoachAndStudentService;
 import Capstone.VoQal.domain.member.service.MemberService;
 import Capstone.VoQal.domain.member.domain.Coach;
 import Capstone.VoQal.domain.member.domain.CoachAndStudent;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +36,7 @@ public class ProfileService {
     private final AuthService authService;
     private final JwtProvider jwtProvider;
     private final MemberService memberService;
+    private final CoachAndStudentService coachAndStudentService;
 
     @Transactional
     public GeneratedTokenDTO setRoleToCoach() {
@@ -186,9 +189,9 @@ public class ProfileService {
 
 
     @Transactional
-    public MessageDTO deleteStudent(Long studentId) {
+    public MessageDTO deleteStudent(Long studentId) throws ExecutionException, InterruptedException {
         Member coach = memberService.getCurrentMember();
-        coachAndStudentRepository.deleteByCoachIdAndStudentId(coach.getId(), studentId);
+        coachAndStudentService.deleteByCoachIdAndStudentId(coach.getId(), studentId);
         Member member = memberService.getMemberById(studentId);
         member.setRole(Role.GUEST);
         return MessageDTO.builder()

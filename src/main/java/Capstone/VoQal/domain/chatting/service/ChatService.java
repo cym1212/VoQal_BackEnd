@@ -33,23 +33,31 @@ public class ChatService {
         Firestore dbFirestore = FirestoreClient.getFirestore();
         CollectionReference chatRooms = dbFirestore.collection(CHAT_COLLECTION);
 
+        // 기존 채팅방 조회 (학생 ID가 포함된 방)
         ApiFuture<QuerySnapshot> future = chatRooms
                 .whereArrayContains("participants", studentIdString)
                 .get();
 
         List<ChatRoom> rooms = future.get().toObjects(ChatRoom.class);
 
+        // 현재 코치와 학생이 포함된 채팅방이 있는지 확인
         for (ChatRoom room : rooms) {
             if (room.getParticipants().contains(currentMemberId) && room.getParticipants().contains(studentIdString)) {
-                return chatRooms.document(room.getId());
+                return chatRooms.document(room.getId());  // 기존 채팅방 반환
             }
         }
 
-        DocumentReference newRoom = chatRooms.document();
-        ChatRoom chatRoom = new ChatRoom(newRoom.getId(), List.of(studentIdString, currentMemberId), System.currentTimeMillis());
-        newRoom.set(chatRoom);
+        // 새로운 채팅방 ID를 코치ID_학생ID 형식으로 생성
+        String chatRoomId = currentMemberId + "_" + studentIdString;
+        DocumentReference newRoom = chatRooms.document(chatRoomId);
+
+        // 새로운 채팅방 생성
+        ChatRoom chatRoom = new ChatRoom(chatRoomId, List.of(studentIdString, currentMemberId), System.currentTimeMillis());
+        newRoom.set(chatRoom).get();  // Firestore에 저장 완료 후 반환
+
         return newRoom;
     }
+
 
     // 채팅방 찾기 (학생입장)
     public ChatRoomInfo getOrCreateChatRoomForStudent() throws ExecutionException, InterruptedException {
@@ -59,23 +67,34 @@ public class ChatService {
         Firestore dbFirestore = FirestoreClient.getFirestore();
         CollectionReference chatRooms = dbFirestore.collection(CHAT_COLLECTION);
 
+        // 기존 채팅방 조회 (현재 학생이 포함된 방)
         ApiFuture<QuerySnapshot> future = chatRooms
                 .whereArrayContains("participants", currentMemberId.toString())
                 .get();
 
         List<ChatRoom> rooms = future.get().toObjects(ChatRoom.class);
 
+        // 현재 학생과 코치가 포함된 채팅방이 있는지 확인
         for (ChatRoom room : rooms) {
             if (room.getParticipants().contains(coachId.toString()) && room.getParticipants().contains(currentMemberId.toString())) {
-                return new ChatRoomInfo(chatRooms.document(room.getId()), coachId);  // ChatRoomInfo 객체 반환
+                return new ChatRoomInfo(chatRooms.document(room.getId()), coachId);  // 기존 채팅방이 있을 경우 반환
             }
         }
 
-        DocumentReference newRoom = chatRooms.document();
-        ChatRoom chatRoom = new ChatRoom(newRoom.getId(), List.of(currentMemberId.toString(), coachId.toString()), System.currentTimeMillis());
-        newRoom.set(chatRoom);
+        // 새로운 채팅방 ID를 "coachId_studentId" 형식으로 생성
+        String chatRoomId = coachId.toString() + "_" + currentMemberId.toString();
+        DocumentReference newRoom = chatRooms.document(chatRoomId);
+
+        // 새로운 채팅방 생성
+        ChatRoom chatRoom = new ChatRoom(chatRoomId, List.of(currentMemberId.toString(), coachId.toString()), System.currentTimeMillis());
+
+        // Firestore에 채팅방 저장 완료 대기
+        newRoom.set(chatRoom).get();
+
+        // 새로 생성된 채팅방 정보 반환
         return new ChatRoomInfo(newRoom, coachId);
     }
+
 
 
 

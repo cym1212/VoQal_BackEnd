@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequiredArgsConstructor
@@ -136,7 +137,7 @@ public class ProfileController {
 
     @DeleteMapping("{id}")
     @Operation(summary = "담당 학생 삭제 ", description = "본인이 담당하는 학생을 삭제합니다.")
-    public ResponseEntity<MessageDTO> studentDelete(@PathVariable("id") Long id) {
+    public ResponseEntity<MessageDTO> studentDelete(@PathVariable("id") Long id) throws ExecutionException, InterruptedException {
         MessageDTO deleted = profileService.deleteStudent(id);
         return ResponseEntity.ok(deleted);
     }

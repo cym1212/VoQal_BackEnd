@@ -14,7 +14,6 @@ public interface CoachAndStudentRepositoryCustom {
 
     List<CoachAndStudent> findApprovedStudentsByCoachId(Long coachMemberId);
 
-    void deleteByCoachIdAndStudentId(Long coachId, Long studentId);
 
     Optional<RequestStatus> getStudentStatusByMemberId(Long memberId);
 

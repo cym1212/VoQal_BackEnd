@@ -75,16 +75,6 @@ public class CoachAndStudentRepositoryCustomImpl implements CoachAndStudentRepos
                 .fetch();
     }
 
-    @Override
-    @Transactional
-    public void deleteByCoachIdAndStudentId(Long coachId, Long studentId) {
-        QCoachAndStudent coachAndStudent = QCoachAndStudent.coachAndStudent;
-
-        long deletedCount = queryFactory.delete(coachAndStudent)
-                .where(coachAndStudent.coach.member.id.eq(coachId)
-                        .and(coachAndStudent.student.member.id.eq(studentId)))
-                .execute();
-    }
 
     @Transactional
     public Optional<RequestStatus> getStudentStatusByMemberId(Long memberId) {
