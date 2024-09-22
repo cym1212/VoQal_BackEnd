@@ -89,10 +89,8 @@ public class ChallengeService {
     @Transactional
     public void updateChallengePost(Long challengePostId, MultipartFile thumbnail, MultipartFile record, UpdateChallengeRequestDTO updateChallengeRequestDTO) {
         Member currentMember = memberService.getCurrentMember();
-        if (thumbnail.isEmpty() || record.isEmpty()) {
-            throw new BusinessException(ErrorCode.MULTIPART_FILE_NOT_FOUND);
-        }
 
+        // 기존 게시물 가져오기
         ChallengePost existingPost = challengePostRepository.findById(challengePostId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CHALLENGE_POST_NOT_FOUND));
 
@@ -103,18 +101,40 @@ public class ChallengeService {
             throw new BusinessException(ErrorCode.CAN_NOT_UPDATE);
         }
 
-        s3UploadService.copyFile(existingPost.getChallengeRecordUrl(), UploadUtils.CHALLENGE_RECORD, UploadUtils.CHALLENGE_RECORD_DELETED);
-        s3UploadService.copyFile(existingPost.getThumbnailUrl(), UploadUtils.CHALLENGE_THUMBNAIL, UploadUtils.CHALLENGE_THUMBNAIL_DELETED);
+        // 썸네일 파일이 있으면 수정, 없으면 기존 파일 유지
+        String updateThumbnail;
+        if (thumbnail != null && !thumbnail.isEmpty()) {
+            // 기존 썸네일 백업 및 삭제
+            s3UploadService.copyFile(existingPost.getThumbnailUrl(), UploadUtils.CHALLENGE_THUMBNAIL, UploadUtils.CHALLENGE_THUMBNAIL_DELETED);
+            s3UploadService.deleteFile(existingPost.getThumbnailUrl());
+            // 새 썸네일 업로드
+            updateThumbnail = s3UploadService.uploadFile(thumbnail, UploadUtils.CHALLENGE_THUMBNAIL, currentMember.getId());
+        } else {
+            updateThumbnail = existingPost.getThumbnailUrl(); // 수정하지 않을 경우 기존 값 유지
+        }
 
-        s3UploadService.deleteFile(existingPost.getChallengeRecordUrl());
-        s3UploadService.deleteFile(existingPost.getThumbnailUrl());
+        // 녹음 파일이 있으면 수정, 없으면 기존 파일 유지
+        String updateRecord;
+        if (record != null && !record.isEmpty()) {
+            // 기존 녹음 파일 백업 및 삭제
+            s3UploadService.copyFile(existingPost.getChallengeRecordUrl(), UploadUtils.CHALLENGE_RECORD, UploadUtils.CHALLENGE_RECORD_DELETED);
+            s3UploadService.deleteFile(existingPost.getChallengeRecordUrl());
+            // 새 녹음 파일 업로드
+            updateRecord = s3UploadService.uploadFile(record, UploadUtils.CHALLENGE_RECORD, currentMember.getId());
+        } else {
+            updateRecord = existingPost.getChallengeRecordUrl(); // 수정하지 않을 경우 기존 값 유지
+        }
 
-        String updateThumbnail = s3UploadService.uploadFile(thumbnail, UploadUtils.CHALLENGE_THUMBNAIL, currentMember.getId());
-        String updateRecord = s3UploadService.uploadFile(record, UploadUtils.CHALLENGE_RECORD, currentMember.getId());
+        // 제목이나 가수가 수정되지 않았다면 기존 값 유지
+        String updateSongTitle = updateChallengeRequestDTO.getUpdateSongTitle() != null ?
+                updateChallengeRequestDTO.getUpdateSongTitle() : existingPost.getSongTitle();
+        String updateSinger = updateChallengeRequestDTO.getUpdateSinger() != null ?
+                updateChallengeRequestDTO.getUpdateSinger() : existingPost.getSinger();
 
-        challengePostRepository.updateChallengePost(challengePostId, updateThumbnail, updateRecord, updateChallengeRequestDTO.getUpdateSongTitle(), updateChallengeRequestDTO.getUpdateSinger());
-
+        // 최종 업데이트
+        challengePostRepository.updateChallengePost(challengePostId, updateThumbnail, updateRecord, updateSongTitle, updateSinger);
     }
+
 
 
     //본인이 올린 챌린지 삭제

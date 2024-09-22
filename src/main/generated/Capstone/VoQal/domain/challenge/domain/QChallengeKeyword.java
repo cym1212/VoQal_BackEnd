@@ -24,6 +24,8 @@ public class QChallengeKeyword extends EntityPathBase<ChallengeKeyword> {
 
     public final ListPath<ChallengePost, QChallengePost> challengePost = this.<ChallengePost, QChallengePost>createList("challengePost", ChallengePost.class, QChallengePost.class, PathInits.DIRECT2);
 
+    public final StringPath color = createString("color");
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 

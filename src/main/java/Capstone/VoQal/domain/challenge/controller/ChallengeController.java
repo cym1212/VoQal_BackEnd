@@ -80,8 +80,8 @@ public class ChallengeController {
             })
     public ResponseEntity<MessageDTO> updateChallengePost(
             @PathVariable("challengePostId") Long challengePostId,
-            @RequestPart(value ="thumbnail") MultipartFile thumbnail,
-            @RequestPart(value ="record") MultipartFile record,
+            @RequestPart(value ="thumbnail",required = false) MultipartFile thumbnail,
+            @RequestPart(value ="record",required = false) MultipartFile record,
             @RequestPart(value = "data") UpdateChallengeRequestDTO updateChallengeRequestDTO) {
         challengeService.updateChallengePost(challengePostId, thumbnail, record, updateChallengeRequestDTO);
         return ResponseEntity.ok().body(MessageDTO.builder()
