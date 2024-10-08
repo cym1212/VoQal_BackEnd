@@ -57,7 +57,7 @@ public class ChatController {
                 .build();
     }
 
-    // 이전 메시지 가져오기
+    //  메시지 가져오기
     @GetMapping("/{chatId}/messages")
     @Operation(summary = "메시지 내역 조회 로직", description = "기존의 메시지 전송 내역을 가져옵니다.")
     public ResponseEntity<ResponseWrapper<List<ChatMessageResponse>>> getMessages(@PathVariable(value = "chatId") String chatId) throws ExecutionException, InterruptedException {

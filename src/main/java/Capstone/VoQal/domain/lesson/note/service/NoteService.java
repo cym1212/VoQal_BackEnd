@@ -23,7 +23,6 @@ import java.util.List;
 public class NoteService {
     private final MemberService memberService;
     private final LessonNoteRepository lessonNoteRepository;
-    private final CoachAndStudentRepository coachAndStudentRepository;
 
 
     //coach

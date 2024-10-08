@@ -8,11 +8,16 @@ import Capstone.VoQal.global.auth.dto.*;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.error.exception.BusinessException;
 
+import Capstone.VoQal.global.firebase.service.FirebaseService;
 import Capstone.VoQal.global.jwt.service.JwtProvider;
+import com.google.firebase.auth.FirebaseAuthException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +35,7 @@ public class AuthService {
     private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
     private final MemberService memberService;
+    private final FirebaseService firebaseService;
 
 
     @Transactional
@@ -58,7 +64,6 @@ public class AuthService {
                 .status(200)
                 .build();
     }
-
 
 
     @Transactional
@@ -93,6 +98,7 @@ public class AuthService {
         return findNickname.isPresent();
 
     }
+
     @Transactional
     public boolean duplicateEmail(String requsetEmail) {
         Optional<Member> findEmail = memberRepository.findByEmail(requsetEmail);
@@ -111,8 +117,7 @@ public class AuthService {
                     .email(findEmailMember.getEmail())
                     .status(200)
                     .build();
-        }
-        else {
+        } else {
             throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
         }
 
@@ -120,7 +125,7 @@ public class AuthService {
 
     @Transactional
     public boolean checkMember(FindRequestDTO.Password findPasswordRequestDTO) {
-        Optional<Member> findMember = memberRepository.findByNameAndPhoneNumberAndEmail(findPasswordRequestDTO.getName(),findPasswordRequestDTO.getPhoneNumber(),findPasswordRequestDTO.getEmail());
+        Optional<Member> findMember = memberRepository.findByNameAndPhoneNumberAndEmail(findPasswordRequestDTO.getName(), findPasswordRequestDTO.getPhoneNumber(), findPasswordRequestDTO.getEmail());
 
         return findMember.isPresent();
     }
@@ -155,6 +160,29 @@ public class AuthService {
         Long currentMember = memberService.getCurrentMember().getId();
 
         memberRepository.invalidateRefreshToken(currentMember);
+    }
+
+    @Transactional
+    // Firebase Custom Token 생성 로직
+    public CustomTokenDTO generateFirebaseCustomToken(String jwtToken) throws FirebaseAuthException {
+        try {
+            Claims claims = jwtProvider.verifyToken(jwtToken);
+
+            String userId = claims.getId();
+
+
+            String customToken = firebaseService.createFirebaseCustomToken(userId);
+            CustomTokenDTO customTokenDTO = CustomTokenDTO.builder()
+                    .firebaseCustomToken(customToken)
+                    .status(200)
+                    .build();
+            return customTokenDTO;
+        } catch (JwtException e) {
+            throw new BusinessException(ErrorCode.INVALID_JWT_TOKEN);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.FAIL_TO_MAKE_FIREBASE_CUSTOM_TOKEN);
+        }
+
     }
 }
 

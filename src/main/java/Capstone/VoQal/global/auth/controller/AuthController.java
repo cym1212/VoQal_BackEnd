@@ -6,6 +6,8 @@ import Capstone.VoQal.global.auth.service.AuthService;
 import Capstone.VoQal.global.error.exception.ErrorResponse;
 import Capstone.VoQal.global.jwt.service.JwtProvider;
 import Capstone.VoQal.global.dto.MessageDTO;
+import com.google.firebase.auth.FirebaseAuthException;
+import io.jsonwebtoken.JwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class       AuthController {
+public class AuthController {
     private final AuthService authService;
     private final JwtProvider jwtProvider;
 
@@ -115,8 +117,6 @@ public class       AuthController {
     }
 
 
-
-
     @PostMapping("/find/member")
     @Operation(summary = "회원인지 찾기 ", description = "이름과 전화번호 이메일을 사용해서 가입된 회원인지 확인합니다.",
             responses = {
@@ -191,6 +191,18 @@ public class       AuthController {
                         .status(HttpStatus.OK.value())
                         .build());
     }
+
+    @PostMapping("/firebase-token")
+    @Operation(summary = "파이어베이스 커스텀 토큰 발급", description = "헤더에 존재하는 토큰을 기반으로 커스텀 토큰을 생성합니다. 반드시 Bearer (jwtToken) 형태로 보내주세요.")
+    public ResponseEntity<CustomTokenDTO> getFirebaseCustomToken(@RequestHeader("Authorization") String jwtToken) throws FirebaseAuthException {
+
+        if (jwtToken.startsWith("Bearer ")) {
+            jwtToken = jwtToken.substring(7);
+        }
+        CustomTokenDTO customTokenDTO = authService.generateFirebaseCustomToken(jwtToken);
+        return ResponseEntity.ok(customTokenDTO);
+    }
+
 
     @PostMapping("/test")
     public String test() {
