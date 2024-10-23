@@ -4,11 +4,16 @@ import Capstone.VoQal.domain.chatting.dto.ChatMessageRequest;
 import Capstone.VoQal.domain.chatting.dto.ChatMessageResponse;
 import Capstone.VoQal.domain.chatting.dto.ChatRoom;
 import Capstone.VoQal.domain.chatting.dto.ChatRoomInfo;
+import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.domain.member.repository.CoachAndStudent.CoachAndStudentRepository;
 import Capstone.VoQal.domain.member.service.MemberService;
+import Capstone.VoQal.global.enums.ErrorCode;
+import Capstone.VoQal.global.error.exception.BusinessException;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -113,8 +118,30 @@ public class ChatService {
         messages.add(chatMessageWithTimestamp);
 
         dbFirestore.collection(CHAT_COLLECTION).document(chatId).update("lastMessageTimestamp", currentTimestamp);
-    }
 
+        Member receiver = memberService.getMemberById(Long.valueOf(message.getReceiverId()));
+
+        if (receiver != null) {
+            String fcmToken = receiver.getFcmToken();
+
+            if (fcmToken != null) {
+                sendPushNotification(fcmToken,"새로운 메시지가 도착했습니다", message.getMessage());
+            }
+        }
+    }
+    public void sendPushNotification(String fcmToken, String title, String message) {
+        Message fcmMessage = Message.builder()
+                .setToken(fcmToken)
+                .putData("title", title)
+                .putData("message", message)
+                .build();
+
+        try {
+            FirebaseMessaging.getInstance().send(fcmMessage);
+        }catch (Exception e){
+            throw new BusinessException(ErrorCode.FAIL_TO_SEND_PUSH_NOTIFICATION);
+        }
+    }
 
     public List<ChatMessageResponse> getMessages(String chatId) throws ExecutionException, InterruptedException {
         Firestore dbFirestore = FirestoreClient.getFirestore();

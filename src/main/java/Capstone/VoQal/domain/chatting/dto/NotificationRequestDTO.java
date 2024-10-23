@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatMessageResponse {
+public class NotificationRequestDTO {
 
-    private String  receiverId;
+    private String  userId;
+    private String title;
     private String message;
-    private long timestamp;
 }

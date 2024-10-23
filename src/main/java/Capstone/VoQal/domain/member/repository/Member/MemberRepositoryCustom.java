@@ -16,4 +16,5 @@ public interface MemberRepositoryCustom {
     String findRoleById(Long memberId);
 
     MemberInfromationDTO getCurrentUserDetails(Long memberId);
+    void updateFcmToken(Long id, String fcmToken);
 }

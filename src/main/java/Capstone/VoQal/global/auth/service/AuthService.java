@@ -88,7 +88,7 @@ public class AuthService {
             }
 
         } else {
-            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
         }
     }
 

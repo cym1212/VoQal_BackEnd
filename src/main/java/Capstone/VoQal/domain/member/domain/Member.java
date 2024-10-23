@@ -45,6 +45,8 @@ public class Member extends BaseEntity {
 
     private String name;
 
+    private String fcmToken;
+
     @Setter
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Student student;

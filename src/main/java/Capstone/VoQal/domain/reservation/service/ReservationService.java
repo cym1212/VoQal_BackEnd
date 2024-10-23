@@ -38,7 +38,7 @@ public class ReservationService {
         LocalDateTime startOfDay = getAvailableTimeDTO.getRequestDate().atStartOfDay();
         LocalDateTime endOfDay = getAvailableTimeDTO.getRequestDate().atTime(LocalTime.MAX);
 
-        List<Reservation> reservations = reservationRepository.findResrvationList(getAvailableTimeDTO.getRoomId(), startOfDay, endOfDay);
+        List<Reservation> reservations = reservationRepository.findReservationList(getAvailableTimeDTO.getRoomId(), startOfDay, endOfDay);
 
         reservations.forEach(reservation -> entityManager.lock(reservation, LockModeType.PESSIMISTIC_READ));
 
@@ -80,7 +80,7 @@ public class ReservationService {
 
         entityManager.lock(room, LockModeType.PESSIMISTIC_WRITE);
 
-        Optional<Reservation> checkReservation = reservationRepository.findSameResrvation(room.getId(), startTime, endTime);
+        Optional<Reservation> checkReservation = reservationRepository.findSameReservation(room.getId(), startTime, endTime);
         if (checkReservation.isPresent()) {
             throw new BusinessException(ErrorCode.RESERVATION_TIME_CONFLICT);
         }
@@ -88,7 +88,7 @@ public class ReservationService {
         if (reservationRequestDTO.getStartTime().isBefore(LocalDateTime.now())) {
             throw new BusinessException(ErrorCode.PAST_RESERVATION_NOT_ALLOWED);
         }
-        chechAvailableReservationTime(startTime, endTime);
+        checkAvailableReservationTime(startTime, endTime);
 
         Reservation reservation = Reservation.builder()
                 .room(room)
@@ -156,13 +156,13 @@ public class ReservationService {
 
         entityManager.lock(existingReservation, LockModeType.PESSIMISTIC_WRITE);
 
-        Optional<Reservation> conflictingReservations = reservationRepository.findSameResrvation(
+        Optional<Reservation> conflictingReservations = reservationRepository.findSameReservation(
                 newRoom.getId(), newStartTime, newEndTime);
 
         if (conflictingReservations.isPresent()) {
             throw new BusinessException(ErrorCode.RESERVATION_TIME_CONFLICT);
         }
-        chechAvailableReservationTime(updateReservationDTO.getNewStartTime(), updateReservationDTO.getNewEndTime());
+        checkAvailableReservationTime(updateReservationDTO.getNewStartTime(), updateReservationDTO.getNewEndTime());
 
 
         existingReservation.changeRoom(newRoom);
@@ -184,7 +184,7 @@ public class ReservationService {
 
     }
 
-    private static void chechAvailableReservationTime(LocalDateTime startTime, LocalDateTime endTime) {
+    private static void checkAvailableReservationTime(LocalDateTime startTime, LocalDateTime endTime) {
         LocalTime allowedStartTime = LocalTime.of(10, 0);
         LocalTime allowedEndTime = LocalTime.of(22, 0);
 

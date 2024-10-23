@@ -83,6 +83,9 @@ public enum ErrorCode {
     //Record
     RECORD_NOT_FOUND(400,"RD001","녹음 파일을 찾을 수 없습니다"),
 
+    //FCM 관련
+    FAIL_TO_SEND_PUSH_NOTIFICATION(400,"F001","푸시알림 전송 요청을 실패했습니다"),
+
     //ChallengePost
     CHALLENGE_POST_NOT_FOUND(400,"CP001","챌린지 게시물을 찾을 수 없습니다."),
     CAN_NOT_UPDATE(400,"CP002","시간이 지나 챌린지 게시물을 수정할 수 없습니다"),

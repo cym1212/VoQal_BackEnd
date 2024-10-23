@@ -54,6 +54,17 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
 
     @Override
     @Transactional
+    public void updateFcmToken(Long id, String fcmToken) {
+        QMember member = QMember.member;
+
+        queryFactory.update(member)
+                .set(member.fcmToken, fcmToken)
+                .where(member.id.eq(id))
+                .execute();
+    }
+
+    @Override
+    @Transactional
     public void updateRole(Long id, Role role) {
         QMember member = QMember.member;
 

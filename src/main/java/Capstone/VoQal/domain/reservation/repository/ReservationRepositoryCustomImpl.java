@@ -46,7 +46,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 
     @Transactional
     @Override
-    public List<Reservation> findResrvationList(Long roomId, LocalDateTime startOfDay, LocalDateTime endOfDay) {
+    public List<Reservation> findReservationList(Long roomId, LocalDateTime startOfDay, LocalDateTime endOfDay) {
         return queryFactory.selectFrom(reservation)
                 .where(
                         reservation.room.id.eq(roomId)
@@ -58,7 +58,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 
     @Transactional
     @Override
-    public Optional<Reservation> findSameResrvation(Long roomId, LocalDateTime startTime, LocalDateTime endTime) {
+    public Optional<Reservation> findSameReservation(Long roomId, LocalDateTime startTime, LocalDateTime endTime) {
         Reservation result = queryFactory.selectFrom(reservation)
                 .where(
                         reservation.room.id.eq(roomId)

@@ -137,7 +137,7 @@ public class ProfileController {
 
     @DeleteMapping("{id}")
     @Operation(summary = "담당 학생 삭제 ", description = "본인이 담당하는 학생을 삭제합니다.")
-    public ResponseEntity<MessageDTO> studentDelete(@PathVariable("id") Long id) throws ExecutionException, InterruptedException {
+    public ResponseEntity<MessageDTO> deleteStudent(@PathVariable("id") Long id) throws ExecutionException, InterruptedException {
         MessageDTO deleted = profileService.deleteStudent(id);
         return ResponseEntity.ok(deleted);
     }

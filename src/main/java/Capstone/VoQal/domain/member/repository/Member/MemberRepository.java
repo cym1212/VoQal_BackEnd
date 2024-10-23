@@ -20,6 +20,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
 
     Optional<Member> findByEmail(String email);
 
+    Optional<Member> findByIdAndFcmToken(Long id, String fcmToken);
 
     List<Member> findByRole(Role role);
 

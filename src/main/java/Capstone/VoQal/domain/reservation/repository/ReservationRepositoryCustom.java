@@ -10,7 +10,7 @@ public interface ReservationRepositoryCustom {
     void deleteReservation(Long reservationId);
     List<Reservation> findNonDeletedByMemberId(Long memberId);
 
-    Optional<Reservation> findSameResrvation(Long roomId, LocalDateTime startOfDay, LocalDateTime endOfDay);
+    Optional<Reservation> findSameReservation(Long roomId, LocalDateTime startOfDay, LocalDateTime endOfDay);
 
-    List<Reservation> findResrvationList(Long roomId, LocalDateTime startOfDay, LocalDateTime endOfDay);
+    List<Reservation> findReservationList(Long roomId, LocalDateTime startOfDay, LocalDateTime endOfDay);
 }

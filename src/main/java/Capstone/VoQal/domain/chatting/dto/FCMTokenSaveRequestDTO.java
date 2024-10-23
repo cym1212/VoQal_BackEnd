@@ -10,9 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatMessageResponse {
+public class FCMTokenSaveRequestDTO {
+    private String  userId;
+    private String fcmToken;
 
-    private String  receiverId;
-    private String message;
-    private long timestamp;
 }
