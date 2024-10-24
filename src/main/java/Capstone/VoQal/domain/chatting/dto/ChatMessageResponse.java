@@ -14,5 +14,7 @@ public class ChatMessageResponse {
 
     private String  receiverId;
     private String message;
-    private long timestamp;
+    private Long timestamp;
+
+
 }

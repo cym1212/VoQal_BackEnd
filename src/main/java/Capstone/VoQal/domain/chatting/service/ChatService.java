@@ -1,9 +1,6 @@
 package Capstone.VoQal.domain.chatting.service;
 
-import Capstone.VoQal.domain.chatting.dto.ChatMessageRequest;
-import Capstone.VoQal.domain.chatting.dto.ChatMessageResponse;
-import Capstone.VoQal.domain.chatting.dto.ChatRoom;
-import Capstone.VoQal.domain.chatting.dto.ChatRoomInfo;
+import Capstone.VoQal.domain.chatting.dto.*;
 import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.domain.member.repository.CoachAndStudent.CoachAndStudentRepository;
 import Capstone.VoQal.domain.member.service.MemberService;
@@ -12,14 +9,17 @@ import Capstone.VoQal.global.error.exception.BusinessException;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -57,7 +57,7 @@ public class ChatService {
         DocumentReference newRoom = chatRooms.document(chatRoomId);
 
         // 새로운 채팅방 생성
-        ChatRoom chatRoom = new ChatRoom(chatRoomId, List.of(studentIdString, currentMemberId), System.currentTimeMillis());
+        ChatRoom chatRoom = new ChatRoom(chatRoomId, List.of(studentIdString, currentMemberId), System.currentTimeMillis(), null, null);
         newRoom.set(chatRoom).get();  // Firestore에 저장 완료 후 반환
 
         return newRoom;
@@ -90,8 +90,9 @@ public class ChatService {
         String chatRoomId = coachId.toString() + "_" + currentMemberId.toString();
         DocumentReference newRoom = chatRooms.document(chatRoomId);
 
+
         // 새로운 채팅방 생성
-        ChatRoom chatRoom = new ChatRoom(chatRoomId, List.of(currentMemberId.toString(), coachId.toString()), System.currentTimeMillis());
+        ChatRoom chatRoom = new ChatRoom(chatRoomId, List.of(currentMemberId.toString(), coachId.toString()), System.currentTimeMillis(), null, null);
 
         // Firestore에 채팅방 저장 완료 대기
         newRoom.set(chatRoom).get();
@@ -99,8 +100,6 @@ public class ChatService {
         // 새로 생성된 채팅방 정보 반환
         return new ChatRoomInfo(newRoom, coachId);
     }
-
-
 
 
     public void sendMessage(String chatId, ChatMessageRequest message) {
@@ -118,37 +117,90 @@ public class ChatService {
         messages.add(chatMessageWithTimestamp);
 
         dbFirestore.collection(CHAT_COLLECTION).document(chatId).update("lastMessageTimestamp", currentTimestamp);
-
+        Member currentMember = memberService.getCurrentMember();
         Member receiver = memberService.getMemberById(Long.valueOf(message.getReceiverId()));
 
         if (receiver != null) {
             String fcmToken = receiver.getFcmToken();
 
             if (fcmToken != null) {
-                sendPushNotification(fcmToken,"새로운 메시지가 도착했습니다", message.getMessage());
+                sendPushNotification(fcmToken, currentMember.getName(), message.getMessage());
             }
         }
     }
+
     public void sendPushNotification(String fcmToken, String title, String message) {
         Message fcmMessage = Message.builder()
                 .setToken(fcmToken)
                 .putData("title", title)
                 .putData("message", message)
+                .setApnsConfig(ApnsConfig.builder()
+                        .putHeader("apns-priority", "10")
+                        .setAps(Aps.builder()
+                                .setAlert(ApsAlert.builder()
+                                        .setTitle(title)
+                                        .setBody(message)
+                                        .build())
+                                .setSound("default")
+                                .build())
+                        .build())
                 .build();
 
         try {
             FirebaseMessaging.getInstance().send(fcmMessage);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new BusinessException(ErrorCode.FAIL_TO_SEND_PUSH_NOTIFICATION);
         }
     }
 
-    public List<ChatMessageResponse> getMessages(String chatId) throws ExecutionException, InterruptedException {
+
+    public ChatMessageWithReadTimeDTO getMessagesWithReadTimes(String chatId) throws ExecutionException, InterruptedException {
         Firestore dbFirestore = FirestoreClient.getFirestore();
-        ApiFuture<QuerySnapshot> future = dbFirestore.collection(CHAT_COLLECTION).document(chatId).collection("messages")
-                .orderBy("timestamp", Query.Direction.ASCENDING)  // 오래된 순서대로 정렬
-                .get();
-        return future.get().toObjects(ChatMessageResponse.class);
+
+        // Firestore 병렬 호출을 위한 CompletableFuture
+        CompletableFuture<DocumentSnapshot> chatDocumentFuture = CompletableFuture.supplyAsync(() -> {
+            try {
+                return dbFirestore.collection(CHAT_COLLECTION).document(chatId).get().get();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        CompletableFuture<List<QueryDocumentSnapshot>> messagesFuture = CompletableFuture.supplyAsync(() -> {
+            try {
+                return dbFirestore.collection(CHAT_COLLECTION).document(chatId).collection("messages")
+                        .orderBy("timestamp", Query.Direction.ASCENDING)
+                        .get().get().getDocuments();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        // 두 Future가 완료될 때까지 기다림
+        DocumentSnapshot chatDocument = chatDocumentFuture.get();
+        List<QueryDocumentSnapshot> messagesDocs = messagesFuture.get();
+
+        // coachLastReadTime 및 studentLastReadTime 가져오기
+        Long coachLastReadTime = chatDocument.getLong("coachLastReadTime");
+        Long studentLastReadTime = chatDocument.getLong("studentLastReadTime");
+
+        // 메시지 리스트 생성
+        List<ChatMessageResponse> messages = new ArrayList<>();
+        for (QueryDocumentSnapshot messageDoc : messagesDocs) {
+            ChatMessageResponse chatMessageResponse = ChatMessageResponse.builder()
+                    .receiverId(messageDoc.getString("receiverId"))
+                    .message(messageDoc.getString("message"))
+                    .timestamp(messageDoc.getLong("timestamp"))
+                    .build();
+            messages.add(chatMessageResponse);
+        }
+
+        // 결과 반환
+        return ChatMessageWithReadTimeDTO.builder()
+                .coachLastReadTime(coachLastReadTime)
+                .studentLastReadTime(studentLastReadTime)
+                .messages(messages)
+                .build();
     }
 
 }

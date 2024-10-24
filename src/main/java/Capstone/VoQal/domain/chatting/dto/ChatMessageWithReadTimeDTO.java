@@ -1,6 +1,5 @@
 package Capstone.VoQal.domain.chatting.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,10 +11,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatRoom {
-    private String id;
-    private List<String> participants; // A와 B의 사용자 ID 리스트
-    private Long lastMessageTimestamp;
+public class ChatMessageWithReadTimeDTO {
     private Long coachLastReadTime;
     private Long studentLastReadTime;
+    private List<ChatMessageResponse> messages;
 }

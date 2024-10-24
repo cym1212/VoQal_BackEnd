@@ -3,6 +3,7 @@ package Capstone.VoQal.domain.chatting.controller;
 
 import Capstone.VoQal.domain.chatting.dto.ChatMessageRequest;
 import Capstone.VoQal.domain.chatting.dto.ChatMessageResponse;
+import Capstone.VoQal.domain.chatting.dto.ChatMessageWithReadTimeDTO;
 import Capstone.VoQal.domain.chatting.dto.ChatRoomInfo;
 import Capstone.VoQal.domain.chatting.service.ChatService;
 import Capstone.VoQal.global.dto.MessageDTO;
@@ -60,9 +61,9 @@ public class ChatController {
     //  메시지 가져오기
     @GetMapping("/{chatId}/messages")
     @Operation(summary = "메시지 내역 조회 로직", description = "기존의 메시지 전송 내역을 가져옵니다.")
-    public ResponseEntity<ResponseWrapper<List<ChatMessageResponse>>> getMessages(@PathVariable(value = "chatId") String chatId) throws ExecutionException, InterruptedException {
-        List<ChatMessageResponse> messages = chatService.getMessages(chatId);
-        ResponseWrapper<List<ChatMessageResponse>> result = ResponseWrapper.<List<ChatMessageResponse>>builder()
+    public ResponseEntity<ResponseWrapper<ChatMessageWithReadTimeDTO>> getMessages(@PathVariable(value = "chatId") String chatId) throws ExecutionException, InterruptedException {
+        ChatMessageWithReadTimeDTO messages = chatService.getMessagesWithReadTimes(chatId);
+        ResponseWrapper<ChatMessageWithReadTimeDTO> result = ResponseWrapper.<ChatMessageWithReadTimeDTO>builder()
                 .status(HttpStatus.OK.value())
                 .data(messages)
                 .build();

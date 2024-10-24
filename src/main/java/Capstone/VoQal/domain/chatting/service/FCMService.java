@@ -29,7 +29,8 @@ public class FCMService {
         if (existingToken.isPresent()){
             memberRepository.updateFcmToken(Long.valueOf(fcmTokenSaveRequestDTO.getUserId()), fcmTokenSaveRequestDTO.getFcmToken());
         } else{
-            Member member = existingToken.get();
+            Member member = memberService.getMemberById(Long.valueOf(fcmTokenSaveRequestDTO.getUserId()));
+            member.saveFcmToken(fcmTokenSaveRequestDTO.getFcmToken());
             memberRepository.save(member);
 
         }

@@ -71,4 +71,7 @@ public class Member extends BaseEntity {
         this.password = newPassword;
     }
 
+    public void saveFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
 }
