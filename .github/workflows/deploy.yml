@@ -83,7 +83,11 @@ jobs:
             docker pull cym1212/voqal
             docker stop spring-container || true
             docker rm spring-container || true
-            docker run -d --name spring-container -p 8080:8080 cym1212/voqal
+            docker run -d --name spring-container -p 8080:8080 \
+              -e DB_URL=${{ secrets.DB_URL }} \
+              -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
+              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+                cym1212/voqal
 
 #         추가했던 인바운드 규칙을 제거
       - name: Remove GitHub Actions IP
