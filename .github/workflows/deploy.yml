@@ -71,12 +71,14 @@ jobs:
 
           # EC2 서버에 SSH 연결하여 Docker Hub에서 이미지 가져오기 및 컨테이너 실행
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@v0.1.0
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
+          port: '22'
           debug: true
+          script_stop : true
           script: |
             docker pull cym1212/voqal
             docker stop spring-container || true
