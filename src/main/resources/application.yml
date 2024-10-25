@@ -2,12 +2,11 @@ spring:
   config:
     import:
       - classpath:application-secret.yml
-      - classpath:application-database-prod.yml
       - classpath:application-s3.yml
       - classpath:application-webhook-discord.yml
       - classpath:application-firebase.yml
-#      배포 전에 주석처리
-#      - classpath:application-database-local.yml
+      - optional:classpath:application-database-local.yml
+      - optional:classpath:application-database-prod.yml
 
   servlet:
     multipart:
