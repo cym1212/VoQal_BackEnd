@@ -48,6 +48,27 @@ jobs:
       - name: Push Docker image to Docker Hub
         run: docker push cym1212/voqal
 
+
+      - name: Get Public IP
+        id: ip
+        uses: haythem/public-ip@v1.3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'ap-northeast-2'
+
+        #EC2 서버에 ssh 포트 허용을 위한 ip를 얻은 후 인바운드 규칙에 추가
+      - name: Add GitHub Actions IP
+        run: |
+          aws ec2 authorize-security-group-ingress \
+            --group-id ${{ secrets.SECURITY_GROUP_ID }} \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32  
+
           # EC2 서버에 SSH 연결하여 Docker Hub에서 이미지 가져오기 및 컨테이너 실행
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v0.1.0
@@ -60,3 +81,12 @@ jobs:
             docker stop spring-container || true
             docker rm spring-container || true
             docker run -d --name spring-container -p 8080:8080 cym1212/voqal
+
+#         추가했던 인바운드 규칙을 제거
+      - name: Remove GitHub Actions IP
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id ${{ secrets.SECURITY_GROUP_ID }} \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
