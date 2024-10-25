@@ -31,10 +31,15 @@ public class KeywordService {
     // 100개의 키워드 중에서 랜덤으로 가져오되 31개 전까지는 한 번 가져왔던 키워드가 또 가져와지면 안 됨
     @Transactional
     public void updateDailyKeyword() {
+
         if (used >= 31) {
+            used = 0;
+            return;
+        }
+
+        if (used == 0) {
             usedKeywords.clear();
             keywordRepository.resetAllUsedKeywords();
-            used = 0;
         }
 
         // 사용되지 않은 키워드를 한 번에 모두 가져옵니다.

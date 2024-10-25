@@ -34,6 +34,7 @@ public class KeywordRepositoryCustomImpl implements KeywordRepositoryCustom {
 
         queryFactory.update(challengeKeyword)
                 .set(challengeKeyword.used, false)
+                .where(challengeKeyword.used.isTrue())
                 .execute();
     }
 

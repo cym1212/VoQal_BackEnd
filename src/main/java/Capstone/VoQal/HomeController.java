@@ -1,7 +1,9 @@
 package Capstone.VoQal;
 
+import Capstone.VoQal.domain.challenge.service.KeywordService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @AllArgsConstructor
 public class HomeController {
+
+
 
     @GetMapping("/")
     @ResponseBody
@@ -23,4 +27,6 @@ public class HomeController {
     public String getSecuredHome() {
         return "Here is secured home";
     }
+
+
 }
