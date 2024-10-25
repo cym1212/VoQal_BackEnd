@@ -1,0 +1,61 @@
+name: Deploy to EC2 with Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: ''
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Restore configuration files from GitHub Secrets
+        run: |
+            echo "${{ secrets.APPLICATION_DATABASE_YML }}" > src/main/resources/application-database.yml
+            echo "${{ secrets.APPLICATION_FIREBASE_YML }}" > src/main/resources/application-firebase.yml
+            echo "${{ secrets.APPLICATION_S3_YML }}" > src/main/resources/application-s3.yml
+            echo "${{ secrets.APPLICATION_SECRET_YML }}" > src/main/resources/application-secret.yml
+            echo "${{ secrets.APPLICATION_WEBHOOK_DISCORD_YML }}" > src/main/resources/application-webhook-discord.yml
+            echo "${{ secrets.VOQAL_FIREBASE_ADMIN_SDK_JSON }}" > src/main/resources/voqal-firebase-admin-sdk.json
+
+
+      - name: Build with Gradle
+        run: ./gradlew build -x test
+
+          # Docker Hub 로그인
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+          # Docker 이미지 빌드
+      - name: Build Docker image
+        run: docker build -t your_dockerhub_username/spring-app .
+
+          # Docker Hub에 이미지 푸시
+      - name: Push Docker image to Docker Hub
+        run: docker push your_dockerhub_username/spring-app
+
+          # EC2 서버에 SSH 연결하여 Docker Hub에서 이미지 가져오기 및 컨테이너 실행
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker pull your_dockerhub_username/spring-app
+            docker stop spring-container || true
+            docker rm spring-container || true
+            docker run -d --name spring-container -p 8080:8080 your_dockerhub_username/spring-app
