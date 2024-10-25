@@ -76,6 +76,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
+          debug: true
           script: |
             docker pull cym1212/voqal
             docker stop spring-container || true
