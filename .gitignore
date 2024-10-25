@@ -37,7 +37,8 @@ out/
 .vscode/
 
 application-secret.yml
-application-database.yml
+application-database-local.yml
+application-database-prod.yml
 application-s3.yml
 application-webhook-discord.yml
 application-firebase.yml

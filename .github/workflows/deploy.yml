@@ -25,12 +25,12 @@ jobs:
 
       - name: Restore configuration files from GitHub Secrets
         run: |
-            echo "${{ secrets.APPLICATION_DATABASE_YML }}" > src/main/resources/application-database.yml
+            echo "${{ secrets.APPLICATION_DATABASE_YML }}" > src/main/resources/application-database-prod.yml
             echo "${{ secrets.APPLICATION_FIREBASE_YML }}" > src/main/resources/application-firebase.yml
             echo "${{ secrets.APPLICATION_S3_YML }}" > src/main/resources/application-s3.yml
             echo "${{ secrets.APPLICATION_SECRET_YML }}" > src/main/resources/application-secret.yml
             echo "${{ secrets.APPLICATION_WEBHOOK_DISCORD_YML }}" > src/main/resources/application-webhook-discord.yml
-            echo "${{ secrets.VOQAL_FIREBASE_ADMIN_SDK_JSON }}" > src/main/resources/voqal-firebase-admin-sdk.json
+            echo "${{ secrets.VOQAL_FIREBASE_ADMIN_SDK_JSON }}" | base64 -d > src/main/resources/voqal-firebase-admin-sdk.json
 
 
       - name: Build with Gradle

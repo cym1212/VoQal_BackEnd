@@ -2,10 +2,12 @@ spring:
   config:
     import:
       - classpath:application-secret.yml
-      - classpath:application-database.yml
+      - classpath:application-database-local.yml
+      - classpath:application-database-prod.yml
       - classpath:application-s3.yml
       - classpath:application-webhook-discord.yml
       - classpath:application-firebase.yml
+
   servlet:
     multipart:
       maxFileSize: 10MB
