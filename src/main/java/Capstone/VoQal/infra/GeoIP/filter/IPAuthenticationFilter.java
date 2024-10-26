@@ -27,7 +27,7 @@ public class IPAuthenticationFilter implements Filter {
         String ipAddress = request.getRemoteAddr();
 
         // 로컬호스트(127.0.0.1)와 내부 IP 예외 처리
-        if (ipAddress.equals("127.0.0.1") || ipAddress.equals("0:0:0:0:0:0:0:1") || ipAddress.startsWith("192.168.") || ipAddress.startsWith("10.")) {
+        if (ipAddress.equals("127.0.0.1") || ipAddress.equals("0:0:0:0:0:0:0:1") || ipAddress.startsWith("192.168.") || ipAddress.startsWith("10.") || ipAddress.startsWith("172.17")) {
             chain.doFilter(request, response); // 필터를 적용하지 않고 다음 필터로 넘김
             return;
         }

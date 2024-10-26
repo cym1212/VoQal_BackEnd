@@ -83,7 +83,7 @@ jobs:
             docker pull cym1212/voqal
             docker stop spring-container || true
             docker rm spring-container || true
-            docker run -d --name spring-container -p 127.0.0.1:8080:8080 \
+            docker run -d --name spring-container -p 0.0.0.0:8080:8080 \
               -e DB_URL=${{ secrets.DB_URL }} \
               -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
               -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
