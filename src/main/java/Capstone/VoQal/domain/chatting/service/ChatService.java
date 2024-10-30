@@ -124,14 +124,15 @@ public class ChatService {
             String fcmToken = receiver.getFcmToken();
 
             if (fcmToken != null) {
-                sendPushNotification(fcmToken, currentMember.getName(), message.getMessage());
+                sendPushNotification(fcmToken,currentMember.getId().toString(), currentMember.getName(), message.getMessage());
             }
         }
     }
 
-    public void sendPushNotification(String fcmToken, String title, String message) {
+    public void sendPushNotification(String fcmToken,String senderId, String title, String message) {
         Message fcmMessage = Message.builder()
                 .setToken(fcmToken)
+                .putData("sender", senderId)
                 .putData("title", title)
                 .putData("message", message)
                 .setApnsConfig(ApnsConfig.builder()
