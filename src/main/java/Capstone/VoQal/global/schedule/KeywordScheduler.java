@@ -24,7 +24,7 @@ public class KeywordScheduler {
         }
     }
 
-    @Scheduled(cron = "0 4 * * * ?")
+    @Scheduled(cron = "0 0 4 * * ?")
     @Transactional
     public void scheduleDailyKeyword() {
         keywordService.updateDailyKeyword();
