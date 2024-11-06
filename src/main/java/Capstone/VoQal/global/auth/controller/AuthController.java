@@ -204,8 +204,4 @@ public class AuthController {
     }
 
 
-    @PostMapping("/test")
-    public String test() {
-        return "sucess";
-    }
 }

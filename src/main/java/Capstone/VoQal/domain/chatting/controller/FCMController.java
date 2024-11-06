@@ -35,12 +35,7 @@ public class FCMController {
     }
 
     @PostMapping("/send")
-    @Operation(summary = "학생입장 - 채팅방 id 조회 (없으면 생성)", description = "학생입장 - 코치와의 채팅 방이 존재하는지 확인한 후 있으면 채팅방 id 리턴 없으면 생성후 리턴합니다.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "성공"),
-                    @ApiResponse(responseCode = "400", description = "잘못된 멤버 ID 입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-                    @ApiResponse(responseCode = "400", description = "푸시알림 전송을 실패했습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            })
+    @Operation(summary = "공지사항", description = "fcm을 활용한 공지사항 기능.")
     public MessageDTO sendNotification(@RequestBody NotificationRequestDTO notificationRequestDTO) {
         fcmService.sendNotification(notificationRequestDTO);
         return MessageDTO.builder()
