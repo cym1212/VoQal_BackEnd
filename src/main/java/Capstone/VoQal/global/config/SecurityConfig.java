@@ -45,12 +45,12 @@ public class SecurityConfig {
                     //todo
                     //권한별로 엔드포인트 설정하기
                     auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll();
+                    // 모두
+                    auth.requestMatchers(HttpMethod.GET).permitAll();
+                    auth.requestMatchers(HttpMethod.POST,"/signup","/reset/password","/login","/find/*","/duplicate/*").permitAll();
+                    auth.requestMatchers(HttpMethod.PATCH,"/tokens","/logout").permitAll();
+                    auth.requestMatchers(HttpMethod.DELETE,"/delete/member").permitAll();
 
-                    // 학생 코치 둘다
-                    auth.requestMatchers(HttpMethod.GET,"/liked","/count/likes","/user/details","/reservation","/reservation/*","/available-times","lessonNote/*","/chat/*/messages","/challenge","/challenge/*").hasAnyAuthority(STUDENT, COACH);
-                    auth.requestMatchers(HttpMethod.POST,"/firebase-token","/**/like","/reservation","/fcm/token","/fcm/send","/chat/*/messages","/challenge").hasAnyAuthority(STUDENT, COACH);
-                    auth.requestMatchers(HttpMethod.PATCH,"/reservation/*","/challenge/*").hasAnyAuthority(STUDENT, COACH);
-                    auth.requestMatchers(HttpMethod.DELETE,"/*/unlike","/reservation/*","/challenge/*").hasAnyAuthority(STUDENT, COACH);
 
                     // 게스트
                     auth.requestMatchers(HttpMethod.GET,"/role/coach","/status/check").hasAnyAuthority(GUEST);
@@ -70,11 +70,11 @@ public class SecurityConfig {
                     auth.requestMatchers(HttpMethod.PATCH,"/lessonsongurl/*","/record/*","/lessonNote/*").hasAnyAuthority(COACH);
                     auth.requestMatchers(HttpMethod.DELETE,"/*","/lessonsongurl/*","/record/*","/lessonNote/*").hasAnyAuthority(COACH);
 
-                    // 모두
-                    auth.requestMatchers(HttpMethod.GET).permitAll();
-                    auth.requestMatchers(HttpMethod.POST,"/signup","/reset/password","/login","/find/*","/duplicate/*").permitAll();
-                    auth.requestMatchers(HttpMethod.PATCH,"/tokens","/logout").permitAll();
-                    auth.requestMatchers(HttpMethod.DELETE,"/delete/member").permitAll();
+                    // 학생 코치 둘다
+                    auth.requestMatchers(HttpMethod.GET,"/liked","/count/likes","/user/details","/reservation","/reservation/*","/available-times","lessonNote/*","/chat/*/messages","/challenge","/challenge/*").hasAnyAuthority(STUDENT, COACH);
+                    auth.requestMatchers(HttpMethod.POST,"/firebase-token","/**/like","/reservation","/fcm/token","/fcm/send","/chat/*/messages","/challenge").hasAnyAuthority(STUDENT, COACH);
+                    auth.requestMatchers(HttpMethod.PATCH,"/reservation/*","/challenge/*").hasAnyAuthority(STUDENT, COACH);
+                    auth.requestMatchers(HttpMethod.DELETE,"/*/unlike","/reservation/*","/challenge/*").hasAnyAuthority(STUDENT, COACH);
 
 
                     auth.anyRequest().authenticated();
