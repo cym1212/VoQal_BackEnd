@@ -40,41 +40,40 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-//                    auth.requestMatchers("/**").permitAll();
+                    auth.requestMatchers("/**").permitAll();
 
                     //todo
                     //권한별로 엔드포인트 설정하기
                     auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll();
                     // 모두
-                    auth.requestMatchers(HttpMethod.GET).permitAll();
-                    auth.requestMatchers(HttpMethod.POST,"/signup","/reset/password","/login","/find/*","/duplicate/*").permitAll();
-                    auth.requestMatchers(HttpMethod.PATCH,"/tokens","/logout").permitAll();
-                    auth.requestMatchers(HttpMethod.DELETE,"/delete/member").permitAll();
-
-
-                    // 게스트
-                    auth.requestMatchers(HttpMethod.GET,"/role/coach","/status/check").hasAnyAuthority(GUEST);
-                    auth.requestMatchers(HttpMethod.POST,"/role/coach","/request").hasAnyAuthority(GUEST);
-                    auth.requestMatchers(HttpMethod.PATCH,"/*/change-nickname").hasAnyAuthority(GUEST);
-                    auth.requestMatchers(HttpMethod.DELETE).hasAnyAuthority(GUEST);
-
-                    // 학생
-                    auth.requestMatchers(HttpMethod.GET,"/lessonsongurl/student","/record/student","lessonNote/student").hasAnyAuthority(STUDENT);
-                    auth.requestMatchers(HttpMethod.POST,"/chat/room").hasAnyAuthority(STUDENT);
-                    auth.requestMatchers(HttpMethod.PATCH).hasAnyAuthority(STUDENT);
-                    auth.requestMatchers(HttpMethod.DELETE).hasAnyAuthority(STUDENT);
-
-                    // 코치
-                    auth.requestMatchers(HttpMethod.GET,"/request","/student","/lessonsongurl","/record","/lessonNote").hasAnyAuthority(COACH);
-                    auth.requestMatchers(HttpMethod.POST,"/reject","/approve","/lessonsongurl","/create/record","/create/note","/chat/room/*").hasAnyAuthority(COACH);
-                    auth.requestMatchers(HttpMethod.PATCH,"/lessonsongurl/*","/record/*","/lessonNote/*").hasAnyAuthority(COACH);
-                    auth.requestMatchers(HttpMethod.DELETE,"/*","/lessonsongurl/*","/record/*","/lessonNote/*").hasAnyAuthority(COACH);
-
-                    // 학생 코치 둘다
-                    auth.requestMatchers(HttpMethod.GET,"/liked","/count/likes","/user/details","/reservation","/reservation/*","/available-times","lessonNote/*","/chat/*/messages","/challenge","/challenge/*").hasAnyAuthority(STUDENT, COACH);
-                    auth.requestMatchers(HttpMethod.POST,"/firebase-token","/**/like","/reservation","/fcm/token","/fcm/send","/chat/*/messages","/challenge").hasAnyAuthority(STUDENT, COACH);
-                    auth.requestMatchers(HttpMethod.PATCH,"/reservation/*","/challenge/*").hasAnyAuthority(STUDENT, COACH);
-                    auth.requestMatchers(HttpMethod.DELETE,"/*/unlike","/reservation/*","/challenge/*").hasAnyAuthority(STUDENT, COACH);
+//                    auth.requestMatchers(HttpMethod.GET).permitAll();
+//                    auth.requestMatchers(HttpMethod.POST,"/signup","/reset/password","/login","/find/*","/duplicate/*").permitAll();
+//                    auth.requestMatchers(HttpMethod.PATCH,"/tokens","/logout").permitAll();
+//                    auth.requestMatchers(HttpMethod.DELETE,"/delete/member").permitAll();
+//
+//                    // 게스트
+//                    auth.requestMatchers(HttpMethod.GET,"/role/coach","/status/check").hasAnyAuthority(GUEST);
+//                    auth.requestMatchers(HttpMethod.POST,"/role/coach","/request").hasAnyAuthority(GUEST);
+//                    auth.requestMatchers(HttpMethod.PATCH,"/*/change-nickname").hasAnyAuthority(GUEST);
+//                    auth.requestMatchers(HttpMethod.DELETE).hasAnyAuthority(GUEST);
+//
+//                    // 학생
+//                    auth.requestMatchers(HttpMethod.GET,"/lessonsongurl/student","/record/student","lessonNote/student").hasAnyAuthority(STUDENT);
+//                    auth.requestMatchers(HttpMethod.POST,"/chat/room").hasAnyAuthority(STUDENT);
+//                    auth.requestMatchers(HttpMethod.PATCH).hasAnyAuthority(STUDENT);
+//                    auth.requestMatchers(HttpMethod.DELETE).hasAnyAuthority(STUDENT);
+//
+//                    // 코치
+//                    auth.requestMatchers(HttpMethod.GET,"/request","/student","/lessonsongurl","/record","/lessonNote").hasAnyAuthority(COACH);
+//                    auth.requestMatchers(HttpMethod.POST,"/reject","/approve","/lessonsongurl","/create/record","/create/note","/chat/room/*").hasAnyAuthority(COACH);
+//                    auth.requestMatchers(HttpMethod.PATCH,"/lessonsongurl/*","/record/*","/lessonNote/*").hasAnyAuthority(COACH);
+//                    auth.requestMatchers(HttpMethod.DELETE,"/*","/lessonsongurl/*","/record/*","/lessonNote/*").hasAnyAuthority(COACH);
+//
+//                    // 학생 코치 둘다
+//                    auth.requestMatchers(HttpMethod.GET,"/liked","/count/likes","/user/details","/reservation","/reservation/*","/available-times","/lessonNote/*","/chat/*/messages","/challenge","/challenge/*").hasAnyAuthority(STUDENT, COACH);
+//                    auth.requestMatchers(HttpMethod.POST,"/firebase-token","/**/like","/reservation","/fcm/token","/fcm/send","/chat/*/message","/challenge").hasAnyAuthority(STUDENT, COACH);
+//                    auth.requestMatchers(HttpMethod.PATCH,"/reservation/*","/challenge/*").hasAnyAuthority(STUDENT, COACH);
+//                    auth.requestMatchers(HttpMethod.DELETE,"/*/unlike","/reservation/*","/challenge/*").hasAnyAuthority(STUDENT, COACH);
 
 
                     auth.anyRequest().authenticated();
@@ -82,6 +81,7 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(ipAuthenticationFilter,JwtAuthFilter.class)
                 .logout(Customizer.withDefaults());
+
 
         return httpSecurity.build();
 
