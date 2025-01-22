@@ -6,6 +6,7 @@ spring:
       - classpath:application-webhook-discord.yml
       - classpath:application-firebase.yml
       - optional:classpath:application-database-local.yml
+      - classpath:application-local-upload.yml
   servlet:
     multipart:
       maxFileSize: 10MB

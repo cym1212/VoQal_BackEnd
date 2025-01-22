@@ -59,6 +59,9 @@ public enum ErrorCode {
     STORAGE_UPLOAD_FAILURE(400, "MP002", "스토리지로 업로드를 실패했습니다"),
     MAX_UPLOAD_SIZE_EXCEEDED(400, "MP003", "파일 최대 크기를 초과했습니다"),
     NO_SUCH_KEY(400, "MP004", "잘못된 파일 이름으로 스토리지에 업로드를 요청했습니다"),
+    STORAGE_COPY_FAILURE(400,"MP004","파일 복사에 실패했습니다"),
+    STORAGE_DELETE_FAILURE(400,"MP005","파일 삭제에 실패했습니다"),
+    FILE_NOT_FOUND(400,"MP006","파일을 찾을 수 없습니다."),
 
     //Login
     INCOMPLETE_SIGNUP_INFO(400,"L001","회원가입 정보 누락! 누락된 정보를 입력해주세요"),

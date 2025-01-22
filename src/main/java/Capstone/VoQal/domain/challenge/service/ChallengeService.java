@@ -10,6 +10,8 @@ import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.domain.member.service.MemberService;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.error.exception.BusinessException;
+import Capstone.VoQal.global.localFile.service.LocalFileService;
+import Capstone.VoQal.global.localFile.utils.LocalUploadUtils;
 import Capstone.VoQal.infra.s3upload.service.S3UploadService;
 import Capstone.VoQal.infra.s3upload.utils.UploadUtils;
 import jakarta.transaction.Transactional;
@@ -30,7 +32,8 @@ public class ChallengeService {
     private final MemberService memberService;
     private final KeywordService keywordService;
     private final ChallengePostRepository challengePostRepository;
-    private final S3UploadService s3UploadService;
+//    private final S3UploadService s3UploadService;
+    private final LocalFileService localFileService;
 
     // 모든 사용자의 챌린지 조회 + 일정 시간마다 랜덤한 순서로 인덱싱 후 가져와야함
     @Transactional
@@ -62,8 +65,11 @@ public class ChallengeService {
         if (thumbnail.isEmpty() || record.isEmpty()) {
             throw new BusinessException(ErrorCode.MULTIPART_FILE_NOT_FOUND);
         }
-        String uploadThumbnail = s3UploadService.uploadFile(thumbnail, UploadUtils.CHALLENGE_THUMBNAIL, currentMember.getId());
-        String uploadRecord = s3UploadService.uploadFile(record, UploadUtils.CHALLENGE_RECORD, currentMember.getId());
+//        String uploadThumbnail = s3UploadService.uploadFile(thumbnail, UploadUtils.CHALLENGE_THUMBNAIL, currentMember.getId());
+//        String uploadRecord = s3UploadService.uploadFile(record, UploadUtils.CHALLENGE_RECORD, currentMember.getId());
+
+        String uploadThumbnail = localFileService.uploadFile(thumbnail, LocalUploadUtils.CHALLENGE_THUMBNAIL, currentMember.getId());
+        String uploadRecord = localFileService.uploadFile(record, LocalUploadUtils.CHALLENGE_RECORD, currentMember.getId());
 
         ChallengePost challengePost = ChallengePost.builder()
                 .thumbnailUrl(uploadThumbnail)
@@ -105,10 +111,13 @@ public class ChallengeService {
         String updateThumbnail;
         if (thumbnail != null && !thumbnail.isEmpty()) {
             // 기존 썸네일 백업 및 삭제
-            s3UploadService.copyFile(existingPost.getThumbnailUrl(), UploadUtils.CHALLENGE_THUMBNAIL, UploadUtils.CHALLENGE_THUMBNAIL_DELETED);
-            s3UploadService.deleteFile(existingPost.getThumbnailUrl());
+//            s3UploadService.copyFile(existingPost.getThumbnailUrl(), UploadUtils.CHALLENGE_THUMBNAIL, UploadUtils.CHALLENGE_THUMBNAIL_DELETED);
+//            s3UploadService.deleteFile(existingPost.getThumbnailUrl());
+            localFileService.copyFile(existingPost.getThumbnailUrl(), LocalUploadUtils.CHALLENGE_THUMBNAIL, LocalUploadUtils.CHALLENGE_THUMBNAIL_DELETED);
+            localFileService.deleteFile(existingPost.getThumbnailUrl());
             // 새 썸네일 업로드
-            updateThumbnail = s3UploadService.uploadFile(thumbnail, UploadUtils.CHALLENGE_THUMBNAIL, currentMember.getId());
+//            updateThumbnail = s3UploadService.uploadFile(thumbnail, UploadUtils.CHALLENGE_THUMBNAIL, currentMember.getId());
+            updateThumbnail = localFileService.uploadFile(thumbnail, LocalUploadUtils.CHALLENGE_THUMBNAIL, currentMember.getId());
         } else {
             updateThumbnail = existingPost.getThumbnailUrl(); // 수정하지 않을 경우 기존 값 유지
         }
@@ -117,10 +126,13 @@ public class ChallengeService {
         String updateRecord;
         if (record != null && !record.isEmpty()) {
             // 기존 녹음 파일 백업 및 삭제
-            s3UploadService.copyFile(existingPost.getChallengeRecordUrl(), UploadUtils.CHALLENGE_RECORD, UploadUtils.CHALLENGE_RECORD_DELETED);
-            s3UploadService.deleteFile(existingPost.getChallengeRecordUrl());
+//            s3UploadService.copyFile(existingPost.getChallengeRecordUrl(), UploadUtils.CHALLENGE_RECORD, UploadUtils.CHALLENGE_RECORD_DELETED);
+//            s3UploadService.deleteFile(existingPost.getChallengeRecordUrl());
+            localFileService.copyFile(existingPost.getChallengeRecordUrl(), LocalUploadUtils.CHALLENGE_RECORD, LocalUploadUtils.CHALLENGE_RECORD_DELETED);
+            localFileService.deleteFile(existingPost.getChallengeRecordUrl());
             // 새 녹음 파일 업로드
-            updateRecord = s3UploadService.uploadFile(record, UploadUtils.CHALLENGE_RECORD, currentMember.getId());
+//            updateRecord = s3UploadService.uploadFile(record, UploadUtils.CHALLENGE_RECORD, currentMember.getId());
+            updateRecord = localFileService.uploadFile(record, LocalUploadUtils.CHALLENGE_RECORD, currentMember.getId());
         } else {
             updateRecord = existingPost.getChallengeRecordUrl(); // 수정하지 않을 경우 기존 값 유지
         }
@@ -144,11 +156,17 @@ public class ChallengeService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.CHALLENGE_POST_NOT_FOUND));
 
 
-        s3UploadService.copyFile(existingPost.getChallengeRecordUrl(), UploadUtils.CHALLENGE_RECORD, UploadUtils.CHALLENGE_RECORD_DELETED);
-        s3UploadService.copyFile(existingPost.getThumbnailUrl(), UploadUtils.CHALLENGE_THUMBNAIL, UploadUtils.CHALLENGE_THUMBNAIL_DELETED);
+//        s3UploadService.copyFile(existingPost.getChallengeRecordUrl(), UploadUtils.CHALLENGE_RECORD, UploadUtils.CHALLENGE_RECORD_DELETED);
+//        s3UploadService.copyFile(existingPost.getThumbnailUrl(), UploadUtils.CHALLENGE_THUMBNAIL, UploadUtils.CHALLENGE_THUMBNAIL_DELETED);
+//
+//        s3UploadService.deleteFile(existingPost.getThumbnailUrl());
+//        s3UploadService.deleteFile(existingPost.getChallengeRecordUrl());
 
-        s3UploadService.deleteFile(existingPost.getThumbnailUrl());
-        s3UploadService.deleteFile(existingPost.getChallengeRecordUrl());
+        localFileService.copyFile(existingPost.getChallengeRecordUrl(), LocalUploadUtils.CHALLENGE_RECORD, LocalUploadUtils.CHALLENGE_RECORD_DELETED);
+        localFileService.copyFile(existingPost.getThumbnailUrl(), LocalUploadUtils.CHALLENGE_THUMBNAIL, LocalUploadUtils.CHALLENGE_THUMBNAIL_DELETED);
+
+        localFileService.deleteFile(existingPost.getThumbnailUrl());
+        localFileService.deleteFile(existingPost.getChallengeRecordUrl());
 
         challengePostRepository.deleteChallengePost(challengePostId);
 

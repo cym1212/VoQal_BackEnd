@@ -1,7 +1,6 @@
 package Capstone.VoQal.domain.lesson.record.service;
 
 
-
 import Capstone.VoQal.domain.lesson.record.domain.LessonRecord;
 import Capstone.VoQal.domain.lesson.record.dto.*;
 import Capstone.VoQal.domain.lesson.record.repository.RecordRepository;
@@ -10,6 +9,8 @@ import Capstone.VoQal.domain.member.domain.Member;
 import Capstone.VoQal.domain.member.service.MemberService;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.error.exception.BusinessException;
+import Capstone.VoQal.global.localFile.service.LocalFileService;
+import Capstone.VoQal.global.localFile.utils.LocalUploadUtils;
 import Capstone.VoQal.infra.s3upload.service.S3UploadService;
 import Capstone.VoQal.infra.s3upload.utils.UploadUtils;
 import jakarta.transaction.Transactional;
@@ -28,6 +29,7 @@ public class RecordService {
     private final MemberService memberService;
     private final S3UploadService s3UploadService;
     private final RecordRepository recordRepository;
+    private final LocalFileService localFileService;
 
 
     //coach
@@ -40,7 +42,8 @@ public class RecordService {
         CoachAndStudent coachAndStudent = memberService.getCoachAndStudent(currentCoach.getId(), uploadRequestDTO.getStudentId());
 
 
-        String uploadFile = s3UploadService.uploadFile(multipartFile, UploadUtils.LESSON_NOTE_RECORD, currentCoach.getId());
+//        String uploadFile = s3UploadService.uploadFile(multipartFile, UploadUtils.LESSON_NOTE_RECORD, currentCoach.getId());
+        String uploadFile = localFileService.uploadFile(multipartFile, LocalUploadUtils.LESSON_NOTE_RECORD, currentCoach.getId());
         LessonRecord uploadLessonRecord = LessonRecord.builder()
                 .recordDate(uploadRequestDTO.getRecordDate())
                 .recordTitle(uploadRequestDTO.getRecordTitle())
@@ -61,7 +64,7 @@ public class RecordService {
     public List<LessonRecordResponseDTO> getAllRecordsByCoach(GetRecordUrlDTO getRecordUrlDTO) {
         Member currentCoach = memberService.getCurrentCoach();
 
-        List<LessonRecord> RecordList = recordRepository.findNonDeletedRecordByCoachIdAndStudentId(currentCoach.getId(),getRecordUrlDTO.getStudentId());
+        List<LessonRecord> RecordList = recordRepository.findNonDeletedRecordByCoachIdAndStudentId(currentCoach.getId(), getRecordUrlDTO.getStudentId());
         List<LessonRecordResponseDTO> responseDTOS = new ArrayList<>();
         for (LessonRecord lessonRecord : RecordList) {
             responseDTOS.add(new LessonRecordResponseDTO(
@@ -85,10 +88,14 @@ public class RecordService {
             throw new BusinessException(ErrorCode.MULTIPART_FILE_NOT_FOUND);
         }
 
-        s3UploadService.copyFile(existingRecord.getRecordUrl(), UploadUtils.LESSON_NOTE_RECORD, UploadUtils.LESSON_NOTE_RECORD_DELETED);
-        s3UploadService.deleteFile(existingRecord.getRecordUrl());
+//        s3UploadService.copyFile(existingRecord.getRecordUrl(), UploadUtils.LESSON_NOTE_RECORD, UploadUtils.LESSON_NOTE_RECORD_DELETED);
+//        s3UploadService.deleteFile(existingRecord.getRecordUrl());
+//
+//        String uploadFile = s3UploadService.uploadFile(multipartFile, UploadUtils.LESSON_NOTE_RECORD, currentCoach.getId());
+        localFileService.copyFile(existingRecord.getRecordUrl(), LocalUploadUtils.LESSON_NOTE_RECORD, LocalUploadUtils.LESSON_NOTE_RECORD_DELETED);
+        localFileService.deleteFile(existingRecord.getRecordUrl());
 
-        String uploadFile = s3UploadService.uploadFile(multipartFile, UploadUtils.LESSON_NOTE_RECORD, currentCoach.getId());
+        String uploadFile = localFileService.uploadFile(multipartFile, LocalUploadUtils.LESSON_NOTE_RECORD, currentCoach.getId());
 
         LessonRecord updatedRecord = recordRepository.updateLessonRecord(recordId, updateUploadRequestDTO.getUpdateRecordDate(), updateUploadRequestDTO.getUpdateRecordTitle(), uploadFile);
 
@@ -105,8 +112,11 @@ public class RecordService {
         LessonRecord existingRecord = recordRepository.findById(recordId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RECORD_NOT_FOUND));
 
-        s3UploadService.copyFile(existingRecord.getRecordUrl(), UploadUtils.LESSON_NOTE_RECORD, UploadUtils.LESSON_NOTE_RECORD_DELETED);
-        s3UploadService.deleteFile(existingRecord.getRecordUrl());
+//        s3UploadService.copyFile(existingRecord.getRecordUrl(), UploadUtils.LESSON_NOTE_RECORD, UploadUtils.LESSON_NOTE_RECORD_DELETED);
+//        s3UploadService.deleteFile(existingRecord.getRecordUrl());
+
+        localFileService.copyFile(existingRecord.getRecordUrl(), LocalUploadUtils.LESSON_NOTE_RECORD, LocalUploadUtils.LESSON_NOTE_RECORD_DELETED);
+        localFileService.deleteFile(existingRecord.getRecordUrl());
 
         recordRepository.deleteRecord(recordId);
     }
@@ -117,7 +127,7 @@ public class RecordService {
         Member currentStudent = memberService.getCurrentMember();
         Long coach = memberService.getCoachIdByStudentId(currentStudent.getId());
 
-        List<LessonRecord> RecordList = recordRepository.findNonDeletedRecordByCoachIdAndStudentId(coach,currentStudent.getId());
+        List<LessonRecord> RecordList = recordRepository.findNonDeletedRecordByCoachIdAndStudentId(coach, currentStudent.getId());
         List<LessonRecordResponseDTO> responseDTOS = new ArrayList<>();
         for (LessonRecord lessonRecord : RecordList) {
             responseDTOS.add(new LessonRecordResponseDTO(

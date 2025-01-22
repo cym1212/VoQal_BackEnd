@@ -1,0 +1,5 @@
+file:
+  upload:
+    dir: ${user.home}/upload
+  deleted:
+    dir: ${user.home}/deleted
