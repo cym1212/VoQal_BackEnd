@@ -26,6 +26,7 @@ public enum ErrorCode {
     INVALID_REQUEST(400,"C018", "잘못된 요청값입니다."),
     MULTIPART_FILE_NOT_FOUND(400,"C019","MultipartFile을 찾을 수 없습니다."),
     REQUEST_FAILED(400,"C020","요청에 실패했습니다 다시 시도해주세요"),
+    SYSTEM_ERROR(400,"C021","시스템 오류가 발생했습니다. 다시 시도해주세요."),
 
 
 

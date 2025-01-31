@@ -44,6 +44,8 @@ public class QReservation extends EntityPathBase<Reservation> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
+    public final NumberPath<Integer> version = createNumber("version", Integer.class);
+
     public QReservation(String variable) {
         this(Reservation.class, forVariable(variable), INITS);
     }
