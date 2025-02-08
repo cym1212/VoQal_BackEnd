@@ -13,6 +13,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -68,17 +70,18 @@ public class ReservationService {
     }
 
 
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ReservationResponseDTO createReservation(ReservationRequestDTO reservationRequestDTO) {
         Member currentMember = memberService.getCurrentMember();
 
         Room room = roomRepository.findById(reservationRequestDTO.getRoomId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_REQUEST));
+//        Room room = entityManager.find(Room.class, reservationRequestDTO.getRoomId(), LockModeType.PESSIMISTIC_WRITE);
 
         LocalDateTime startTime = reservationRequestDTO.getStartTime().truncatedTo(ChronoUnit.HOURS);
         LocalDateTime endTime = reservationRequestDTO.getEndTime().truncatedTo(ChronoUnit.HOURS).minusMinutes(1);
 
-        entityManager.lock(room, LockModeType.PESSIMISTIC_WRITE);
+//        entityManager.lock(room, LockModeType.PESSIMISTIC_WRITE);
 
         Optional<Reservation> checkReservation = reservationRepository.findSameReservation(room.getId(), startTime, endTime);
         if (checkReservation.isPresent()) {
@@ -98,6 +101,8 @@ public class ReservationService {
                 .build();
 
         reservationRepository.save(reservation);
+
+//        entityManager.flush();
 
         return ReservationResponseDTO.builder()
                 .roomId(reservation.getRoom().getId())

@@ -4,6 +4,7 @@ import Capstone.VoQal.domain.reservation.domain.Reservation;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.error.exception.BusinessException;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -57,7 +58,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
     }
 
     @Transactional
-    @Override
+//    @Override
     public Optional<Reservation> findSameReservation(Long roomId, LocalDateTime startTime, LocalDateTime endTime) {
         Reservation result = queryFactory.selectFrom(reservation)
                 .where(
@@ -65,6 +66,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
                                 .and(reservation.startTime.between(startTime, endTime))
                                 .and(reservation.deletedAt.isNull())
                 )
+                .setLockMode(LockModeType.PESSIMISTIC_WRITE)
                 .fetchOne();
         return Optional.ofNullable(result);
     }
