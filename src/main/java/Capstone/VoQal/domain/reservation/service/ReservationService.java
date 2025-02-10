@@ -70,7 +70,7 @@ public class ReservationService {
     }
 
 
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public ReservationResponseDTO createReservation(ReservationRequestDTO reservationRequestDTO) {
         Member currentMember = memberService.getCurrentMember();
 
