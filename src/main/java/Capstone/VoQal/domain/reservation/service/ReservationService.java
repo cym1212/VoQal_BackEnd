@@ -9,14 +9,19 @@ import Capstone.VoQal.domain.reservation.repository.ReservationRepository;
 import Capstone.VoQal.domain.reservation.repository.RoomRepository;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.error.exception.BusinessException;
+import Capstone.VoQal.global.redis.service.RedisSingleDataService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -33,6 +38,7 @@ public class ReservationService {
     private final RoomRepository roomRepository;
     private final MemberService memberService;
     private final EntityManager entityManager;
+    private final RedisSingleDataService redisSingleDataService;
 
 
     @Transactional
@@ -74,25 +80,24 @@ public class ReservationService {
     public ReservationResponseDTO createReservation(ReservationRequestDTO reservationRequestDTO) {
         Member currentMember = memberService.getCurrentMember();
 
-        Room room = roomRepository.findById(reservationRequestDTO.getRoomId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_REQUEST));
-//        Room room = entityManager.find(Room.class, reservationRequestDTO.getRoomId(), LockModeType.PESSIMISTIC_WRITE);
-
         LocalDateTime startTime = reservationRequestDTO.getStartTime().truncatedTo(ChronoUnit.HOURS);
         LocalDateTime endTime = reservationRequestDTO.getEndTime().truncatedTo(ChronoUnit.HOURS).minusMinutes(1);
 
-//        entityManager.lock(room, LockModeType.PESSIMISTIC_WRITE);
+        String key = "room:" + reservationRequestDTO.getRoomId() + ":" + startTime.toString() + ":" + endTime.toString();
 
-        Optional<Reservation> checkReservation = reservationRepository.findSameReservation(room.getId(), startTime, endTime);
-        if (checkReservation.isPresent()) {
+        if (!redisSingleDataService.getSingleData(key).isEmpty()) {
+            throw new BusinessException(ErrorCode.RESERVATION_TIME_CONFLICT_BY_REDIS);
+        }
+
+
+        Room room = roomRepository.findById(reservationRequestDTO.getRoomId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_REQUEST));
+
+
+        Optional<Reservation> existingReservation = reservationRepository.findSameReservation(room.getId(), startTime, endTime);
+        if (existingReservation.isPresent()) {
             throw new BusinessException(ErrorCode.RESERVATION_TIME_CONFLICT);
         }
-
-        if (reservationRequestDTO.getStartTime().isBefore(LocalDateTime.now())) {
-            throw new BusinessException(ErrorCode.PAST_RESERVATION_NOT_ALLOWED);
-        }
-        checkAvailableReservationTime(startTime, endTime);
-
         Reservation reservation = Reservation.builder()
                 .room(room)
                 .startTime(startTime)
@@ -102,7 +107,15 @@ public class ReservationService {
 
         reservationRepository.save(reservation);
 
-//        entityManager.flush();
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+            @Override
+            public void afterCommit() {
+                Duration ttl = Duration.between(LocalDateTime.now(), startTime);
+                if (!ttl.isNegative()) {
+                    redisSingleDataService.setSingleData(key, "reserved", ttl);
+                }
+            }
+        });
 
         return ReservationResponseDTO.builder()
                 .roomId(reservation.getRoom().getId())
@@ -110,6 +123,42 @@ public class ReservationService {
                 .endTime(reservation.getEndTime())
                 .status(200)
                 .build();
+
+
+//        Room room = roomRepository.findById(reservationRequestDTO.getRoomId())
+//                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_REQUEST));
+////        Room room = entityManager.find(Room.class, reservationRequestDTO.getRoomId(), LockModeType.PESSIMISTIC_WRITE);
+//
+//
+////        entityManager.lock(room, LockModeType.PESSIMISTIC_WRITE);
+//
+//        Optional<Reservation> checkReservation = reservationRepository.findSameReservation(room.getId(), startTime, endTime);
+//        if (checkReservation.isPresent()) {
+//            throw new BusinessException(ErrorCode.RESERVATION_TIME_CONFLICT);
+//        }
+//
+//        if (reservationRequestDTO.getStartTime().isBefore(LocalDateTime.now())) {
+//            throw new BusinessException(ErrorCode.PAST_RESERVATION_NOT_ALLOWED);
+//        }
+//        checkAvailableReservationTime(startTime, endTime);
+//
+//        Reservation reservation = Reservation.builder()
+//                .room(room)
+//                .startTime(startTime)
+//                .endTime(endTime)
+//                .member(currentMember)
+//                .build();
+//
+//        reservationRepository.save(reservation);
+//
+////        entityManager.flush();
+//
+//        return ReservationResponseDTO.builder()
+//                .roomId(reservation.getRoom().getId())
+//                .startTime(reservation.getStartTime())
+//                .endTime(reservation.getEndTime())
+//                .status(200)
+//                .build();
     }
 
 
@@ -139,7 +188,6 @@ public class ReservationService {
                 .status(200)
                 .build();
     }
-
 
 
     @Transactional
