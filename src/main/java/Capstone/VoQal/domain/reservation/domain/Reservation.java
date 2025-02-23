@@ -23,8 +23,8 @@ public class Reservation extends BaseEntity {
 
     private LocalDateTime endTime;
 
-    @Version
-    private Integer version;
+//    @Version
+//    private Integer version;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

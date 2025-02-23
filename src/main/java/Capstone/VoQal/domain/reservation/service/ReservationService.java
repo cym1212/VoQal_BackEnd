@@ -10,17 +10,25 @@ import Capstone.VoQal.domain.reservation.repository.ReservationRepository;
 import Capstone.VoQal.domain.reservation.repository.RoomRepository;
 import Capstone.VoQal.global.enums.ErrorCode;
 import Capstone.VoQal.global.error.exception.BusinessException;
+import Capstone.VoQal.global.redis.service.RedisSingleDataService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
+
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -32,18 +40,17 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final RoomRepository roomRepository;
     private final MemberService memberService;
     private final EntityManager entityManager;
+    private final RedisSingleDataService redisSingleDataService;
     private final RedissonClient redissonClient;
     private final StringRedisTemplate redisTemplate;
     private final FCMService fcmService;
-
-    private static final String RESERVATION_LOCK_PREFIX = "reservation:lock:";
-    private static final String RESERVATION_STREAM_KEY = "reservation:stream";
 
 
     @Transactional
@@ -80,32 +87,35 @@ public class ReservationService {
                 .build();
     }
 
-    @Retryable(value = {OptimisticLockException.class, BusinessException.class}, maxAttempts = 3)
     @Transactional
     public ReservationResponseDTO createReservation(ReservationRequestDTO reservationRequestDTO) {
         Member currentMember = memberService.getCurrentMember();
 
-        Room room = roomRepository.findById(reservationRequestDTO.getRoomId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_REQUEST));
-
         LocalDateTime startTime = reservationRequestDTO.getStartTime();
         LocalDateTime endTime = reservationRequestDTO.getEndTime();
 
-        String lockKey = RESERVATION_LOCK_PREFIX + room.getId();
-        RLock lock = redissonClient.getLock(lockKey);
+        String key = "room:" + reservationRequestDTO.getRoomId() + ":" + startTime.toString() + ":" + endTime.toString();
 
+        if (!redisSingleDataService.getSingleData(key).isEmpty()) {
+            throw new BusinessException(ErrorCode.RESERVATION_TIME_CONFLICT_BY_REDIS);
+        }
+
+        RLock lock = redissonClient.getLock(key);
         try {
-            boolean isLocked = lock.tryLock(5, 10, TimeUnit.SECONDS);
-            if (!isLocked) {
+            boolean available = lock.tryLock(100, 200, TimeUnit.MILLISECONDS);
+
+            if (!available) {
                 throw new BusinessException(ErrorCode.RESERVATION_TIME_CONFLICT);
             }
 
-            Optional<Reservation> existingReservation = reservationRepository.findSameReservation(room.getId(), startTime, endTime);
+            Room room = roomRepository.findById(reservationRequestDTO.getRoomId())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_REQUEST));
 
+
+            Optional<Reservation> existingReservation = reservationRepository.findSameReservation(room.getId(), startTime, endTime);
             if (existingReservation.isPresent()) {
                 throw new BusinessException(ErrorCode.RESERVATION_TIME_CONFLICT);
             }
-
             Reservation reservation = Reservation.builder()
                     .room(room)
                     .startTime(startTime)
@@ -114,6 +124,17 @@ public class ReservationService {
                     .build();
 
             reservationRepository.save(reservation);
+
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                @Override
+                public void afterCommit() {
+                    Duration ttl = Duration.between(LocalDateTime.now(), startTime);
+                    if (!ttl.isNegative()) {
+                        redisSingleDataService.setSingleData(key, "reserved", ttl);
+                    }
+                }
+            });
+
             return ReservationResponseDTO.builder()
                     .roomId(reservation.getRoom().getId())
                     .startTime(reservation.getStartTime())
@@ -123,10 +144,13 @@ public class ReservationService {
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+            throw new RuntimeException("Lock 획득 중 오류 발생", e);
         } finally {
-            lock.unlock();
+            if (lock.isHeldByCurrentThread() && lock.isLocked()) {
+                lock.unlock();  // 락 해제
+            }
         }
+
     }
 
 
@@ -156,7 +180,6 @@ public class ReservationService {
                 .status(200)
                 .build();
     }
-
 
 
     @Transactional
